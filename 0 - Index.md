@@ -1,7 +1,7 @@
 # Primo anno
 ## Primo semestre
 - [ ] **Algebra e Geometria**
-	- [ ] [[Algebra e geometria]]
+	- [ ] [[Algebra e Geometria]]
 - [ ] **Analisi Matematica**
 	- [ ] [[Analisi 1]]
 - [ ] **Fondamenti di Informatica**
