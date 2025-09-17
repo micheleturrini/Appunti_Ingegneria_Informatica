@@ -39,8 +39,8 @@ Non basta avere la grandezza fisica ma bisogna saperla **interpretare**
 Legge superata, a causa della fisica quantistica non si possono rimpicciolire i transistor più di qualche nanometro.
 ## UNIAC
 Primo calcolatore senza parti in movimento realizzato con 18000 valvole termoioniche.
-### Architettura Von Neumann 
-![[01a-ShortintroInf.pdf#page=13&rect=29,189,566,420|01a-ShortintroInf, p.13]]
+## Architettura Von Neumann 
+![[01a-ShortintroInf.pdf#page=13&rect=29,189,566,420|01a-ShortintroInf, p.13|600]]
 L'Inghilterra vuole la bomba atomica e investe nella realizzazione di calcolatori.
 Neumann inventa un architettura per i calcolatori ancora utilizzata.
 **componenti**
@@ -61,7 +61,7 @@ Piccoli programmi
 ## Software
 - Software di Base (Sistema operativo)
 - Software Applicativo (Chrome ,Macchine Virtuali)
-![[01a-ShortintroInf.pdf#page=21&rect=363,125,671,384&color=yellow|01a-ShortintroInf, p.21]]
+![[01a-ShortintroInf.pdf#page=21&rect=363,125,671,384&color=yellow|01a-ShortintroInf, p.21|300]]
 ### Sistema operativo
 - gestione risorse
 - gestione memoria centrale e di massa

@@ -34,13 +34,11 @@ R (insieme numeri reali)
 - **Vel (disgiunzione)**:  
   $p \lor q$.  
 - **Implicazione**:    $p \implies q$.  
-
-L'implicazione materiale $p \implies q$ è la proposizione che vale **falsa** solo quando $p$ è vera e $q$ è falsa; è vera in tutti gli altri casi. Intuitivamente: "se $p$ allora $q$".
-$$\begin{array}{c|c|c} p & q & p\implies q\\\hline \text{V} & \text{V} & \text{V}\\ \text{V} & \text{F} & \text{F}\\ \text{F} & \text{V} & \text{V}\\ \text{F} & \text{F} & \text{V} \end{array}$$​​
-
-Questo comporta il concetto di **verità per vacuità**: se l'antecedente $p$ è falso, l'implicazione $p\implies q$ è automaticamente vera.
-  Equivalentemente: $p\implies q \equiv \lnot(p\land\lnot q)$.
-- **Negazione**:  
+   Se l'ipotesi è **vera** allora **sicuramente la tesi è vera**
+  Se l'ipotesi è **falsa** allora **non è detto che la tesi sia falsa**
+$$\begin{array}{c|c|c} p & q & p\implies q\\\hline \text{V} & \text{V} & \text{V}\\ \text{V} & \text{F} & \text{F}\\ \text{F} & \text{V} & \text{V}\\ \text{F} & \text{F} & \text{V} \end{array}$$​    Equivalentemente: $p\implies q \equiv \lnot(p\land\lnot q)$.
+   $p \iff q$ : **se e solo se**
+-  **Negazione**:  
   $\lnot p$.  
 ### Operazioni insiemistiche
 - **Inclusione fra insiemi**:  
