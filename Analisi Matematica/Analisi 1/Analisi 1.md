@@ -17,7 +17,7 @@ R (insieme numeri reali)
   $x \in A$ → $x$ appartiene all’insieme $A$.  
 - **Non appartiene**:  
   $x \notin A$ → $x$ non appartiene all’insieme $A$.  
-****
+**Insieme Numerabile**
 un insieme che può essere messo in corrispondenza biunivoca con i numeri naturali
 ### Quantificatori
 - **Per ogni**:  
