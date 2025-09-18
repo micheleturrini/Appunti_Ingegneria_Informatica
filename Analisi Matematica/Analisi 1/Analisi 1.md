@@ -18,7 +18,8 @@ R (insieme numeri reali)
 - **Non appartiene**:  
   $x \notin A$ → $x$ non appartiene all’insieme $A$.  
 **Insieme Numerabile**
-un insieme che può essere messo in corrispondenza biunivoca con i numeri naturali
+Un insieme che può essere messo in **corrispondenza biunivoca con i numeri naturali** (gli elementi di un insieme numerabile possono essere enumerati, consentendo la possibilità di elencarli in una sequenza)
+R non è numerabile.
 ### Quantificatori
 - **Per ogni**:  
   $\forall$  
@@ -84,3 +85,7 @@ Funzione **Suriettiva** -> occupa tutto il codominio
 Funzione **Biettiva** -> suriettiva e iniettiva -> invertibile
 L'insieme immagine è l'insieme di tutti gli elementi del codominio a cui corrisponde un elemento del dominio.
 Per rendere una funzione invertibile posso manipolare il dominio e devo ricavare la x e sostituirla alla y
+
+### Sommatoria e calcolo combinatorio
+Sommatoria
+Coefficiente binomiale e fattoriale
