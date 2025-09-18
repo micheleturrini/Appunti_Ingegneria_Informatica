@@ -36,7 +36,7 @@ R (insieme numeri reali)
 - **Implicazione**:    $p \implies q$.  
    Se l'ipotesi è **vera** allora **sicuramente la tesi è vera**
   Se l'ipotesi è **falsa** allora **non è detto che la tesi sia falsa**
-$$\begin{array}{c|c|c} p & q & p\implies q\\\hline \text{V} & \text{V} & \text{V}\\ \text{V} & \text{F} & \text{F}\\ \text{F} & \text{V} & \text{V}\\ \text{F} & \text{F} & \text{V} \end{array}$$​    Equivalentemente: $p\implies q \equiv \lnot(p\land\lnot q)$.
+$$\begin{array}{c|c|c} p & q & p\implies q\\\hline \text{V} & \text{V} & \text{V}\\ \text{V} & \text{F} & \text{F}\\ \text{F} & \text{V} & \text{V}\\ \text{F} & \text{F} & \text{V} \end{array}$$​    Equivalentemente: $p\implies q \equiv \lnot(q\land\lnot p)$.
    $p \iff q$ : **se e solo se**
 -  **Negazione**:  
   $\lnot p$.  
@@ -49,7 +49,7 @@ $$\begin{array}{c|c|c} p & q & p\implies q\\\hline \text{V} & \text{V} & \text{V
 - **Unione**:  
   $A \cup B$.  
 - **Insieme vuoto**:  
-  $\varnothing$.  
+  $\varnothing$. 
 - **Sottrazione (differenza insiemistica)**:  
   $A \setminus B$.  
 # ## Intervalli (in $\mathbb{R}$)
@@ -70,4 +70,15 @@ $$
   $$
 - **Relazione inversa**:    $$
   R^{-1} = \{(b,a) \mid (a,b) \in R\}
-  $$  
+  $$
+## Funzione 
+'E una relazione fra A (ass. Dominio) e B (ass. Codominio) in cui ad ogni elemento del dominio deve corrispondere un unico elemento del codominio
+I tre elementi sono:
+- Relazione
+- Dominio
+- Codominio
+Funzione **Iniettiva** -> passa due volte per la stessa y
+Funzione **Suriettiva** -> occupa tutto il codominio
+Funzione **Biettiva** -> suriettiva e iniettiva -> invertibile
+L'insieme immagine è l'insieme di tutti gli elementi del codominio a cui corrisponde un elemento del dominio.
+Per rendere una funzione invertibile posso manipolare il dominio e devo ricavare la x e sostituirla alla y
