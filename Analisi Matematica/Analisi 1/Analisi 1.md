@@ -87,9 +87,11 @@ L'insieme immagine è l'insieme di tutti gli elementi del codominio a cui corris
 Per rendere una funzione invertibile posso manipolare il dominio e devo ricavare la x e sostituirla alla y
 
 ### Sommatoria e calcolo combinatorio
-Sommatoria
-Coefficiente binomiale e fattoriale
-
+- **Sommatoria**
+- **Coefficiente binomiale** (Quante sottoinsiemi n posso formare in m)![[2. 18 Settembre 2025 Ing.pdf#page=49&rect=30,88,172,153|2. 18 Settembre 2025 Ing, p.49|200]]- **Proprietà**
+	- ![[2. 18 Settembre 2025 Ing.pdf#page=58&rect=50,434,193,503|2. 18 Settembre 2025 Ing, p.58|150]]
+	- ![[2. 18 Settembre 2025 Ing.pdf#page=58&rect=53,337,298,394|2. 18 Settembre 2025 Ing, p.58|200]]
+- **fattoriale**
 ## Binomio di Newton
 é un algoritmo che permette di trovare il quadrato di ogni binomio.
 Si dimostra cercando ogni possibile combinazione.
