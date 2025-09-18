@@ -89,3 +89,9 @@ Per rendere una funzione invertibile posso manipolare il dominio e devo ricavare
 ### Sommatoria e calcolo combinatorio
 Sommatoria
 Coefficiente binomiale e fattoriale
+
+## Binomio di Newton
+é un algoritmo che permette di trovare il quadrato di ogni binomio.
+Si dimostra cercando ogni possibile combinazione.
+- Scrivo tutti i monomi di grado n ma mancano i coefficienti
+- conto in quanti modi diversi posso ottenere il monomio
