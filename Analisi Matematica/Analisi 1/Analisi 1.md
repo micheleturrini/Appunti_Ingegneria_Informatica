@@ -17,6 +17,7 @@ R (insieme numeri reali)
   $x \in A$ → $x$ appartiene all’insieme $A$.  
 - **Non appartiene**:  
   $x \notin A$ → $x$ non appartiene all’insieme $A$.  
+
 ### Quantificatori
 - **Per ogni**:  
   $\forall$  
