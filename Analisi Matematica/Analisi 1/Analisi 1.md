@@ -102,3 +102,19 @@ Scrivendo i risultati della formula incrementando n si ottiene una struttura sim
 
 ## Il principio di induzione
 è un metodo per dimostrare formule e teoremi che dipendono da un parametro
+**Es 1**
+![[3. 19 Settembre 2025 Ing 1.pdf#page=12&rect=49,524,347,624|3. 19 Settembre 2025 Ing 1, p.12]]
+Chiamo ogni eguaglianza P(0), P(1), ..., P(n)
+Tramite il principio di induzione dobbiamo dimostrare che se ogni 
+
+Se ho una successione infinita di affermazioni assumendo che la prima è vera e che questo implica la verità della seguente posso dimostrare che tutte sono vere.
+![[3. 19 Settembre 2025 Ing 1.pdf#page=15&rect=82,225,577,399|3. 19 Settembre 2025 Ing 1, p.15|400]]![[3. 19 Settembre 2025 Ing 1.pdf#page=15&rect=119,102,517,149|3. 19 Settembre 2025 Ing 1, p.15|400]]
+**Principio del minio in N**
+Qualunque sottoinsieme non vuoto di N ha un **minimo**.
+![[3. 19 Settembre 2025 Ing 1.pdf#page=18&rect=50,275,549,376|3. 19 Settembre 2025 Ing 1, p.18]]
+ Dimostrazione del principio di induzione
+ Procediamo per assurdo negando la tesi del Teorema
+![[3. 19 Settembre 2025 Ing 1.pdf#page=20&rect=57,430,521,497|3. 19 Settembre 2025 Ing 1, p.20]]
+m è il minimo di A
+m non può essere uguale a 0 perche sappiamo da ipotesi che P(0) è vera
+se m>0 allora posso scrivere m-1 che però è priva di significato perchè m è il minimo di A
