@@ -112,9 +112,19 @@ Se ho una successione infinita di affermazioni assumendo che la prima è vera e 
 **Principio del minio in N**
 Qualunque sottoinsieme non vuoto di N ha un **minimo**.
 ![[3. 19 Settembre 2025 Ing 1.pdf#page=18&rect=50,275,549,376|3. 19 Settembre 2025 Ing 1, p.18]]
- Dimostrazione del principio di induzione
+ 
+ **Dimostrazione del principio di induzione**
  Procediamo per assurdo negando la tesi del Teorema
 ![[3. 19 Settembre 2025 Ing 1.pdf#page=20&rect=57,430,521,497|3. 19 Settembre 2025 Ing 1, p.20]]
 m è il minimo di A
 m non può essere uguale a 0 perche sappiamo da ipotesi che P(0) è vera
 se m>0 allora posso scrivere m-1 che però è priva di significato perchè m è il minimo di A
+
+Esempio 1
+![[3. 19 Settembre 2025 Ing 1.pdf#page=23&rect=62,523,364,614|3. 19 Settembre 2025 Ing 1, p.23]]
+Esempio 2 
+Diseguaglianaza di bernulli
+Esempio 3 a casa 
+Biomio di Newton
+Esempio 4
+Percorso di ipotesi verificate tramite il teorema di induzione
