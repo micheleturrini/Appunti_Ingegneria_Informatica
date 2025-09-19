@@ -97,3 +97,8 @@ Per rendere una funzione invertibile posso manipolare il dominio e devo ricavare
 Si dimostra cercando ogni possibile combinazione.
 - Scrivo tutti i monomi di grado n ma mancano i coefficienti
 - conto in quanti modi diversi posso ottenere il monomio
+![[3. 19 Settembre 2025 Ing 1.pdf#page=2&rect=41,593,486,688|3. 19 Settembre 2025 Ing 1, p.2|300]]
+Scrivendo i risultati della formula incrementando n si ottiene una struttura simile al **triangolo di tartaglia** (I numeri corrispondono)
+
+## Il principio di induzione
+è un metodo per dimostrare formule e teoremi che dipendono da un parametro
