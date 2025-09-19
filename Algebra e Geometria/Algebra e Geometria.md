@@ -36,5 +36,13 @@ La soluzione è una n-upla che soddisfi le condizioni di tutte le equazioni e lo
 > **Il rango (rg(A)) è il numero di pivot**
 
 Una matrice a scala si risolve facilmente per sostituzione
+Le **variabili associate a un pivot sono definite quelle che non lo sono restano libere.**
+![[richiami_ - Lezione_2.pdf#page=3&rect=101,697,520,878|richiami_ - Lezione_2, p.3|200]]
 ### Teorema di Rochè Capelli
 ![[richiami_ - Lezione_2.pdf#page=2&rect=23,138,1174,381|richiami_ - Lezione_2, p.2]]
+DA FINIRE
+## Algoritmo di eliminazione di Gauss
+è utile per **trasformare le matrici in matrici a scala.**
+https://www.youtube.com/watch?v=Hv6NYGhCIFk
+
+## Principio di induzione
