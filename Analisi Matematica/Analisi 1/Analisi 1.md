@@ -37,7 +37,7 @@ R non è numerabile.
 - **Vel (disgiunzione)**:  
   $p \lor q$.  
 - **Implicazione**:    $p \implies q$.  
-   Se l'ipotesi è **vera** allora **sicuramente la tesi è vera**
+  Se l'ipotesi è **vera** allora **sicuramente la tesi è vera**
   Se l'ipotesi è **falsa** allora **non è detto che la tesi sia falsa**
 $$\begin{array}{c|c|c} p & q & p\implies q\\\hline \text{V} & \text{V} & \text{V}\\ \text{V} & \text{F} & \text{F}\\ \text{F} & \text{V} & \text{V}\\ \text{F} & \text{F} & \text{V} \end{array}$$​    Equivalentemente: $p\implies q \equiv \lnot(q\land\lnot p)$.
    $p \iff q$ : **se e solo se**
@@ -55,7 +55,7 @@ $$\begin{array}{c|c|c} p & q & p\implies q\\\hline \text{V} & \text{V} & \text{V
   $\varnothing$. 
 - **Sottrazione (differenza insiemistica)**:  
   $A \setminus B$.  
-# ## Intervalli (in $\mathbb{R}$)
+### Intervalli (in $\mathbb{R}$)
 - **Chiuso**:  
   $[a,b] = \{x \in \mathbb{R} \mid a \leq x \leq b\}$.  
 - **Aperto**:  
@@ -102,29 +102,23 @@ Scrivendo i risultati della formula incrementando n si ottiene una struttura sim
 
 ## Il principio di induzione
 è un metodo per dimostrare formule e teoremi che dipendono da un parametro
-**Es 1**
-![[3. 19 Settembre 2025 Ing 1.pdf#page=12&rect=49,524,347,624|3. 19 Settembre 2025 Ing 1, p.12]]
-Chiamo ogni eguaglianza P(0), P(1), ..., P(n)
-Tramite il principio di induzione dobbiamo dimostrare che se ogni 
 
-Se ho una successione infinita di affermazioni assumendo che la prima è vera e che questo implica la verità della seguente posso dimostrare che tutte sono vere.
-![[3. 19 Settembre 2025 Ing 1.pdf#page=15&rect=82,225,577,399|3. 19 Settembre 2025 Ing 1, p.15|400]]![[3. 19 Settembre 2025 Ing 1.pdf#page=15&rect=119,102,517,149|3. 19 Settembre 2025 Ing 1, p.15|400]]
+Data un **proposizione** P che dipende da un numero naturale n () P(0), P(1), ..., P(n)) tramite il principio di induzione si può dimostrare che se ho una **successione infinita** di affermazioni assumendo che **la prima è vera** e che **questo implica la verità della seguente** posso dimostrare che **tutte sono vere**.![[3. 19 Settembre 2025 Ing 1.pdf#page=15&rect=82,225,577,399|3. 19 Settembre 2025 Ing 1, p.15|400]]![[3. 19 Settembre 2025 Ing 1.pdf#page=15&rect=119,102,517,149|3. 19 Settembre 2025 Ing 1, p.15|400]]
+### Dimostrazione
 **Principio del minio in N**
 Qualunque sottoinsieme non vuoto di N ha un **minimo**.
-![[3. 19 Settembre 2025 Ing 1.pdf#page=18&rect=50,275,549,376|3. 19 Settembre 2025 Ing 1, p.18]]
- 
- **Dimostrazione del principio di induzione**
- Procediamo per assurdo negando la tesi del Teorema
-![[3. 19 Settembre 2025 Ing 1.pdf#page=20&rect=57,430,521,497|3. 19 Settembre 2025 Ing 1, p.20]]
+![[3. 19 Settembre 2025 Ing 1.pdf#page=18&rect=50,275,549,376|3. 19 Settembre 2025 Ing 1, p.18|500]]
+ *Vedi  la dimostrazione sul PDF*
+Procediamo per assurdo negando la tesi del Teorema
 m è il minimo di A
-m non può essere uguale a 0 perche sappiamo da ipotesi che P(0) è vera
+m non può essere uguale a 0 perchè sappiamo da ipotesi che P(0) è vera
 se m>0 allora posso scrivere m-1 che però è priva di significato perchè m è il minimo di A
 
-Esempio 1
-![[3. 19 Settembre 2025 Ing 1.pdf#page=23&rect=62,523,364,614|3. 19 Settembre 2025 Ing 1, p.23]]
-Esempio 2 
-Diseguaglianaza di bernulli
-Esempio 3 a casa 
-Biomio di Newton
-Esempio 4
+**Esempio 1** *Vedi  la dimostrazione sul PDF*
+![[3. 19 Settembre 2025 Ing 1.pdf#page=23&rect=62,523,364,614|3. 19 Settembre 2025 Ing 1, p.23|300]]
+**Esempio 2** (Disuguaglianaza di Bernulli) *Vedi  la dimostrazione sul PDF*
+![[3. 19 Settembre 2025 Ing 1.pdf#page=26&rect=120,504,412,560|3. 19 Settembre 2025 Ing 1, p.26|300]]
+**Esempio 3** a casa 
+
+**Esempio 4** (Biomio di Newton)
 Percorso di ipotesi verificate tramite il teorema di induzione

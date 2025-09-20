@@ -15,7 +15,8 @@ Appelli (I moduli si possono dare separatamente ma i due moduli sono molto conne
 **Parte pratica** 2 ore, 20 punti, 11 sufficienza
 - programmare in C
 *Si può aumentare il voto facendo l'orale*
-## Il Digitale
+## Hardware
+### Il Digitale
 Boole Propone un'algebra fatta di vero o falso
 Shannon sostiene che l'algebra booleana può essere usata per i circuiti elettronici.
 ### Architettura
@@ -68,7 +69,7 @@ Piccoli programmi
 - sistema multi utente
 - GUI
 ## L'elaboratore elettronico
-è uno strumento in grado di svolgere **operazioni elementari**.
+Il processore è uno strumento in grado di svolgere **operazioni elementari**.
 A ogni operazione corrisponde un **circuito fisico** nell'hardware
 La quantità migliore di istruzioni che un elaboratore deve saper risolvere è un bilancio fra efficienza e numero di istruzioni.
 

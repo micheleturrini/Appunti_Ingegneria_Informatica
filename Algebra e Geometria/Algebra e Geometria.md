@@ -46,3 +46,4 @@ DA FINIRE
 https://www.youtube.com/watch?v=Hv6NYGhCIFk
 
 ## Principio di induzione
+Vedi [[Analisi 1#Il principio di induzione]]
