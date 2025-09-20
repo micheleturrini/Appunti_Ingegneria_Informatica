@@ -3,7 +3,6 @@ Lunedì 22 settembre 14:30 - lezione base base - Guarda le slide
 Il linguaggio C , Deitel
 
 Codelite
-eclipse
 NetBeans
 ## Esame
 Appelli (I moduli si possono dare separatamente ma i due moduli sono molto connessi)
