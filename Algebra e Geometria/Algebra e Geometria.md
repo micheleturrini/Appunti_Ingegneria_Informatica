@@ -21,7 +21,7 @@ La soluzione è una n-upla che soddisfi le condizioni di tutte le equazioni e lo
 > [!summary]
 > Dati due interi positivi una matrice **mxn** a coefficienti reali è una tabella con **m righe e n colonne** riempita con numeri reali
 > Ogni colonna della matrice A corrisponde a una variabile
-> $M_{mxn}(\R)$
+> $M_{mxn}(\mathbb{R})$
 > $a_{ij}$ : **entrata riga i (vettore) colonna j (vettore riga)**
 
 ![[Lezione_1.pdf#page=3&rect=62,861,412,1192|Lezione_1, p.3|300]]
