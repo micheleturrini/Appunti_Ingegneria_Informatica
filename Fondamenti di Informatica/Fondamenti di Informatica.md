@@ -73,23 +73,29 @@ Il processore è uno strumento in grado di svolgere **operazioni elementari**.
 A ogni operazione corrisponde un **circuito fisico** nell'hardware
 La quantità migliore di istruzioni che un elaboratore deve saper risolvere è un bilancio fra efficienza e numero di istruzioni.
 
+## Lo sviluppo della macchina di Turing
 Turing calcola il numero minimo di istruzioni per risolvere tutte le operazioni computabili.
 Immagina un automa esecutore (non sa come realizzarlo fisicamente) che
--  prenda ingiresso un metodo risolutivo
+- prenda ingresso un metodo risolutivo
 - prenda in ingresso i Dati
 - mandi in uscita i risultati
-è necessario un linguaggio per spiegare alla macchina come risolvere le Operazioni
-Il linguaggio naturale è ambiguo.
-La macchina è un interprete di questo linguaggio (a livello basso si usa il linguaggio macchina a livello alto i linguaggi di alto livello)
 
-La macchina è costruita di un numero finito di parti ma deve muoversi nell'ambiente matematico che è infinito -> siamo costretti all'approssimazione
+> [!attention]
+> La macchina è costruita di un numero finito di parti ma deve muoversi nell'ambiente matematico che è infinito -> siamo costretti all'approssimazione
 
 Turing capisce che la macchina deve essere realizzata basandosi sul modello del calcolatore elettronico basato sull'architettura di Von Neumann
 
 Nella sua tesi di laurea Turing dimostra che la sua macchina in teoria è la più potente di sempre (ancora oggi)
-Turing stabilisce che se la sua macchina è la più potente ciò che è computabile dipende da quello che la sua macchina è in gradi di fare.
+Turing stabilisce che se la sua macchina è la più potente ciò che è computabile dipende da quello che la sua macchina è in grado di fare.
 Se esiste un meccanismo per raggiungere la soluzione in un numero finito di passi l'operazione è computabile
-Il numero è un concetto rappresentato da un simbolo quindi la macchina (che non può pensare concetti) deve lavorare coi simboli
+
+> [!attention]
+> E' necessario un linguaggio per spiegare alla macchina come risolvere le Operazioni
+
+**Il linguaggio naturale è ambiguo.**
+La macchina è un interprete di questo linguaggio (a livello basso oggi si usa il linguaggio macchina a livello alto i linguaggi di alto livello)
+Il numero è un concetto rappresentato da un simbolo quindi la macchina (che non può pensare concetti) deve lavorare coi simboli.
+
 La macchina è composta da
 - una testina capace di scrivere e leggere simboli
 - un nastro che scorre sotto la testina
@@ -98,9 +104,9 @@ La macchina è composta da
 	la macchina decide come muoversi in base a cosa scrive cosa legge e allo stato.
 ![[01b-algoritmiNew.pdf#page=14&rect=82,49,549,181|01b-algoritmiNew, p.14|400]]
 
-Turing sa che deve definire una simbologia in grado di rappresentare dati iniziali e risultati
-
-Il comportamento della macchina è un insieme di quintuple 
+Turing sa che deve **definire una simbologia in grado di rappresentare dati iniziali e risultati**
+> [!success]
+> Il comportamento della macchina è definito da un insieme di quintuple (Primo linguaggio di programmazione)
 > [!PDF|yellow] [[01b-algoritmiNew.pdf#page=16&selection=43,0,44,19&color=yellow|01b-algoritmiNew, p.16]]
 > > (stato-corrente, simbolo-letto, nuovo-stato, simboloscritto, direzione)
 > 
@@ -109,7 +115,7 @@ Il comportamento della macchina è un insieme di quintuple
 > La macchina è in grado di risolvere un solo compito.
 
 L'unica cosa che cambia sono le istruzioni quindi Turing idea un modo per cambiare le istruzioni fornite alla macchina.
-Scrive le istruzioni sul nastro, la macchina le legge le impara e inizia a operare.
+**Scrive le istruzioni sul nastro, la macchina le legge le impara e inizia a operare.**
 Tuttora il computer a ogni avvio legge le istruzioni in memoria e avvia il sistema operativo.
 > [!success]
 > La macchina è **universale e programmabile**
@@ -120,11 +126,12 @@ Tuttora il computer a ogni avvio legge le istruzioni in memoria e avvia il siste
 - **decode** (interpreta)
 - **execute** (esegue)
 
-Nella macchina di **Turing** non sono previsti dispositivi di interfaccia che vengono ideati da Von Neumann
+Nella macchina di **Turing** non sono previsti dispositivi di interfaccia che vengono ideati da Von Neumann.
 
-Problema dell'Halt
+> [!attention]
+> Problema dell'Halt
 è possibile stabilire con un programma se un altro programma finisce solo se il secondo programma finisce.
-Il problema è definibile ma non computabile.
+**Il problema è definibile ma non computabile.**
 
 La prima che immagina il concetto di programmazione è Ada Byron.
-Ha una serie di intuizioni che si avvicinano al linguaggio Assembly
+Ha una serie di intuizioni che si avvicinano al linguaggio Assembly.
