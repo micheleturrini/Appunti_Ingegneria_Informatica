@@ -44,6 +44,7 @@ DA FINIRE
 ## Algoritmo di eliminazione di Gauss
 è utile per **trasformare le matrici in matrici a scala.**
 https://www.youtube.com/watch?v=Hv6NYGhCIFk
+	
 
 ## Principio di induzione
 Vedi [[Analisi 1#Il principio di induzione]]
