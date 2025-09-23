@@ -135,3 +135,52 @@ Nella macchina di **Turing** non sono previsti dispositivi di interfaccia che ve
 
 La prima che immagina il concetto di programmazione è Ada Byron.
 Ha una serie di intuizioni che si avvicinano al linguaggio Assembly.
+
+## Algoritmo
+> [!PDF|yellow] [[01b-algoritmiNew.pdf#page=50&selection=4,0,21,11&color=yellow|01b-algoritmiNew, p.50]]
+> > Un algoritmo è una sequenza finita di mosse che risolve in un tempo finito una classe di problemi
+> 
+
+**Proprietà degli algoritmi**:
+- **Eseguibilità** Ogni operazione deve essere eseguibile in un tempo finito
+- **Non-ambiguità** Le istruzioni non possono essere fraintendibili
+- **Finitezza** Deve risolversi in un temp finito
+- **applicabile** a **qualsiasi insieme di dati di ingresso appartenenti al dominio** di definizione dell’algoritmo
+Algoritmi **equivalenti**:
+- stesso dominio di ingresso
+- stesso dominio di uscita
+- stessi valori in uscita per gli stessi valori in entrata
+
+Funzione ricorsiva (definisco una funzione con se stessa)
+
+## Linguaggi
+L'**espressività** di un linguaggio è definita in base alla quantità di operazioni rispetto alla macchina di Turing.
+
+- **Sintassi** regole formali per la scrittura di programmi (le regole sintattiche sono definite dal linguaggio **BNF**)
+- **Semantica** significati da attribuire alle frasi
+![[02-LinguaggieGrammatiche.pdf#page=15&rect=176,256,254,402|02-LinguaggieGrammatiche, p.15|30]]
+
+### BNF
+da fareeeeeeeeeeeeeeeeeeeee
+
+- **Alto livello** (C, Python, Java)
+- **Basso livello** (Assembly)
+### Linguaggi imperativi (C)
+Si sono imposti come genere di linguaggi preferiti per motivi storici.
+### Linguaggi a oggetti (Java, python, C++)
+Figli dei linguaggi imperativi con l'aggiunta degli oggetti.
+
+## Il linguaggio assembly
+Ogni **circuito corrispondente ad una operazione** ha un nome in 0 e 1
+Ogni costrutto linguistico corrisponde a una operazione precisa sul processore.
+Per scriverlo è necessario **conoscere nel dettaglio le caratteristiche del processore (Instruction Center)**
+
+I linguaggi di alto livello vengono tradotti da un compiler in linguaggio macchina
+
+Approccio a compilatore  (prende un programma e lo traduce direttamente in 0 e 1)
+Approccio a interprete (prende componente per componente del programma, la traduce in un linguaggio intermedio, lo esegue, lo traduce in linguaggio macchina)
+
+
+## Il linguaggio C
+
+

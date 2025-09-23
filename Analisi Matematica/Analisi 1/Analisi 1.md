@@ -119,6 +119,28 @@ se m>0 allora posso scrivere m-1 che però è priva di significato perchè m è 
 **Esempio 2** (Disuguaglianaza di Bernulli) *Vedi  la dimostrazione sul PDF*
 ![[3. 19 Settembre 2025 Ing 1.pdf#page=26&rect=120,504,412,560|3. 19 Settembre 2025 Ing 1, p.26|300]]
 **Esempio 3** a casa 
-
 **Esempio 4** (Biomio di Newton)
 Percorso di ipotesi verificate tramite il teorema di induzione
+
+## I numeri razionali
+**Non sono tutti i numeri** -> mancano gli irrazionali come le radici.
+![[4. 23 Settembre 2025 Ing.pdf#page=4&rect=223,696,390,742|4. 23 Settembre 2025 Ing, p.4|200]]
+*Dimostrazione sul PDF*
+![[4. 23 Settembre 2025 Ing.pdf#page=11&rect=137,591,291,639|4. 23 Settembre 2025 Ing, p.11|200]]
+*Dimostrazione sul PDF*
+**I numeri razionali non sono sufficienti a descrivere una funzione perchè lasciano dei buchi**
+## I numeri reali
+L'insieme andrebbe costruito a partire dai numeri razionali rendendo l'insieme non numerabile.
+*Dim non numerabilità*
+![[4. 23 Settembre 2025 Ing.pdf#page=42&rect=68,590,512,631|4. 23 Settembre 2025 Ing, p.42|500]]
+(posso costruire un numero diverso da tutti gli altri fra 0 e 1+)
+
+La continuità
+
+*Def di **Maggiorante**, **Minorante**, **Limitato** , **Minimo**, **Massimo** Pg 21 PDF*
+Se esiste il minimo di un insieme questo è il massimo dei minoranti.
+Se esiste il massimo di un insieme questo è il minimo dei maggioranti.
+
+**Proprietà di completezza di R**
+Ogni sottoinsieme finito di R ha un massimo e un minimo.
+*pag 31 PDF*
