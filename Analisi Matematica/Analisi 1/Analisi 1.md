@@ -135,7 +135,7 @@ L'insieme andrebbe costruito a partire dai numeri razionali rendendo l'insieme n
 ![[4. 23 Settembre 2025 Ing.pdf#page=42&rect=68,590,512,631|4. 23 Settembre 2025 Ing, p.42|500]]
 (posso costruire un numero diverso da tutti gli altri fra 0 e 1+)
 
-La continuità
+L'insieme dei numeri reali è continuo
 
 *Def di **Maggiorante**, **Minorante**, **Limitato** , **Minimo**, **Massimo** Pg 21 PDF*
 Se esiste il minimo di un insieme questo è il massimo dei minoranti.

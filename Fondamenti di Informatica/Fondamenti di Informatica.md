@@ -15,11 +15,13 @@ Appelli (I moduli si possono dare separatamente ma i due moduli sono molto conne
 **Parte pratica** 2 ore, 20 punti, 11 sufficienza
 - programmare in C
 *Si può aumentare il voto facendo l'orale*
+## Informatica
+Definizione più completa: **scienza della rappresentazione e dell’elaborazione dell’informazione**
 ## Hardware
 ### Il Digitale
-Boole Propone un'algebra fatta di vero o falso
-Shannon sostiene che l'algebra booleana può essere usata per i circuiti elettronici.
-### Architettura
+**Boole (1854)** → algebra booleana (variabili vero/falso con operatori logici).
+**Shannon (1940)** → l’algebra booleana può essere applicata ai circuiti elettronici.
+### Tecnologia
 rappresentare l'Informazione tramite la **presenza  o l'assenza di una differenza di potenziale**
 Il vantaggio rispetto all'analogico è che i circuiti sono più piccoli facili e veloci.
 Logica **Positiva** **1 - vero** - presenza, 0 - falso - assenza
@@ -33,27 +35,27 @@ $2^8$  possibili combinazioni
 ### Interpretazione
 Non basta avere la grandezza fisica ma bisogna saperla **interpretare**
 è necessaria una convenzione internazionale
-## Legge di Moore
+### Legge di Moore
 (fondatore di Intel)
 "Ogni anno **raddoppieremo** il numero di **transistor**"
 Legge superata, a causa della fisica quantistica non si possono rimpicciolire i transistor più di qualche nanometro.
-## UNIAC
-Primo calcolatore senza parti in movimento realizzato con 18000 valvole termoioniche.
-## Architettura Von Neumann 
-![[01a-ShortintroInf.pdf#page=13&rect=29,189,566,420|01a-ShortintroInf, p.13|600]]
+### Primi calcolatori
+**ENIAC** Primo calcolatore senza parti in movimento realizzato con 18000 valvole termoioniche.
+### Architettura Von Neumann 
 L'Inghilterra vuole la bomba atomica e investe nella realizzazione di calcolatori.
 Neumann inventa un architettura per i calcolatori ancora utilizzata.
-**componenti**
-- RAM (Random Access Memory) Utilizzando i nastri per trovare un informazione era necessario percorrerlo tutto mentre nella RAM si può accedere direttamente per questo Random.
-- CPU
-- ROM (contenuto immutabile -> contiene il Firmware o il BIOS)
-
-I componenti diversi vengono **collegati tutti allo stesso modo da un BUS** (fili elettrici)
-Per evitare confusione sono necessari 3 bus e tutti sono collegati a ogni cella di memoria
-- **Dati**
-- **Controllo** 
-- **Indirizzi** (Necesario per rintracciare le informazioni specifica nella memoria)
-	- I bit sono come cassette postali con un indirizzo (address)
+![[01a-ShortintroInf.pdf#page=13&rect=29,189,566,420|01a-ShortintroInf, p.13|600]]
+**Componenti**
+- **RAM** (Random Access Memory) Utilizzando i nastri per trovare un informazione era necessario percorrerlo tutto mentre nella RAM si può accedere direttamente per questo Random.
+- **CPU** (transistor) Il **processore** è uno strumento in grado di svolgere **operazioni elementari**.
+	A ogni operazione corrisponde un **circuito fisico** nell'hardware
+	La quantità migliore di istruzioni che un processore deve saper risolvere è un bilancio fra efficienza e numero di istruzioni.
+- **ROM** (contenuto immutabile -> contiene il Firmware o il BIOS)
+- **BUS** (fili che collegano tutti i componenti elettrici)
+	- **Dati**
+	- **Controllo** 
+	- **Indirizzi** (Necessario per rintracciare le informazioni specifica nella memoria) I bit sono come cassette postali con un indirizzo (address)
+	- **I/O**
 ## Firmware 
 (Bios)
 è il **confine** fra hardware e software
@@ -68,10 +70,6 @@ Piccoli programmi
 - comandi elementari
 - sistema multi utente
 - GUI
-## L'elaboratore elettronico
-Il processore è uno strumento in grado di svolgere **operazioni elementari**.
-A ogni operazione corrisponde un **circuito fisico** nell'hardware
-La quantità migliore di istruzioni che un elaboratore deve saper risolvere è un bilancio fra efficienza e numero di istruzioni.
 
 ## Lo sviluppo della macchina di Turing
 Turing calcola il numero minimo di istruzioni per risolvere tutte le operazioni computabili.
@@ -151,7 +149,7 @@ Algoritmi **equivalenti**:
 - stesso dominio di uscita
 - stessi valori in uscita per gli stessi valori in entrata
 
-Funzione ricorsiva (definisco una funzione con se stessa)
+Funzione **ricorsiva** (definisco una funzione con se stessa)
 
 ## Linguaggi
 L'**espressività** di un linguaggio è definita in base alla quantità di operazioni rispetto alla macchina di Turing.
