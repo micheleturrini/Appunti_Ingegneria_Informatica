@@ -152,31 +152,43 @@ Algoritmi **equivalenti**:
 Funzione **ricorsiva** (definisco una funzione con se stessa)
 
 ## Linguaggi
-L'**espressività** di un linguaggio è definita in base alla quantità di operazioni rispetto alla macchina di Turing.
-
-- **Sintassi** regole formali per la scrittura di programmi (le regole sintattiche sono definite dal linguaggio **BNF**)
-- **Semantica** significati da attribuire alle frasi
-![[02-LinguaggieGrammatiche.pdf#page=15&rect=176,256,254,402|02-LinguaggieGrammatiche, p.15|30]]
-
-### BNF
-da fareeeeeeeeeeeeeeeeeeeee
-
 - **Alto livello** (C, Python, Java)
-- **Basso livello** (Assembly)
+- **Basso livello** (Assembler)
+
+Un linguaggio di programmazione è una notazione formale per descrivere algoritmi
+L'**espressività** di un linguaggio è definita in base alla quantità di operazioni rispetto alla macchina di Turing.
+![[02-LinguaggieGrammatiche.pdf#page=16&rect=65,116,671,419|02-LinguaggieGrammatiche, p.16|300]]
+**Semantica** significati da attribuire alle frasi (a parola, operazionale, denotazionale, assiomatica)
+**Sintassi** regole formali per la scrittura di programmi **Specifica il sottoinsieme V* ***(le regole sintattiche sono definite dal linguaggio **BNF**)
+### BNF
+Backus-Naur Form
+Descrive la sintassi alla base di ogni linguaggio.
+![[02-LinguaggieGrammatiche.pdf#page=20&rect=76,74,664,422|02-LinguaggieGrammatiche, p.20|300]]
+> [!regole]
+> ![[02-LinguaggieGrammatiche.pdf#page=22&rect=140,192,574,343|02-LinguaggieGrammatiche, p.22|250]]
+> ** | ** significa oppure
+ 
+ Per sfruttare il linguaggio bisogna muoversi fra le opzioni per costruire la cifra desiderata
+![[02-LinguaggieGrammatiche.pdf#page=11&rect=70,131,667,376|02-LinguaggieGrammatiche, p.11|400]]
+
+**Esempio derivazione left most**
+![[02-LinguaggieGrammatiche.pdf#page=31&rect=118,155,657,416|02-LinguaggieGrammatiche, p.31|300]]
 ### Linguaggi imperativi (C)
 Si sono imposti come genere di linguaggi preferiti per motivi storici.
 ### Linguaggi a oggetti (Java, python, C++)
 Figli dei linguaggi imperativi con l'aggiunta degli oggetti.
-
-## Il linguaggio assembly
+### Il linguaggio assembly
 Ogni **circuito corrispondente ad una operazione** ha un nome in 0 e 1
 Ogni costrutto linguistico corrisponde a una operazione precisa sul processore.
-Per scriverlo è necessario **conoscere nel dettaglio le caratteristiche del processore (Instruction Center)**
-
+Per scriverlo è necessario **conoscere nel dettaglio le caratteristiche del processore (Instruction SET)**
+### Il linguaggio macchina
 I linguaggi di alto livello vengono tradotti da un compiler in linguaggio macchina
+Fatto di 0 e 1
 
-Approccio a compilatore  (prende un programma e lo traduce direttamente in 0 e 1)
-Approccio a interprete (prende componente per componente del programma, la traduce in un linguaggio intermedio, lo esegue, lo traduce in linguaggio macchina)
+
+
+Approccio a **compilatore**  (prende un programma e lo traduce direttamente in 0 e 1)
+Approccio a **interprete** (prende componente per componente del programma, la traduce in un linguaggio intermedio, lo esegue, lo traduce in linguaggio macchina)
 
 
 ## Il linguaggio C
