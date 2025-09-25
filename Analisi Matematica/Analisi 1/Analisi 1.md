@@ -108,7 +108,7 @@ Data un **proposizione** P che dipende da un numero naturale n () P(0), P(1), ..
 **Principio del minio in N**
 Qualunque sottoinsieme non vuoto di N ha un **minimo**.
 ![[3. 19 Settembre 2025 Ing 1.pdf#page=18&rect=50,275,549,376|3. 19 Settembre 2025 Ing 1, p.18|500]]
- *Vedi  la dimostrazione sul PDF*
+*Vedi  la dimostrazione sul PDF*
 Procediamo per assurdo negando la tesi del Teorema
 m è il minimo di A
 m non può essere uguale a 0 perchè sappiamo da ipotesi che P(0) è vera
@@ -144,3 +144,25 @@ Se esiste il massimo di un insieme questo è il minimo dei maggioranti.
 **Proprietà di completezza di R**
 Ogni sottoinsieme finito di R ha un massimo e un minimo.
 *pag 31 PDF*
+
+## Successioni Numeriche
+una successione di numeri reali è una funzione
+
+Non confondere la successione (Funzione) con l'insieme degli elementi (Immagine)
+Nella successione è prescritto l'ordine degli elementi
+
+## limite
+**Limite Finito** (convergente)
+![[25 Settembre 2025 Ing.pdf#page=10&rect=10,144,586,543|25 Settembre 2025 Ing, p.10|500]]
+Per ogni epsilon positivo esiste una posizione per cui **da quel punto in poi tutti gli elementi della successione stanno dentro il delta.**
+Per avere punti via via più vicini al limite devo aumentare di n![[25 Settembre 2025 Ing.pdf#page=16&rect=31,375,572,565|25 Settembre 2025 Ing, p.16|500]]
+
+**Limite infinito** (divergente)
+![[25 Settembre 2025 Ing.pdf#page=21&rect=13,152,591,783|25 Settembre 2025 Ing, p.21|500]]
+Per ogni epsilon positivo esiste una posizione per cui **da quel punto in poi tutti gli elementi della successione saranno tutti maggiori o tutti minori.**
+
+**Se il limite c'è è UNICO**
+Esistono successioni che non hanno un limite
+
+### Teorema del confronto
+Se un numero è compreso fra due numeri che tendono allo stesso numero anche il primo numero tende allo stesso numero.
