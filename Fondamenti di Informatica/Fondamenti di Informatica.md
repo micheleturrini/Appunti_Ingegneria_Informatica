@@ -151,118 +151,156 @@ Algoritmi **equivalenti**:
 
 Funzione **ricorsiva** (definisco una funzione con se stessa)
 
-## Linguaggi
+## Classificazione dei linguaggi
 - **Alto livello** (C, Python, Java)
 - **Basso livello** (Assembly)
 
-Un linguaggio di programmazione è una notazione formale per descrivere algoritmi
-L'**espressività** di un linguaggio è definita in base a
-- Quali tipi di dati rappresenta 
-- Quali istruzioni mette a disposizione
-- Quante operazioni fa rispetto alla macchina di turing
-- 
+Un linguaggio di programmazione è una **notazione formale per descrivere algoritmi**
+L'**espressività** di un linguaggio è definita in base a:
+- quali tipi di dati rappresenta
+- quali istruzioni mette a disposizione
+- quante operazioni fa rispetto alla macchina di Turing
 
+## Sintassi e Semantica
+- **Sintassi** → regole formali per la scrittura di programmi (definisce il sottoinsieme $V^*$).
+    - Le regole sintattiche sono spesso definite tramite **BNF**. 
+- **Semantica** → significati da attribuire alle frasi.
+    - Può essere: **a parola, operazionale, denotazionale, assiomatica**.
 
 ![[02-LinguaggieGrammatiche.pdf#page=16&rect=65,116,671,419|02-LinguaggieGrammatiche, p.16|300]]
-**Semantica** significati da attribuire alle frasi (a parola, operazionale, denotazionale, assiomatica)
-**Sintassi** regole formali per la scrittura di programmi **Specifica il sottoinsieme V* ***(le regole sintattiche sono definite dal linguaggio **BNF**)
-### BNF
-Backus-Naur Form
-Descrive la sintassi alla base di ogni linguaggio.
+### BNF (Backus–Naur Form)
+La **BNF** descrive la sintassi alla base di ogni linguaggio di programmazione.
 ![[02-LinguaggieGrammatiche.pdf#page=20&rect=76,74,664,422|02-LinguaggieGrammatiche, p.20|300]]
 > [!regole]
 > ![[02-LinguaggieGrammatiche.pdf#page=22&rect=140,192,574,343|02-LinguaggieGrammatiche, p.22|250]]
-> ** | ** significa oppure
+> Il simbolo `|` significa **oppure**.
+> <>
+> {opzione facoltativa} 
  
  Per sfruttare il linguaggio bisogna muoversi fra le opzioni per costruire la cifra desiderata
 ![[02-LinguaggieGrammatiche.pdf#page=11&rect=70,131,667,376|02-LinguaggieGrammatiche, p.11|400]]
 
-**Esempio derivazione left most**
+**Esempio derivazione left-most**
 ![[02-LinguaggieGrammatiche.pdf#page=31&rect=118,155,657,416|02-LinguaggieGrammatiche, p.31|300]]
+## Tipi di Linguaggi
 ### Linguaggi imperativi (C)
 Si sono imposti come genere di linguaggi preferiti per motivi storici.
 ### Linguaggi a oggetti (Java, python, C++)
 Figli dei linguaggi imperativi con l'aggiunta degli oggetti.
 ### Il linguaggio assembly
-Ogni **circuito corrispondente ad una operazione** ha un nome in 0 e 1
-Ogni costrutto linguistico corrisponde a una operazione precisa sul processore.
+![[03-IntroCompilatori+LinguaggioC.pdf#page=2&rect=56,180,175,261|03-IntroCompilatori+LinguaggioC, p.2|100]]
+Le istruzioni corrispondono univocamente a quelle macchina, ma vengono espresse tramite nomi simbolici (parole chiave )
 Per scriverlo è necessario **conoscere nel dettaglio le caratteristiche del processore (Instruction SET)**
-### Il linguaggio macchina
-I linguaggi di alto livello vengono tradotti da un compiler in linguaggio macchina
-Fatto di 0 e 1
-
-
-
-Approccio a **compilatore**  (prende un programma e lo traduce direttamente in 0 e 1)
-Approccio a **interprete** (prende componente per componente del programma, la traduce in un linguaggio intermedio, lo esegue, lo traduce in linguaggio macchina)
-
+L'assembler lo traduce in linguaggio macchina
+### Linguaggio Macchina
+![[03-IntroCompilatori+LinguaggioC.pdf#page=2&rect=60,303,270,398|03-IntroCompilatori+LinguaggioC, p.2|200]]
+- Fatto di **0 e 1**.
+- È il linguaggio direttamente eseguibile dal processore.
+- I linguaggi di alto livello vengono tradotti in linguaggio macchina tramite un **compilatore**.
+## Compilazione e Interpretazione
+Approccio a **compilatore**  (il codice viene direttamente tradotto in linguaggio macchina una sola volta per una specifica architettura)
+Approccio a **interprete** (Il codice viene tradotto e eseguito riga per riga ogni volta)
 ### Linguaggi interpretati
-Eseguibili da ogni macchina che abbia l'interprete installato.
-Tradotto riga per riga ogni volta
-Poco efficiente
+- Eseguibili su ogni macchina che abbia l’interprete installato.
+- Vengono tradotti riga per riga **ogni volta che il programma gira**.
+- Poco efficienti.
 ![[03-IntroCompilatori+LinguaggioC.pdf#page=7&rect=159,91,532,362|03-IntroCompilatori+LinguaggioC, p.7|250]]
 ### Linguaggi compilati
-Compilato una singola volta per una sola architettura (ex Intel x86 Windows).
-Molto efficiente poco versatile.
+- Compilati una volta sola per una sola architettura (es. Intel x86, Windows).
+- Molto efficienti ma poco versatili.
 #### Processo di compilazione
 ![[03-IntroCompilatori+LinguaggioC.pdf#page=6&rect=130,20,618,396|03-IntroCompilatori+LinguaggioC, p.6|350]]
-Editor (Visual studio)
-File sorgente (Hello.c)
-Compilatore (Trasforma il file sorgente in eseguibile)
-**File oggetto** (Eseguibile privo di librerie)
-**Librerie** (**Funzioni** di programma **di uso comune**)
-**Linker** (Prende il file oggetto e **aggiunge le librerie e le collega rendendo l'eseguibile completo**)
-
-### Linguaggi misti
+1. **Editor** (es. Visual Studio)
+2. **File sorgente** (es. Hello.c)
+3. **Compilatore** → trasforma il file sorgente in eseguibile
+    - produce un **file oggetto** (eseguibile privo di librerie)    
+4. **Librerie** → funzioni di uso comune
+5. **Linker** → prende il file oggetto, aggiunge e collega le librerie → eseguibile completo
+#### Linguaggi misti
 Python, Java
 ![[03-IntroCompilatori+LinguaggioC.pdf#page=9&rect=37,318,623,444|03-IntroCompilatori+LinguaggioC, p.9|600]]
-Compilando il programma lo **trasporto in un altro linguaggio LMI** (per java è il Bitecode)
-Ho un **secondo compilatore** molto efficiente che trasforma il linguaggio in linguaggio macchina
-
-### Il compilatore
+- La compilazione trasporta il programma in un **linguaggio LMI (linguaggio macchina intermedio)**.
+    - In Java questo linguaggio è il **Bytecode**.
+- Un secondo compilatore **efficiente** (o macchina virtuale) lo trasforma poi in linguaggio macchina.
+#### Il compilatore
 - **Analisi**
 	- **Lessicale** (correttezza delle singole parole) automatica
 	- **Sintattica** (correttezza delle frasi) automatica
 	- **Semantica** senso del programma - difficile identificare gli errori
 - **Sintesi**
-	- **Generatore di codice** (traduce effettivamente il codice)
-		- Allocazione della **memoria e dei registri**
-	- Ottimizzaore di codice (Migliora il codice, disttivabile)
-
+	- **Generatore di codice** → traduce effettivamente il codice, occupandosi di:
+	    - allocazione della memoria
+	    - gestione dei registri
+	- **Ottimizzatore di codice** → migliora l’efficienza del codice (può essere disattivato).
 ## Linguaggio C
-è estremamente **efficiente** 
-- **Sequenziale** l'ordine delle operazioni importa
-- **Imperativo**
-- **strutturato a blocchi** è costruito di blocchi di codice
-- **basato su espressioni**
-
-'![[03-IntroCompilatori+LinguaggioC.pdf#page=20&rect=40,115,652,317|03-IntroCompilatori+LinguaggioC, p.20|500]]
-il main () èessenziale (entry point)
-Contiene dichiarazioni e definizioni - prima e sequenza di istruzioni -dopo
-
-dichiarazioni-e-definizioni introducono i nomi di costanti, variabili, tipi definiti dall ’utente • sequenza-istruzioni sequenza di frasi del linguaggio ognuna delle quali è un ’istruzione
-
+### Caratteristiche principali
+Il linguaggio **C** (creato da Dennis Ritchie, 1972) è:
+- **Efficientissimo** → tradotto in linguaggio macchina quasi diretto.
+- **Sequenziale** → l’ordine delle operazioni conta.
+- **Imperativo** → i programmi sono composti da istruzioni che modificano lo stato del calcolatore.
+- **Strutturato a blocchi** → il codice è suddiviso in funzioni e blocchi racchiusi tra `{ }`.
+- **Basato su espressioni** → ogni istruzione è spesso un’espressione che produce un valore.
+![[03-IntroCompilatori+LinguaggioC.pdf#page=20&rect=40,115,652,317|03-IntroCompilatori+LinguaggioC, p.20|500]]
+### Struttura
+- **Direttive al preprocessore** (`#include`, `#define`) → vengono eseguite prima della compilazione.
+- Il **punto di ingresso** di ogni programma è la funzione `main()`
+- **Dichiarazioni e definizioni** → introducono nomi di costanti, variabili, tipi.
+- **Sequenza di istruzioni** → frasi del linguaggio eseguite in ordine.
+- `return 0;` → segnala che il programma è terminato correttamente.
+### Elementi del linguaggio
 #### Parole chiave
-Espressioni riservate che hanno sempre lo stesso significato e non possono essere utilizzate in altro modo
+Espressioni **riservate**, con significato predefinito (non possono essere usate come identificatori).  
+Esempi:  
+`int`, `return`, `if`, `else`, `while`, `for`, `switch`, `break`, `continue`, `void`, `struct`, `typedef`, `const`, `static` …
 #### Costanti
-Valori costanti
+Valori fissi
+const float PI = 3.14159;
 #### Identificatori
-Nomi delle variabili tipo???
-Iniziano sempre con una lettera che può essere seguita da numeri e cifre senza spazio Maiuscoli e minuscoli fanno la differenza
-#### commenti
-/* frase su piu righe
+- Sono i **nomi di variabili, funzioni, tipi**
+- Regole:
+    - Devono iniziare con una lettera o `_`.    
+    - Possono contenere lettere, numeri, `_`.
+    - Case sensitive (`pippo` ≠ `Pippo`).
+`int contatore; 
+float valore_medio;`
+#### Commenti
+```cpp
+/* commento su più righe */
 // commento su una riga
+```
+#### Variabili
+Una variabile è un’**astrazione di una cella di memoria**.
+- **L-Value** → l’indirizzo della variabile (dove sta in memoria).
+- **R-Value** → il contenuto della variabile.
+- **Identificatore** -> deve avere un nome 
+##### Definizione di variabili
+Ogni variabile deve avere:
+- un **nome** (identificatore)
+- un **tipo**
+- opzionalmente un valore iniziale (se non sovrascrivo il valore della variabile il pc usa quello che trova)
+- un **scope** (campo di visibilità) vive all'interno del blocco in cui è iniazlizzata
+- un **tempo di vita**
 
-#### variabile
-Una variabile è un'astrazione di una cella di memoria
-L-Value (indirizzo)
-R-Value (contenuto della cella)
-Ogni variabile **deve essere definita**
- - avere un nome
- - avere un contenuto
- - campo d'azione (scope) intervallo di visibilità
- - tipo
- - tempo  di vita
+```cpp
+float altezza = 1.75; // variabile reale 
+char iniziale = 'A';  // variabile carattere`
+int eta = 21;       // variabile intera 
+```
+> [!Chesani 26/09/25]
+> Qualunque istruzione che tocca il ciarpame diventa ciarpame
+#### Espressioni
+Un’espressione è **una formula che produce un valore**.
+Possono avere **Effetti collaterali** se assegnano un valore a una variabile, la **incrementano** o la **diminuiscono**
+L'assegnamento è distruttivo
 
+```cpp
+int i = 4+3; // espressione semplice
 
-Qualunque istruzione che tocca il ciarpame diventa ciarpame
+// espressioni con effetti collaterali
+int i = i-3;
+
+int j = 0;
+int i = j-3; // assegnamento
+
+int i += 1 // incrementa di 1 (+,-,*.%,...)
+```
