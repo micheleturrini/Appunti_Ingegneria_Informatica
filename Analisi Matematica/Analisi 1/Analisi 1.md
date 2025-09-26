@@ -166,3 +166,20 @@ Esistono successioni che non hanno un limite
 
 ### Teorema del confronto
 Se un numero è compreso fra due numeri che tendono allo stesso numero anche il primo numero tende allo stesso numero.
+### Ordine degli infiniti
+![[OrdineInfiniti.png]]
+
+### Esercizi 
+è possibile stimare alcuni limiti e poi usare il teorema del confronto
+![[6. 26 Settembre 2025 Ing 1.pdf#page=31&rect=47,618,257,694|6. 26 Settembre 2025 Ing 1, p.31|200]]
++ esercizio
+## Successioni 
+### Successioni monotone
+Successioni **Crescenti o decrescenti**
+Una successione crescente o decrescente si dice **monotona**
+
+Le successioni monotone **hanno sempre un limite** che è il limite della successione (inferiore, decrescente - superiore, crescente).
+**Dim**
+Da capire pag 40 + es
+
+## Potenze e radici

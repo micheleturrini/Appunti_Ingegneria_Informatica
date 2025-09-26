@@ -153,10 +153,16 @@ Funzione **ricorsiva** (definisco una funzione con se stessa)
 
 ## Linguaggi
 - **Alto livello** (C, Python, Java)
-- **Basso livello** (Assembler)
+- **Basso livello** (Assembly)
 
 Un linguaggio di programmazione è una notazione formale per descrivere algoritmi
-L'**espressività** di un linguaggio è definita in base alla quantità di operazioni rispetto alla macchina di Turing.
+L'**espressività** di un linguaggio è definita in base a
+- Quali tipi di dati rappresenta 
+- Quali istruzioni mette a disposizione
+- Quante operazioni fa rispetto alla macchina di turing
+- 
+
+
 ![[02-LinguaggieGrammatiche.pdf#page=16&rect=65,116,671,419|02-LinguaggieGrammatiche, p.16|300]]
 **Semantica** significati da attribuire alle frasi (a parola, operazionale, denotazionale, assiomatica)
 **Sintassi** regole formali per la scrittura di programmi **Specifica il sottoinsieme V* ***(le regole sintattiche sono definite dal linguaggio **BNF**)
@@ -190,7 +196,73 @@ Fatto di 0 e 1
 Approccio a **compilatore**  (prende un programma e lo traduce direttamente in 0 e 1)
 Approccio a **interprete** (prende componente per componente del programma, la traduce in un linguaggio intermedio, lo esegue, lo traduce in linguaggio macchina)
 
+### Linguaggi interpretati
+Eseguibili da ogni macchina che abbia l'interprete installato.
+Tradotto riga per riga ogni volta
+Poco efficiente
+![[03-IntroCompilatori+LinguaggioC.pdf#page=7&rect=159,91,532,362|03-IntroCompilatori+LinguaggioC, p.7|250]]
+### Linguaggi compilati
+Compilato una singola volta per una sola architettura (ex Intel x86 Windows).
+Molto efficiente poco versatile.
+#### Processo di compilazione
+![[03-IntroCompilatori+LinguaggioC.pdf#page=6&rect=130,20,618,396|03-IntroCompilatori+LinguaggioC, p.6|350]]
+Editor (Visual studio)
+File sorgente (Hello.c)
+Compilatore (Trasforma il file sorgente in eseguibile)
+**File oggetto** (Eseguibile privo di librerie)
+**Librerie** (**Funzioni** di programma **di uso comune**)
+**Linker** (Prende il file oggetto e **aggiunge le librerie e le collega rendendo l'eseguibile completo**)
 
-## Il linguaggio C
+### Linguaggi misti
+Python, Java
+![[03-IntroCompilatori+LinguaggioC.pdf#page=9&rect=37,318,623,444|03-IntroCompilatori+LinguaggioC, p.9|600]]
+Compilando il programma lo **trasporto in un altro linguaggio LMI** (per java è il Bitecode)
+Ho un **secondo compilatore** molto efficiente che trasforma il linguaggio in linguaggio macchina
+
+### Il compilatore
+- **Analisi**
+	- **Lessicale** (correttezza delle singole parole) automatica
+	- **Sintattica** (correttezza delle frasi) automatica
+	- **Semantica** senso del programma - difficile identificare gli errori
+- **Sintesi**
+	- **Generatore di codice** (traduce effettivamente il codice)
+		- Allocazione della **memoria e dei registri**
+	- Ottimizzaore di codice (Migliora il codice, disttivabile)
+
+## Linguaggio C
+è estremamente **efficiente** 
+- **Sequenziale** l'ordine delle operazioni importa
+- **Imperativo**
+- **strutturato a blocchi** è costruito di blocchi di codice
+- **basato su espressioni**
+
+'![[03-IntroCompilatori+LinguaggioC.pdf#page=20&rect=40,115,652,317|03-IntroCompilatori+LinguaggioC, p.20|500]]
+il main () èessenziale (entry point)
+Contiene dichiarazioni e definizioni - prima e sequenza di istruzioni -dopo
+
+dichiarazioni-e-definizioni introducono i nomi di costanti, variabili, tipi definiti dall ’utente • sequenza-istruzioni sequenza di frasi del linguaggio ognuna delle quali è un ’istruzione
+
+#### Parole chiave
+Espressioni riservate che hanno sempre lo stesso significato e non possono essere utilizzate in altro modo
+#### Costanti
+Valori costanti
+#### Identificatori
+Nomi delle variabili tipo???
+Iniziano sempre con una lettera che può essere seguita da numeri e cifre senza spazio Maiuscoli e minuscoli fanno la differenza
+#### commenti
+/* frase su piu righe
+// commento su una riga
+
+#### variabile
+Una variabile è un'astrazione di una cella di memoria
+L-Value (indirizzo)
+R-Value (contenuto della cella)
+Ogni variabile **deve essere definita**
+ - avere un nome
+ - avere un contenuto
+ - campo d'azione (scope) intervallo di visibilità
+ - tipo
+ - tempo  di vita
 
 
+Qualunque istruzione che tocca il ciarpame diventa ciarpame
