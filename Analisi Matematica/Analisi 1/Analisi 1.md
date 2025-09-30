@@ -181,3 +181,6 @@ Le successioni monotone **hanno sempre un limite** che è il limite della succes
 **Dim** pag 40 
 
 ## Potenze e radici
+L'esponenziale a esponente irrazionale si definisce come limite di un esponenziale a potente razionale 
+### Logaritmo
+il logaritmo in base a di y è il numero dare alla base per ottenere

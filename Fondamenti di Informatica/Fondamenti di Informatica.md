@@ -331,3 +331,31 @@ Interi
 - **short** int: almeno **16 bit** (2 byte)
 - int: a discrezione del compilatore, $sizeof(int) >= sizeof (short int)$
 - **long** int: almeno 32 bit (4 byte)  $sizeof(long int) >= sizeof(int)$
+
+**ASCII**
+mettono le lettere in ordine alfabetico per poter utilizzare gli stessi operatori per mettere in ordine lettere e numeri.
+
+
+**Ordine di valutazione degli operandi**
+in C non è definito per magggiore ottimizazione
+Dipende dall'ordine in cui vengono valutati gli operanti
+```cpp
+x = 3;
+(x=5)+3; // NON SCRIVERE MAI
+```
+
+![[04-TipiDato.pdf#page=23&rect=155,156,558,390|04-TipiDato, p.23|300]]
+Nella **divisione** avviene un semantic overloading ma a/b è fra interi se sia a sia b sono interi, è fra reali in tutti gli altri casi. La conversione di tipo puo essere fatta automaticamente dal compilatore o manualmente dal programma - Typecasting (cast)
+```cpp
+i = (int) sqrt(384); //( <tipo> ) <espressione>
+```
+**modulo = resto**
+
+ **Operatori relazionali**
+ ![[04-TipiDato.pdf#page=36&rect=180,72,503,294|04-TipiDato, p.36||300]]
+ > [!attention]
+> << 
+
+Assegamento e confronto di uguaglianza Da precisare
+
+![[04-TipiDato.pdf#page=38&rect=145,272,594,398|04-TipiDato, p.38||350]]
