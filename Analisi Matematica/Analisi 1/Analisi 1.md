@@ -163,7 +163,6 @@ Per ogni epsilon positivo esiste una posizione per cui **da quel punto in poi tu
 
 **Se il limite c'è è UNICO**
 Esistono successioni che non hanno un limite
-
 ### Teorema del confronto
 Se un numero è compreso fra due numeri che tendono allo stesso numero anche il primo numero tende allo stesso numero.
 ### Ordine degli infiniti
@@ -179,7 +178,6 @@ Successioni **Crescenti o decrescenti**
 Una successione crescente o decrescente si dice **monotona**
 
 Le successioni monotone **hanno sempre un limite** che è il limite della successione (inferiore, decrescente - superiore, crescente).
-**Dim**
-Da capire pag 40 + es
+**Dim** pag 40 
 
 ## Potenze e radici
