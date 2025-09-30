@@ -276,7 +276,7 @@ Una variabile è un’**astrazione di una cella di memoria**.
 ##### Definizione di variabili
 Ogni variabile deve avere:
 - un **nome** (identificatore)
-- un **tipo**
+- un **tipo** (classe di valori che può assumere)
 - opzionalmente un valore iniziale (se non sovrascrivo il valore della variabile il pc usa quello che trova)
 - un **scope** (campo di visibilità) vive all'interno del blocco in cui è iniazlizzata
 - un **tempo di vita**
@@ -288,6 +288,7 @@ int eta = 21;       // variabile intera
 ```
 > [!Chesani 26/09/25]
 > Qualunque istruzione che tocca il ciarpame diventa ciarpame
+> **Inizializzare sempre le variabili**
 #### Espressioni
 Un’espressione è **una formula che produce un valore**.
 Possono avere **Effetti collaterali** se assegnano un valore a una variabile, la **incrementano** o la **diminuiscono**
@@ -305,3 +306,28 @@ int i = j-3; // assegnamento
 int i += 1 // incrementa di 1 (+,-,*.%,...)
 ```
 
+### Tipi di Dato
+- numeri **naturali**
+- numeri **reali**
+- **caratteri**
+- **stringhe**
+- booleano (rappresentato con una variable **int** (**0-Falso, altri numeri-Vero**))
+**Specificatore di tipo**
+- **char** caratteri
+- **int** numeri **interi**
+- **float** numero con **virgola**
+- **double** numero con virgola ma **precisione doppia**
+**Modificatori**
+- **short** memorizza **meno valori**
+- **long** memorizza **più** **valori**
+- **signed** dato **con segno** (positivi e negativi)
+- **unsigned** dato **senza segno** (solo positivi)
+
+![[04-TipiDato.pdf#page=5&rect=84,83,614,204|04-TipiDato, p.5|300]]
+Con numeri negativi
+![[04-TipiDato.pdf#page=7&rect=53,97,614,405|04-TipiDato, p.7|400]]
+
+Interi
+- **short** int: almeno **16 bit** (2 byte)
+- int: a discrezione del compilatore, $sizeof(int) >= sizeof (short int)$
+- **long** int: almeno 32 bit (4 byte)  $sizeof(long int) >= sizeof(int)$
