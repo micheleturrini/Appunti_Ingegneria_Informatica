@@ -305,57 +305,58 @@ int i = j-3; // assegnamento
 
 int i += 1 // incrementa di 1 (+,-,*.%,...)
 ```
-
 ### Tipi di Dato
-- numeri **naturali**
-- numeri **reali**
-- **caratteri**
-- **stringhe**
-- booleano (rappresentato con una variable **int** (**0-Falso, altri numeri-Vero**))
-**Specificatore di tipo**
-- **char** caratteri
-- **int** numeri **interi**
-- **float** numero con **virgola**
-- **double** numero con virgola ma **precisione doppia**
-**Modificatori**
-- **short** memorizza **meno valori**
-- **long** memorizza **più** **valori**
-- **signed** dato **con segno** (positivi e negativi)
-- **unsigned** dato **senza segno** (solo positivi)
+#### Specificatori
+- `void` → indefiniti
+- `char` → caratteri (1 byte)    
+- `int` → interi
+- `float` → reali **precisione singola** (~6 cifre, 32 bit)
+- `double` → reali **precisione doppia** (~15 cifre, 64 bit)
+- `long double` → precisione quadrupla (128 bit, dipende dal compilatore)
+#### Modificatori
+- `short` → almeno **16 bit**
+- `long` → almeno **32 bit**
+- `signed` → con segno (positivi + negativi)
+- `unsigned` → senza segno (solo positivi)
 
+`sizeof(long int) >= sizeof(int) >= sizeof(short int)`
+I booleani non esistono (Convenzione: `0 = falso`, valore ≠ 0 = vero.)
+#### Rappresentazione in memoria.
 ![[04-TipiDato.pdf#page=5&rect=84,83,614,204|04-TipiDato, p.5|300]]
-Con numeri negativi
-![[04-TipiDato.pdf#page=7&rect=53,97,614,405|04-TipiDato, p.7|400]]
-
-Interi
-- **short** int: almeno **16 bit** (2 byte)
-- int: a discrezione del compilatore, $sizeof(int) >= sizeof (short int)$
-- **long** int: almeno 32 bit (4 byte)  $sizeof(long int) >= sizeof(int)$
-
+**Interi**
+- **Naturali (unsigned)**: 0 … `2^N - 1`
+    - 8 bit → 0..255
+    - 16 bit → 0..65535
+    - 32 bit → 0..4.294.967.295
+- **Con segno (signed, complemento a 2)**: `[-2^(N-1), 2^(N-1)-1]`
+    - 8 bit → -128..127
+    - 16 bit → -32768..32767
+    - 32 bit → -2.147.483.648..2.147.483.647
+**Caratteri e stringhe**
 **ASCII**
-mettono le lettere in ordine alfabetico per poter utilizzare gli stessi operatori per mettere in ordine lettere e numeri.
-
-
-**Ordine di valutazione degli operandi**
-in C non è definito per magggiore ottimizazione
-Dipende dall'ordine in cui vengono valutati gli operanti
+convenzione che **associa numeri a ogni carattere**
+mettono le lettere in ordine alfabetico per poter **utilizzare gli stessi operatori per mettere in ordine lettere e numeri.**
+#### Operatori
+##### Operatori di calcolo
+![[04-TipiDato.pdf#page=23&rect=155,156,558,390|04-TipiDato, p.23|300]]
+**modulo = resto**
+**Ordine di valutazione degli operandi** è stabilito dal compilatore
+Attenzione:
 ```cpp
 x = 3;
 (x=5)+3; // NON SCRIVERE MAI
 ```
 
-![[04-TipiDato.pdf#page=23&rect=155,156,558,390|04-TipiDato, p.23|300]]
-Nella **divisione** avviene un semantic overloading ma a/b è fra interi se sia a sia b sono interi, è fra reali in tutti gli altri casi. La conversione di tipo puo essere fatta automaticamente dal compilatore o manualmente dal programma - Typecasting (cast)
+Nella **divisione** avviene un semantic overloading ma a/b è fra interi se sia a sia b sono interi, è fra reali in tutti gli altri casi. 
+La **conversione** di tipo può essere fatta **automaticamente** dal compilatore o **manualmente** dal programma - Typecasting (cast)
+Quando effettuata per troncamento possibile perdita di informazioni
 ```cpp
 i = (int) sqrt(384); //( <tipo> ) <espressione>
 ```
-**modulo = resto**
-
- **Operatori relazionali**
+##### Operatori relazionali
  ![[04-TipiDato.pdf#page=36&rect=180,72,503,294|04-TipiDato, p.36||300]]
  > [!attention]
-> << 
-
-Assegamento e confronto di uguaglianza Da precisare
-
+> = **assegna** un valore 
+> == c**hiede al computer se l'uguaglianza è vera**
+##### Operatori logici
 ![[04-TipiDato.pdf#page=38&rect=145,272,594,398|04-TipiDato, p.38||350]]

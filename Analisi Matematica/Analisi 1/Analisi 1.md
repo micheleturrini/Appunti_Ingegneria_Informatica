@@ -179,8 +179,10 @@ Una successione crescente o decrescente si dice **monotona**
 
 Le successioni monotone **hanno sempre un limite** che è il limite della successione (inferiore, decrescente - superiore, crescente).
 **Dim** pag 40 
-
 ## Potenze e radici
 L'esponenziale a esponente irrazionale si definisce come limite di un esponenziale a potente razionale 
-### Logaritmo
-il logaritmo in base a di y è il numero dare alla base per ottenere
+## Logaritmo
+il logaritmo in base a di y è l'esponente dare a a per ottenere y
+
+## Trigonometria
+![[Trigonometria cheatsheet.jpg]]
