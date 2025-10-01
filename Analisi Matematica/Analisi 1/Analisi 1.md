@@ -202,7 +202,6 @@ Una serie geometrica converge solo se il modulo della **ragione** (base) è mino
 **Calcolo della frazione generatrice di un periodico**
 *Dimostrazione formula pag 16 PDF*
 
-
 Ex a casa
 
 **successione armonica semplice**
