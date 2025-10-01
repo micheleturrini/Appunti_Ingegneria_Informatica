@@ -153,12 +153,12 @@ Nella successione è prescritto l'ordine degli elementi
 
 ## limite
 **Limite Finito** (convergente)
-![[25 Settembre 2025 Ing.pdf#page=10&rect=10,144,586,543|25 Settembre 2025 Ing, p.10|500]]
+![[5. 25 Settembre 2025 Ing.pdf#page=10&rect=10,144,586,543|25 Settembre 2025 Ing, p.10|500]]
 Per ogni epsilon positivo esiste una posizione per cui **da quel punto in poi tutti gli elementi della successione stanno dentro il delta.**
-Per avere punti via via più vicini al limite devo aumentare di n![[25 Settembre 2025 Ing.pdf#page=16&rect=31,375,572,565|25 Settembre 2025 Ing, p.16|500]]
+Per avere punti via via più vicini al limite devo aumentare di n![[5. 25 Settembre 2025 Ing.pdf#page=16&rect=31,375,572,565|25 Settembre 2025 Ing, p.16|500]]
 
 **Limite infinito** (divergente)
-![[25 Settembre 2025 Ing.pdf#page=21&rect=13,152,591,783|25 Settembre 2025 Ing, p.21|500]]
+![[5. 25 Settembre 2025 Ing.pdf#page=21&rect=13,152,591,783|25 Settembre 2025 Ing, p.21|500]]
 Per ogni epsilon positivo esiste una posizione per cui **da quel punto in poi tutti gli elementi della successione saranno tutti maggiori o tutti minori.**
 
 **Se il limite c'è è UNICO**
@@ -186,3 +186,46 @@ il logaritmo in base a di y è l'esponente dare a a per ottenere y
 
 ## Trigonometria
 ![[Trigonometria cheatsheet.jpg]]
+
+## Le serie numeriche
+**è la successione delle somme parziali**
+![[8. 1 Ottobre 2025 Ing.pdf#page=5&rect=72,420,527,510|8. 1 Ottobre 2025 Ing, p.5|400]]
+- **convergente** (tende a un numero finito = **somma della serie**) perchè una serie possa convergere i suoi valori devono tendere a 0 (serie infinitesima)![[8. 1 Ottobre 2025 Ing.pdf#page=33&rect=106,448,340,515|8. 1 Ottobre 2025 Ing, p.33|200]]
+- **divergente** (tende a + - infinito)
+- **indeterminata** (non ha un limite)
+studiando la serie **da un numero in poi** cambia la somma ma **non il suo carattere**
+
+**Serie geometrica**
+Una serie geometrica converge solo se il modulo della **ragione** (base) è minore di 1
+*Dimostrazione PDF pag 9*
+
+**Calcolo della frazione generatrice di un periodico**
+*Dimostrazione formula pag 16 PDF*
+
+
+Ex a casa
+
+**successione armonica semplice**
+![[8. 1 Ottobre 2025 Ing.pdf#page=40&rect=33,640,140,720|8. 1 Ottobre 2025 Ing, p.40|100]]
+Non converge
+*Dim pag  41*
+
+Una serie a termini **non negativi o converge o diverge**
+*Dim pag 44*
+
+**Notazione**
+![[8. 1 Ottobre 2025 Ing.pdf#page=46&rect=25,335,550,579|8. 1 Ottobre 2025 Ing, p.46|400]]
+
+**Teorema del confronto**
+posso usare il Teorema del confronto per capire se una serie converge o diverge.
+- se riesco a **maggiorare** la serie in un altra che **converge** allora la prima **converge** o se **diverge** anche la prima **diverge**
+esempio 1
+![[8. 1 Ottobre 2025 Ing.pdf#page=50&rect=45,628,271,721|8. 1 Ottobre 2025 Ing, p.50|200]]
+Il seno è sempre maggiore di -1 quindi posso approssimarlo.
+
+esempio 2
+![[8. 1 Ottobre 2025 Ing.pdf#page=53&rect=50,538,170,627|8. 1 Ottobre 2025 Ing, p.53|100]]
+converge per il teorema del confronto
+
+esempio 3
+![[8. 1 Ottobre 2025 Ing.pdf#page=55&rect=109,677,219,761|8. 1 Ottobre 2025 Ing, p.55|100]]
