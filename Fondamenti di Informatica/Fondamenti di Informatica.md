@@ -305,7 +305,25 @@ int i = j-3; // assegnamento
 
 int i += 1 // incrementa di 1 (+,-,*.%,...)
 ```
-### Tipi di Dato
+##### Espressioni eterogenee
+eseguendo un'espressione eterogenea entrambi gli operandi vengono **trasformati** temporaneamente in float (**promotion**) ma poi se necessario il risultato è **arrotondato per troncamento** (perdita di informazioni)
+```cpp
+#include <stdio.h>
+ int main(void) {
+  int i, k; 
+  float j; 
+  i = 20; 
+  k = i % 3; 
+  i = i / 3; 
+  
+  k = i / 4.0F; // restituisce 1 perchè arrotondato
+  j = i / 4.0F; // restituisce 1.5 perche è float
+  return (0); 
+}
+```
+
+
+### Tipi di Dato 
 #### Specificatori
 - `void` → indefiniti
 - `char` → caratteri (1 byte)    
@@ -313,6 +331,11 @@ int i += 1 // incrementa di 1 (+,-,*.%,...)
 - `float` → reali **precisione singola** (~6 cifre, 32 bit)
 - `double` → reali **precisione doppia** (~15 cifre, 64 bit)
 - `long double` → precisione quadrupla (128 bit, dipende dal compilatore)
+Dichiarando un **float** il compilatore di default considera la variabile **double**
+per avere una variabile float devo aggiungere una f
+```cpp
+float a = 0.3f;
+```
 #### Modificatori
 - `short` → almeno **16 bit**
 - `long` → almeno **32 bit**
@@ -336,7 +359,7 @@ I booleani non esistono (Convenzione: `0 = falso`, valore ≠ 0 = vero.)
 **ASCII**
 convenzione che **associa numeri a ogni carattere**
 mettono le lettere in ordine alfabetico per poter **utilizzare gli stessi operatori per mettere in ordine lettere e numeri.**
-#### Operatori
+### Operatori
 ##### Operatori di calcolo
 ![[04-TipiDato.pdf#page=23&rect=155,156,558,390|04-TipiDato, p.23|300]]
 **modulo = resto**
