@@ -274,6 +274,7 @@ Una variabile è un’**astrazione di una cella di memoria**.
 - **R-Value** → il contenuto della variabile.
 - **Identificatore** -> deve avere un nome 
 ##### Definizione di variabili
+Si **definiscono** all'**inizio** del blocco e poi si usano
 Ogni variabile deve avere:
 - un **nome** (identificatore)
 - un **tipo** (classe di valori che può assumere)
