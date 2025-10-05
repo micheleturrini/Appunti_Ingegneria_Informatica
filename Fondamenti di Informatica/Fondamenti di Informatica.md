@@ -150,7 +150,6 @@ Algoritmi **equivalenti**:
 - stessi valori in uscita per gli stessi valori in entrata
 
 Funzione **ricorsiva** (definisco una funzione con se stessa)
-
 ## Classificazione dei linguaggi
 - **Alto livello** (C, Python, Java)
 - **Basso livello** (Assembly)
@@ -160,7 +159,6 @@ L'**espressività** di un linguaggio è definita in base a:
 - quali tipi di dati rappresenta
 - quali istruzioni mette a disposizione
 - quante operazioni fa rispetto alla macchina di Turing
-
 ## Sintassi e Semantica
 - **Sintassi** → regole formali per la scrittura di programmi (definisce il sottoinsieme $V^*$).
     - Le regole sintattiche sono spesso definite tramite **BNF**. 
@@ -377,10 +375,9 @@ Quando effettuata per troncamento possibile perdita di informazioni
 ```cpp
 i = (int) sqrt(384); //( <tipo> ) <espressione>
 ```
-##### Operatori relazionali
- ![[04-TipiDato.pdf#page=36&rect=180,72,503,294|04-TipiDato, p.36||300]]
+##### Operatori relazionali![[04-TipiDato.pdf#page=36&rect=180,72,503,294|04-TipiDato, p.36||300]]
  > [!attention]
 > = **assegna** un valore 
-> == c**hiede al computer se l'uguaglianza è vera**
+> == **chiede al computer se l'uguaglianza è vera** restituisce 1 o 0
 ##### Operatori logici
 ![[04-TipiDato.pdf#page=38&rect=145,272,594,398|04-TipiDato, p.38||350]]
