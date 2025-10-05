@@ -1,9 +1,5 @@
 [[0 - Index]]
-Lunedì 22 settembre 14:30 - lezione base base - Guarda le slide
 Il linguaggio C , Deitel
-
-Codelite
-NetBeans
 ## Esame
 Appelli (I moduli si possono dare separatamente ma i due moduli sono molto connessi)
 - 3 (Gennaio Febbraio)
@@ -70,8 +66,7 @@ Piccoli programmi
 - comandi elementari
 - sistema multi utente
 - GUI
-
-## Lo sviluppo della macchina di Turing
+## La macchina di Turing
 Turing calcola il numero minimo di istruzioni per risolvere tutte le operazioni computabili.
 Immagina un automa esecutore (non sa come realizzarlo fisicamente) che
 - prenda ingresso un metodo risolutivo
@@ -94,7 +89,7 @@ Se esiste un meccanismo per raggiungere la soluzione in un numero finito di pass
 La macchina è un interprete di questo linguaggio (a livello basso oggi si usa il linguaggio macchina a livello alto i linguaggi di alto livello)
 Il numero è un concetto rappresentato da un simbolo quindi la macchina (che non può pensare concetti) deve lavorare coi simboli.
 
-La macchina è composta da
+La macchina è **composta** da
 - una testina capace di scrivere e leggere simboli
 - un nastro che scorre sotto la testina
 - un dispositivo di controllo che muove a destra o sinistra la testina
@@ -120,7 +115,7 @@ Tuttora il computer a ogni avvio legge le istruzioni in memoria e avvia il siste
 > Tutte le istruzioni sono in memoria
 > La macchina di Turing è l'interprete di un linguaggio
 
--  **fetch** (cerca le istruzioni)
+- **fetch** (cerca le istruzioni)
 - **decode** (interpreta)
 - **execute** (esegue)
 
@@ -133,7 +128,6 @@ Nella macchina di **Turing** non sono previsti dispositivi di interfaccia che ve
 
 La prima che immagina il concetto di programmazione è Ada Byron.
 Ha una serie di intuizioni che si avvicinano al linguaggio Assembly.
-
 ## Algoritmo
 > [!PDF|yellow] [[01b-algoritmiNew.pdf#page=50&selection=4,0,21,11&color=yellow|01b-algoritmiNew, p.50]]
 > > Un algoritmo è una sequenza finita di mosse che risolve in un tempo finito una classe di problemi
@@ -177,7 +171,6 @@ La **BNF** descrive la sintassi alla base di ogni linguaggio di programmazione.
  
  Per sfruttare il linguaggio bisogna muoversi fra le opzioni per costruire la cifra desiderata
 ![[02-LinguaggieGrammatiche.pdf#page=11&rect=70,131,667,376|02-LinguaggieGrammatiche, p.11|400]]
-
 **Esempio derivazione left-most**
 ![[02-LinguaggieGrammatiche.pdf#page=31&rect=118,155,657,416|02-LinguaggieGrammatiche, p.31|300]]
 ## Tipi di Linguaggi
@@ -230,154 +223,3 @@ Python, Java
 	    - allocazione della memoria
 	    - gestione dei registri
 	- **Ottimizzatore di codice** → migliora l’efficienza del codice (può essere disattivato).
-## Linguaggio C
-### Caratteristiche principali
-Il linguaggio **C** (creato da Dennis Ritchie, 1972) è:
-- **Efficientissimo** → tradotto in linguaggio macchina quasi diretto.
-- **Sequenziale** → l’ordine delle operazioni conta.
-- **Imperativo** → i programmi sono composti da istruzioni che modificano lo stato del calcolatore.
-- **Strutturato a blocchi** → il codice è suddiviso in funzioni e blocchi racchiusi tra `{ }`.
-- **Basato su espressioni** → ogni istruzione è spesso un’espressione che produce un valore.
-![[03-IntroCompilatori+LinguaggioC.pdf#page=20&rect=40,115,652,317|03-IntroCompilatori+LinguaggioC, p.20|500]]
-### Struttura
-- **Direttive al preprocessore** (`#include`, `#define`) → vengono eseguite prima della compilazione.
-- Il **punto di ingresso** di ogni programma è la funzione `main()`
-- **Dichiarazioni e definizioni** → introducono nomi di costanti, variabili, tipi.
-- **Sequenza di istruzioni** → frasi del linguaggio eseguite in ordine.
-- `return 0;` → segnala che il programma è terminato correttamente.
-### Elementi del linguaggio
-#### Parole chiave
-Espressioni **riservate**, con significato predefinito (non possono essere usate come identificatori).  
-Esempi:  
-`int`, `return`, `if`, `else`, `while`, `for`, `switch`, `break`, `continue`, `void`, `struct`, `typedef`, `const`, `static` …
-#### Costanti
-Valori fissi
-const float PI = 3.14159;
-#### Identificatori
-- Sono i **nomi di variabili, funzioni, tipi**
-- Regole:
-    - Devono iniziare con una lettera o `_`.    
-    - Possono contenere lettere, numeri, `_`.
-    - Case sensitive (`pippo` ≠ `Pippo`).
-`int contatore; 
-float valore_medio;`
-#### Commenti
-```cpp
-/* commento su più righe */
-// commento su una riga
-```
-#### Variabili
-Una variabile è un’**astrazione di una cella di memoria**.
-- **L-Value** → l’indirizzo della variabile (dove sta in memoria).
-- **R-Value** → il contenuto della variabile.
-- **Identificatore** -> deve avere un nome 
-##### Definizione di variabili
-Si **definiscono** all'**inizio** del blocco e poi si usano
-Ogni variabile deve avere:
-- un **nome** (identificatore)
-- un **tipo** (classe di valori che può assumere)
-- opzionalmente un valore iniziale (se non sovrascrivo il valore della variabile il pc usa quello che trova)
-- un **scope** (campo di visibilità) vive all'interno del blocco in cui è iniazlizzata
-- un **tempo di vita**
-
-```cpp
-float altezza = 1.75; // variabile reale 
-char iniziale = 'A';  // variabile carattere`
-int eta = 21;       // variabile intera 
-```
-> [!Chesani 26/09/25]
-> Qualunque istruzione che tocca il ciarpame diventa ciarpame
-> **Inizializzare sempre le variabili**
-#### Espressioni
-Un’espressione è **una formula che produce un valore**.
-Possono avere **Effetti collaterali** se assegnano un valore a una variabile, la **incrementano** o la **diminuiscono**
-L'assegnamento è distruttivo
-
-```cpp
-int i = 4+3; // espressione semplice
-
-// espressioni con effetti collaterali
-int i = i-3;
-
-int j = 0;
-int i = j-3; // assegnamento
-
-int i += 1 // incrementa di 1 (+,-,*.%,...)
-```
-##### Espressioni eterogenee
-eseguendo un'espressione eterogenea entrambi gli operandi vengono **trasformati** temporaneamente in float (**promotion**) ma poi se necessario il risultato è **arrotondato per troncamento** (perdita di informazioni)
-```cpp
-#include <stdio.h>
- int main(void) {
-  int i, k; 
-  float j; 
-  i = 20; 
-  k = i % 3; 
-  i = i / 3; 
-  
-  k = i / 4.0F; // restituisce 1 perchè arrotondato
-  j = i / 4.0F; // restituisce 1.5 perche è float
-  return (0); 
-}
-```
-
-
-### Tipi di Dato 
-#### Specificatori
-- `void` → indefiniti
-- `char` → caratteri (1 byte)    
-- `int` → interi
-- `float` → reali **precisione singola** (~6 cifre, 32 bit)
-- `double` → reali **precisione doppia** (~15 cifre, 64 bit)
-- `long double` → precisione quadrupla (128 bit, dipende dal compilatore)
-Dichiarando un **float** il compilatore di default considera la variabile **double**
-per avere una variabile float devo aggiungere una f
-```cpp
-float a = 0.3f;
-```
-#### Modificatori
-- `short` → almeno **16 bit**
-- `long` → almeno **32 bit**
-- `signed` → con segno (positivi + negativi)
-- `unsigned` → senza segno (solo positivi)
-
-`sizeof(long int) >= sizeof(int) >= sizeof(short int)`
-I booleani non esistono (Convenzione: `0 = falso`, valore ≠ 0 = vero.)
-#### Rappresentazione in memoria.
-![[04-TipiDato.pdf#page=5&rect=84,83,614,204|04-TipiDato, p.5|300]]
-**Interi**
-- **Naturali (unsigned)**: 0 … `2^N - 1`
-    - 8 bit → 0..255
-    - 16 bit → 0..65535
-    - 32 bit → 0..4.294.967.295
-- **Con segno (signed, complemento a 2)**: `[-2^(N-1), 2^(N-1)-1]`
-    - 8 bit → -128..127
-    - 16 bit → -32768..32767
-    - 32 bit → -2.147.483.648..2.147.483.647
-**Caratteri e stringhe**
-**ASCII**
-convenzione che **associa numeri a ogni carattere**
-mettono le lettere in ordine alfabetico per poter **utilizzare gli stessi operatori per mettere in ordine lettere e numeri.**
-### Operatori
-##### Operatori di calcolo
-![[04-TipiDato.pdf#page=23&rect=155,156,558,390|04-TipiDato, p.23|300]]
-**modulo = resto**
-**Ordine di valutazione degli operandi** è stabilito dal compilatore
-Attenzione:
-```cpp
-x = 3;
-(x=5)+3; // NON SCRIVERE MAI
-```
-
-Nella **divisione** avviene un semantic overloading ma a/b è fra interi se sia a sia b sono interi, è fra reali in tutti gli altri casi. 
-La **conversione** di tipo può essere fatta **automaticamente** dal compilatore o **manualmente** dal programma - Typecasting (cast)
-Quando effettuata per troncamento possibile perdita di informazioni
-```cpp
-i = (int) sqrt(384); //( <tipo> ) <espressione>
-```
-##### Operatori relazionali![[04-TipiDato.pdf#page=36&rect=180,72,503,294|04-TipiDato, p.36||300]]
- > [!attention]
-> = **assegna** un valore 
-> == **chiede al computer se l'uguaglianza è vera** restituisce 1 o 0
-##### Operatori logici
-![[04-TipiDato.pdf#page=38&rect=145,272,594,398|04-TipiDato, p.38||350]]
