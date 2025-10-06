@@ -215,9 +215,11 @@ Tutte le istruzioni contenute in un blocco vengono eseguite **dall'alto al basso
 Definiscono l'**area di validità** di un identificatore.
 Una variabile dichiarata in un blocco è **visibile** soltanto all'**interno** di esso (**scope**) 
 esistono diversi ambienti es. globale, main, funzione, blocco)
-- In ambienti diversi si può definire lo stesso identificatore per denotare due oggetti diversi
-- In ciascun ambiente un identificatore può essere definito una sola volta
-- Se in un ambiente sono visibili due definizioni dello stesso identificatore, la definizione valida è quella dell’ambiente più vicino al punto di utilizzo
+- Un identificatore NON è visibile **prima** della sua dichiarazione 
+- Un identificatore definito in un ambiente è visibile in tutti gli ambienti in esso **contenuti**
+- Se in un ambiente sono visibili due definizioni dello stesso identificatore, la definizione valida è quella dell’ambiente **più vicino** al punto di utilizzo 
+- In ambienti diversi si può definire lo **stesso identificatore** per denotare due oggetti diversi
+- In ciascun ambiente un identificatore può essere **definito una sola volta**
 
 ```cpp
 int main () {
