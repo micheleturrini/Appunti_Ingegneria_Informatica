@@ -80,7 +80,7 @@ I tre elementi sono:
 - Relazione
 - Dominio
 - Codominio
-Funzione **Iniettiva** -> passa due volte per la stessa y
+Funzione **Iniettiva** -> non passa due volte per la stessa y
 Funzione **Suriettiva** -> occupa tutto il codominio
 Funzione **Biettiva** -> suriettiva e iniettiva -> invertibile
 L'insieme immagine è l'insieme di tutti gli elementi del codominio a cui corrisponde un elemento del dominio.
@@ -103,7 +103,7 @@ Scrivendo i risultati della formula incrementando n si ottiene una struttura sim
 ## Il principio di induzione
 è un metodo per dimostrare formule e teoremi che dipendono da un parametro
 
-Data un **proposizione** P che dipende da un numero naturale n () P(0), P(1), ..., P(n)) tramite il principio di induzione si può dimostrare che se ho una **successione infinita** di affermazioni assumendo che **la prima è vera** e che **questo implica la verità della seguente** posso dimostrare che **tutte sono vere**.![[3. 19 Settembre 2025 Ing 1.pdf#page=15&rect=82,225,577,399|3. 19 Settembre 2025 Ing 1, p.15|400]]![[3. 19 Settembre 2025 Ing 1.pdf#page=15&rect=119,102,517,149|3. 19 Settembre 2025 Ing 1, p.15|400]]
+Data un **proposizione** P che dipende da un numero naturale n  P(0), P(1), ..., P(n)) tramite il principio di induzione si può dimostrare che se ho una **successione infinita** di affermazioni assumendo che **la prima è vera** e che **questo implica la verità della seguente** posso dimostrare che **tutte sono vere**.![[3. 19 Settembre 2025 Ing 1.pdf#page=15&rect=82,225,577,399|3. 19 Settembre 2025 Ing 1, p.15|400]]![[3. 19 Settembre 2025 Ing 1.pdf#page=15&rect=119,102,517,149|3. 19 Settembre 2025 Ing 1, p.15|400]]
 ### Dimostrazione
 **Principio del minio in N**
 Qualunque sottoinsieme non vuoto di N ha un **minimo**.
@@ -155,7 +155,7 @@ Nella successione è prescritto l'ordine degli elementi
 **Limite Finito** (convergente)
 ![[5. 25 Settembre 2025 Ing.pdf#page=10&rect=10,144,586,543|25 Settembre 2025 Ing, p.10|500]]
 Per ogni epsilon positivo esiste una posizione per cui **da quel punto in poi tutti gli elementi della successione stanno dentro il delta.**
-Per avere punti via via più vicini al limite devo aumentare di n![[5. 25 Settembre 2025 Ing.pdf#page=16&rect=31,375,572,565|25 Settembre 2025 Ing, p.16|500]]
+Per avere punti via via più vicini al limite devo aumentare di n![[5. 25 Settembre 2025 Ing.pdf#page=16&rect=31,375,572,565|25 Settembre 2025 Ing, p.16|500]
 
 **Limite infinito** (divergente)
 ![[5. 25 Settembre 2025 Ing.pdf#page=21&rect=13,152,591,783|25 Settembre 2025 Ing, p.21|500]]
