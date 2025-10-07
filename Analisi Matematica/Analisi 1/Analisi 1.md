@@ -190,8 +190,7 @@ il logaritmo in base a di y è l'esponente dare a a per ottenere y
 ## Le serie numeriche
 **è la successione delle somme parziali**
 ![[8. 1 Ottobre 2025 Ing.pdf#page=5&rect=72,420,527,510|8. 1 Ottobre 2025 Ing, p.5|400]]
-- **convergente** (tende a un numero finito = **somma della serie**) perchè una serie possa convergere i suoi valori devono tendere a 0 (serie infinitesima)![[8. 1 Ottobre 2025 Ing.pdf#page=33&rect=106,448,340,515|8. 1 Ottobre 2025 Ing, p.33|200]]
-- **divergente** (tende a + - infinito)
+- **convergente** (tende a un numero finito = **somma della serie**) perchè una serie possa convergere i suoi valori devono tendere a 0 (serie infinitesima)![[8. 1 Ottobre 2025 Ing.pdf#page=33&rect=106,448,340,515|8. 1 Ottobre 2025 Ing, p.33|200]]- **divergente** (tende a + - infinito)
 - **indeterminata** (non ha un limite)
 studiando la serie **da un numero in poi** cambia la somma ma **non il suo carattere**
 
