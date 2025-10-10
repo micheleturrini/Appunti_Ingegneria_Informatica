@@ -226,8 +226,7 @@ int main () {
 //sono un blocco :)
 }
 ```
-
-**Selezione**
+### Selezione
 - **Condizionale ternaria**
 ```cpp
 (codizione ? se vero : se falso);
@@ -251,3 +250,60 @@ switch (variabile) {
 }
 ```
 Le **istruzioni non si escludono** a vicenda quindi devo inserire il **break**
+### Ciclo
+**Eseguono** un blocco di codice **fino a quando una condizione non si verifica**
+hanno u**n solo punto di ingresso e un solo punto di uscita**
+Esistono tre modi in C (quasi equivalenti):
+- **While**
+testa la condizione, se è vera esegue il blocco
+![[07a-Istruzioninew.pdf#page=27&rect=74,64,310,319|07a-Istruzioninew, p.27|200]]
+```cpp
+<while> ::= 
+	while(<condizione>) <istruzione>
+```
+Esempio
+```cpp
+#include <stdio.h> 
+int main() /* Media di N voti*/ {
+	int sum,voto,N,i;
+    float media;
+    printf(“Quanti sono i voti?”);
+    scanf("%d",&N);
+    sum = 0;
+    i = 1;
+    while (i <= N) {
+		printf(“Dammi il voto n.%d:”,i);
+        scanf("%d",&voto);
+        sum=sum+voto;
+        i=i+1;
+    } 
+	media=((float)sum)/N;/* ipotesi: N>0 */ 
+	printf("Risultato: %f",media)
+}
+```
+Nella linea 15 il casting viene eseguito prima della divisione quindi si salvano i decimali.
+Per evitare errori è necessario filtrare i dati forniti dall'utonto. (es 0)
+- **Do-while**
+esegue il blocco poi verifica la condizione la prima volta
+![[07a-Istruzioninew.pdf#page=32&rect=65,109,292,320|07a-Istruzioninew, p.32|200]]
+```cpp
+<do-while> ::=
+	do <istruzione> while(<condizione>);
+```
+Programma che legge un una serie di valori fino a un simbolo
+![[07a-Istruzioninew.pdf#page=35&rect=92,249,367,326|07a-Istruzioninew, p.35|250]]
+- **For**
+Permette di iterare un determinato numero di volte
+![[07a-Istruzioninew.pdf#page=38&rect=39,30,282,324|07a-Istruzioninew, p.38|200]]
+```cpp
+<for> ::=
+	for(<espr-iniz>;<cond>;<espr-modifica>) 
+	<istruzione>
+```
+espr-iniz viene eseguita solo prima di iniziare l'iterazione
+verifica la condizione
+espr-modifica viene eseguita
+
+CAPIRE MEGLIO - FARE APPUNTI
+
+
