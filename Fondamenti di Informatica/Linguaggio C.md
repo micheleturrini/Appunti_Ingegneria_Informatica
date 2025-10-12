@@ -233,11 +233,14 @@ int main () {
 ```
 - **If else**
 ```cpp
-if (n > 0) { /* inizio blocco */ 
+if (n > 0) {
 	a = b + 5; 
 	c = a;
-}              /* fine blocco */ 
- else n = b;
+}
+else if (condizione){
+	azione;
+}
+else n = b;
 ```
 - **Espressione di scelta multipla**
 ![[07a-Istruzioninew.pdf#page=23&rect=401,57,660,395|07a-Istruzioninew, p.23|250]]
@@ -290,6 +293,13 @@ esegue il blocco poi verifica la condizione la prima volta
 <do-while> ::=
 	do <istruzione> while(<condizione>);
 ```
+Esempio
+```cpp
+do {
+	F = I*F;
+	I = I+1;
+} while (I <= N);
+```
 Programma che legge un una serie di valori fino a un simbolo
 ![[07a-Istruzioninew.pdf#page=35&rect=92,249,367,326|07a-Istruzioninew, p.35|250]]
 - **For**
@@ -300,10 +310,21 @@ Permette di iterare un determinato numero di volte
 	for(<espr-iniz>;<cond>;<espr-modifica>) 
 	<istruzione>
 ```
-espr-iniz viene eseguita solo prima di iniziare l'iterazione
-verifica la condizione
-espr-modifica viene eseguita
+**espr-iniz** viene eseguita solo prima di iniziare l'iterazione
+verifica la **condizione**
+viene eseguita l'**istruzione**
+**espr-modifica** viene eseguita a ogni iterazione **dopo l'istruzione**
 
-CAPIRE MEGLIO - FARE APPUNTI
+![[07a-Istruzioninew.pdf#page=39&rect=53,191,620,432|07a-Istruzioninew, p.39|400]]
+Esempio
+```cpp
+for(i=1; i<=N; i++) {
+	printf(“Dammi il voto n.%d:”,i);
+	scanf("%d",&voto);
+	sum=sum+voto;
+}
+```
 
-
+**Counter**
+![[07a-Istruzioninew.pdf#page=50&rect=37,74,653,429|07a-Istruzioninew, p.50|400]]
+*Il loro comportamento può variare molto in base a piccole sottigliezze quindi CONTROLLARE  in debug*
