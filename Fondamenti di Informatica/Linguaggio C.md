@@ -350,3 +350,36 @@ rowIndex, columnIndex, colorConverter…
 void swapValues(int &firstValue, int &secondValue);
 void saveToFile(int buffer[], int bufferSize);
 ```
+## Preprocessore
+![[07c-Preprocessore.pdf#page=1&rect=71,76,791,204|07c-Preprocessore, p.1]]
+- Agisce prima del compilatore e processa direttamente il file sorgente
+- Esegue direttive possibilmente contenute nel file sorgente
+- **Sostituisce soltanto testo con testo**
+
+**Direttive**
+- **define**
+  definisce una **regola di ricerca e sostituzione**: ogni occorrenza di Identificatore verrà sostituita da testo
+```cpp
+#define Identificatore_testo
+
+//PRIMA DEL PROCESSING
+#define RADICEDI2 1.4142F
+int main() { 
+	float lato = 18;
+	float diagonale = lato * RADICEDI2;
+}
+// dopo il processing
+int main() { 
+	float lato = 18;
+	float diagonale = lato * 1.4142F;
+}
+```
+- **include**
+  **include il contenuto del file specificato** esattamente nella posizione in cui si trova la direttiva stessa
+```cpp
+#include <libreria.h> // cerca nelle librerie di sistema
+#include “miofile.h”  // cerca nella cartella del programma
+```
+- **ifndef**
+	in laboratorio
+## Funzioni
