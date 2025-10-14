@@ -253,6 +253,13 @@ switch (variabile) {
 }
 ```
 Le **istruzioni non si escludono** a vicenda quindi devo inserire il **break**
+
+**Valutazione in corto circuito** 
+Se il programma deve valutare una sequenza di condizioni in presenza di un **||**  appena ne trova una **vera non valuta le seguenti** e esce dall' if.
+Se il programma deve valutare una sequenza di condizioni in presenza di un **&&**  appena ne trova una **falsa non valuta le seguenti** e esce dall' if.
+(se le seguenti condizioni includono delle operazioni queste non vengono eseguite)
+
+AGGIUNGERE CODICE E SPOSTARE DOVE HA SENSO; AGGIUNGERE C
 ### Ciclo
 **Eseguono** un blocco di codice **fino a quando una condizione non si verifica**
 hanno u**n solo punto di ingresso e un solo punto di uscita**
