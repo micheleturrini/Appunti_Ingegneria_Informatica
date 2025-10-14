@@ -335,3 +335,18 @@ for(i=1; i<=N; i++) {
 **Counter**
 ![[07a-Istruzioninew.pdf#page=50&rect=37,74,653,429|07a-Istruzioninew, p.50|400]]
 *Il loro comportamento può variare molto in base a piccole sottigliezze quindi CONTROLLARE  in debug*
+## Buona programmazione
+### Efficienza
+(in questo corso irrilevante)
+determinazione di un algoritmo che consumi poche risorse
+### Modularità
+irrilevante in programmi piccoli
+Si divide il macroproblema in sottoproblemi e si integrano le sottoparti.
+### Ordine
+Facile comprensione del codice da parte di chi non l’ha scritto ma vorrà manutenerlo
+### Camel Casing
+```cpp
+rowIndex, columnIndex, colorConverter… 
+void swapValues(int &firstValue, int &secondValue);
+void saveToFile(int buffer[], int bufferSize);
+```
