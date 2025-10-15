@@ -199,7 +199,11 @@ l'**ordine di esecuzione delle operazioni** in una espressione è stabilito
 ![[Microsoft PowerPoint - 04b-Espressioni.ppt - Compatibility Mode - 04b-Espressioni.pdf#page=4&rect=173,175,662,451|Microsoft PowerPoint - 04b-Espressioni.ppt - Compatibility Mode - 04b-Espressioni, p.4|350]]
 ![[Microsoft PowerPoint - 04b-Espressioni.ppt - Compatibility Mode - 04b-Espressioni.pdf#page=5&rect=167,105,656,432|Microsoft PowerPoint - 04b-Espressioni.ppt - Compatibility Mode - 04b-Espressioni, p.5|350]]
 ## Input e Output
-da fare
+non ci sono strumenti di default
+**devo includere stdio.h**
+
+
+
 ## Istruzioni
 esprimono azioni che modificano lo stato interno 
 le **strutture di controllo aggregano funzioni semplici in funzioni complesse** e possono essere
