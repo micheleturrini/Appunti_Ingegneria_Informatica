@@ -202,13 +202,76 @@ l'**ordine di esecuzione delle operazioni** in una espressione è stabilito
 non ci sono strumenti di default
 **devo includere stdio.h**
 
+**Input**
+```cpp
+scanf(<stringa-formato>, <sequenza-variabili>);
 
+//esempio
+int X;
+float Y;
+scanf("%d%f", &X, &Y);
+```
+Scanf legge una serie di valore in base alle informazioni nella **stringa formato** e memorizza nelle variabili i valori letti.
+- restituisce il **numero di valori letti e memorizzati**, oppure il codice EOF in caso di end of file
+- gli identificatori sono sempre preceduti da **&**
+- la <stringa_formato> può contenere dei **caratteri qualsiasi (scartati durante la lettura)**, che si prevede vengano **immessi dall’esterno** insieme ai dati da leggere
+```cpp
+scanf("%d:%d:%d", &a, &b, &c);
+```
+richiede che i tre dati vengano immessi separati dal carattere “:”
 
+Per ragioni di **sicurezza** la scanf è deprecata
+```cpp
+// per usarla aggiungo all'inizio
+#define _CRT_SECURE_NO_DEPRECATE
+//oppure posso usare:
+scanfs("%c %c", a, 1, b, 4)
+```
+la scanfs ( solo per i caratteri char devo **specificare il numero di caratteri accettati**)
+
+**Output**
+```cpp
+printf(<stringa-formato>,<sequenza-elementi>);
+
+//esempio
+printf("Quadrato di %d: %d", k, k*k);
+```
+restituisce il numero di caratteri scritti
+
+**Stringa di formato** (descrive esattamente quello che deve esserci in input)
+- se legge un formato **diverso da %c**, **ignora** i caratteri separatori (spazi, tab, invio, etc.)
+- se legge un formato **%c**, allora **restituisce anche** i caratteri separatori
+
+**Formati e caratteri**
+![[06a-Input-Outputnew.pdf#page=9&rect=33,71,508,417|06a-Input-Outputnew, p.9|300]]
+esempio
+```cpp
+char Nome='F';
+char Cognome='R';
+printf("%s\n%c. %c. \n\n%s\n", "Programma scritto da:", Nome, Cognome,"Fine");
+
+//output
+Programma scritto da:
+F. R.
+
+Fine
+```
+
+> [!attention]
+> L' I/O è **bufferizzato**: i caratteri letti da tastiera sono **memorizzati in un buffer**.
+> 	In architetture Windows, il tasto di INVIO corrisponde a 2 (**DUE**!) caratteri (CR LF): il primo è interpretato come separatore, ma il **secondo rimane nel buffer ed è preso come carattere inserito dall’utente (solo da file).**
+> 	
+```cpp
+scanf("%*c"); /* letto e buttato via */
+```
+
+**getchar() e putchar()**
+![[06a-Input-Outputnew.pdf#page=35&rect=56,33,662,469|06a-Input-Outputnew, p.35|300]]
 ## Istruzioni
 esprimono azioni che modificano lo stato interno 
 le **strutture di controllo aggregano funzioni semplici in funzioni complesse** e possono essere
 - composte sequenziali (Blocco)
-- condizionali (selezione)
+- condizionali (selezione)******
 - iterazione (ciclo)
 ### Blocco
 ![[07a-Istruzioninew.pdf#page=6&rect=30,240,464,404|07a-Istruzioninew, p.6|250]]
