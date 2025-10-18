@@ -450,3 +450,87 @@ int main() {
 - **ifndef**
 	in laboratorio
 ## Funzioni
+![[08-Funzioni.pdf#page=5&rect=245,282,575,449|08-Funzioni, p.5|300]]
+**Riceve una o più variabili** quando invocata e **produce un risultato**.
+L'**interfaccia** di una funzione comprende
+- **nome** della funzione 
+- lista dei **parametri** (ci metteremo anche il nome)
+- **tipo del valore** da essa **denotato**
+
+esempio **servitore**
+```cpp
+int max (int x, int y ){
+	if (x>y) return x ;
+		else return y;
+}
+```
+• Il **simbolo max denota il nome** della funzione 
+• Le variabili intere **x e y sono i parametri** della funzione
+• Il **valore restituito** è di tipo intero **int**
+
+esempio **cliente**
+```cpp
+main(){
+	int z = 8;
+	int m;
+	m = max(z , 4);
+}
+```
+**Definizione di una funzione**
+```cpp
+<definizione-di-funzione> ::= <tipoValore> <nome>(<parametri-formali>)
+{ <corpo>
+}
+
+<corpo> ::= <blablacodice> return<risultato>
+```
+- **parametri-formali**
+	- o una lista vuota: **void**
+	- o una **lista di variabili** (ciascuna con il proprio tipo e separate da virgole) visibili solo entro il corpo della funzione
+- **tipoValore**
+	- deve coincidere con il tipo del valore restituito dalla funzione
+	- se non indicato esplicitamente, si **sottintende int** (mai non dichiarare)
+	- se non si desidera valore di ritorno, **void** (vedi procedure)
+- **corpo**
+	- possono essere presenti **definizioni e/o dichiarazioni** **locali** (visibilità limitata al blocco della funzione) (parte def./dich.) e un insieme di **istruzioni** (parte istruzioni)
+	- all'interno del corpo **i parametri formali sono trattati come variabili**
+	- Non è possibile **definire** una funzione all’interno di un’altra (ma si può **dichiarare**)
+	- **return (risultato)** definisce il risultato della funzione. (anche **il main ritorna 0 se tutto è andato** **bene** oppure altri numeri che indicano cosa è andato storto)
+> [!attention]
+> eventuali istruzioni **successive** alla return **non saranno mai eseguite**
+   *quando possibile mettere una sola return in fondo* 
+
+**Chiamata di funzione**
+```cpp
+<nomefunzione> ( <parametri-attuali> )
+
+<parametri-attuali> ::= [ <espressione> ] { , <espressione> }
+```
+
+**Passaggio dei parametri**
+- **per valore o copia** (by value) si fa una copia e se il servitore fa errori non perdo l'originale (protegge ma limita alcune possibilità)
+- (**per riferimento** (by reference) il servitore avendo un riferimento può agire sull'originale.)
+**In C esiste solo il passaggio per copia** --> il servitore può fornire risultati solo attraverso il return
+questa soluzione per dati voluminosi è lenta
+### La ricorsione
+Una funzione al suo interno può **invocare se stessa**.
+> [!important]
+> Qualunque **algoritmo iterativo (while..) può essere scritto con un algoritmo ricorsivo.**
+> il ricorsivo è più complesso
+
+esempio
+```cpp
+int fact(int n) {
+	if (n<=0) return 1;
+	else return n*fact(n-1);
+}
+```
+![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=9&rect=97,251,742,456|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.9|400]]
+
+esempio successione di fibonacci
+
+Bilineare
+
+capire bene 
+
+record di attivazione
