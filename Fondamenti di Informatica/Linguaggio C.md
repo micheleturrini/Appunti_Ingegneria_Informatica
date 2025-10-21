@@ -5,6 +5,7 @@ Il linguaggio **C** (creato da Dennis Ritchie, 1972) è:
 - **Imperativo** → i programmi sono composti da istruzioni che modificano lo stato del calcolatore.
 - **Strutturato a blocchi** → il codice è suddiviso in funzioni e blocchi racchiusi tra `{ }`.
 - **Basato su espressioni** → ogni istruzione è spesso un’espressione che produce un valore.
+- Essendo il codice salvato in memoria posso modificarlo (esclusivo per c e assembler)
 ![[03-IntroCompilatori+LinguaggioC.pdf#page=20&rect=40,115,652,317|03-IntroCompilatori+LinguaggioC, p.20|500]]
 ## Struttura
 - **Direttive al preprocessore** (`#include`, `#define`) → vengono eseguite prima della compilazione.
@@ -533,4 +534,74 @@ Bilineare
 
 capire bene 
 
-record di attivazione
+**Record di attivazione**
+È il “**mondo della funzione**”: contiene tutto ciò che ne caratterizza l’esistenza
+- i **parametri** ricevuti
+- le **variabili** locali 
+- l’indirizzo di ritorno (**Return Address** RA) indica il punto a cui tornare (nel codice del cliente) al  termine della funzione, per permettere al cliente di proseguire
+- **collegamento** fra record di attivazione e cliente (**Dynamic Link** DL)
+![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=24&rect=228,102,620,409|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.24|300]]
+
+In caso di funzioni innestate **i record si accumulano secondo una logica LIFO**
+![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=27&rect=108,43,707,203|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.27|400]]
+
+ecord di una **funzione ricorsiva**
+![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=34&rect=132,113,447,425|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.34|200]]
+
+
+**Ricorsiva Tail**
+E' una funzione in cui le cui **chiamate ricorsive** sono **l'ultima operazione eseguita** dalla funzione stessa
+
+Esempio MCD
+```cpp
+int mcd(int m, int n) {
+if(m == n)
+	return m;
+else return (m > n) ? mcd(m-n, n) : mcd(m, n-m);
+}
+```
+
+**Procedure**
+Funzioni che non restituiscono un valore
+
+```cpp
+void p(int x) { x = x * 2; printf(“%d”, x); }
+```
+
+
+
+
+Il passaggio avviene per **riferimento**
+Prendendo come esempio lo swap la funzione **scambia le copie e non i valori originali**
+
+Se il cliente passa per copia gli indirizzi delle celle contenenti i valori e non i valori stessi ottengo gli stessi vantaggi del passaggio per riferimento
+![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=13&rect=162,83,757,325|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.13|400]]
+
+E' necessario un operatore apposito che prende in ingresso il nome della variabile e restituisce l'indirizzo e un operatore che interpreta lindirizzo come tale e legge il valore corrispondente
+operatore estrazione di indirizzo &
+operatore di dereferenziamento *
+
+Vedi slide per simboli
+
+
+
+Puntatori
+```cpp
+<tipo> * <nomevariabile> ;
+```
+FINIRE
+
+
+Esempio swap con puntatori
+```cpp
+void scambia(int* a, int* b) { //ricevo due indirizzi
+	int t; //variabile temporanea
+	t = *a; //eseguo l'operazione di scambio fra i valori
+	a = *b;
+	*b = t;
+}
+int main(){
+	int y=5, x=33;
+	scambia(&x, &y); //fornisco due indirizzi
+}
+```
