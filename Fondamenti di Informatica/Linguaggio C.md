@@ -519,6 +519,16 @@ Una funzione al suo interno può **invocare se stessa**.
 > Qualunque **algoritmo iterativo (while..) può essere scritto con un algoritmo ricorsivo.**
 > il ricorsivo è più complesso
 
+```cpp
+int funzione(int n){
+	if (caso base){
+		return risMin;
+	} else {
+		operazione con funzione(n-1);
+	}
+}
+```
+
 esempio
 ```cpp
 int fact(int n) {
@@ -582,6 +592,7 @@ operatore estrazione di indirizzo &
 operatore di dereferenziamento *
 
 Vedi slide per simboli
+
 
 
 
