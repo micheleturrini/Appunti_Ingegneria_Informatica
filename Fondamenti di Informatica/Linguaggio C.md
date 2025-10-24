@@ -524,12 +524,19 @@ int funzione(int n){
 	if (caso base){
 		return risMin;
 	} else {
-		operazione con funzione(n-1);
+		return operazione con funzione(n-1);
 	}
 }
 ```
+La funzione **chiama una serie di funzioni innestate** fino a che  non si verifica il **caso base**.
+Quando il caso base si verifica iniziano una **serie di return che calcolano il valore**.
 
-esempio
+Negli esempi visti finora **si inizia a sintetizzare il risultato SOLO DOPO che si sono aperte tutte le chiamate**, “a ritroso”, mentre le chiamate si chiudono.
+Le chiamate ricorsive **decompongono** via via il problema, ma **non calcolano nulla**
+Il **risultato** viene **sintetizzato** a partire dalla **fine**, perché prima occorre arrivare al caso “**banale**”: 
+il caso “banale” fornisce il valore di partenza.
+
+Ricorsione **lineare** - fattoriale
 ```cpp
 int fact(int n) {
 	if (n<=0) return 1;
@@ -538,11 +545,23 @@ int fact(int n) {
 ```
 ![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=9&rect=97,251,742,456|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.9|400]]
 
-esempio successione di fibonacci
+Ricorsione **bilineare** - successione di Fibonacci
+ricorre su due rami (n-1 e n-2)
+```cpp
+unsigned fibonacci(unsigned n) {
+	if (n<2) return n;
+	else return fibonacci(n-1)+fibonacci(n-2);
+}
+```
+![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=15&rect=90,99,657,434|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.15|400]]
 
-Bilineare
-
-capire bene 
+**Modello RUN-TIME**
+quando una funzione viene invocata
+- si crea una nuova attivazione (istanza) del servitore
+- viene allocata la memoria
+- passaggio dei parametri
+- si trasferisce il controllo al servitore
+- il codice esegue
 
 **Record di attivazione**
 È il “**mondo della funzione**”: contiene tutto ciò che ne caratterizza l’esistenza
@@ -571,7 +590,7 @@ else return (m > n) ? mcd(m-n, n) : mcd(m, n-m);
 }
 ```
 
-**Procedure**
+Procedure
 Funzioni che non restituiscono un valore
 
 ```cpp
