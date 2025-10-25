@@ -543,7 +543,7 @@ int fact(int n) {
 	else return n*fact(n-1);
 }
 ```
-![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=9&rect=97,251,742,456|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.9|400]]
+![[09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=9&rect=97,251,742,456|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.9|400]]
 
 Ricorsione **bilineare** - successione di Fibonacci
 ricorre su due rami (n-1 e n-2)
@@ -553,8 +553,9 @@ unsigned fibonacci(unsigned n) {
 	else return fibonacci(n-1)+fibonacci(n-2);
 }
 ```
-![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=15&rect=90,99,657,434|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.15|400]]
+![[09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=15&rect=90,99,657,434|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.15|400]]
 
+### Struttura
 **Modello RUN-TIME**
 quando una funzione viene invocata
 - si crea una nuova attivazione (istanza) del servitore
@@ -569,13 +570,13 @@ quando una funzione viene invocata
 - le **variabili** locali 
 - l’indirizzo di ritorno (**Return Address** RA) indica il punto a cui tornare (nel codice del cliente) al  termine della funzione, per permettere al cliente di proseguire
 - **collegamento** fra record di attivazione e cliente (**Dynamic Link** DL)
-![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=24&rect=228,102,620,409|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.24|300]]
+![[09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=24&rect=228,102,620,409|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.24|300]]
 
 In caso di funzioni innestate **i record si accumulano secondo una logica LIFO**
-![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=27&rect=108,43,707,203|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.27|400]]
+![[09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=27&rect=108,43,707,203|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.27|400]]
 
-ecord di una **funzione ricorsiva**
-![[Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=34&rect=132,113,447,425|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.34|200]]
+record di una **funzione ricorsiva**
+![[09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=34&rect=132,113,447,425|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.34|200]]
 
 
 **Ricorsiva Tail**
@@ -589,38 +590,37 @@ if(m == n)
 else return (m > n) ? mcd(m-n, n) : mcd(m, n-m);
 }
 ```
-
-Procedure
+### Procedure
 Funzioni che non restituiscono un valore
 
 ```cpp
 void p(int x) { x = x * 2; printf(“%d”, x); }
 ```
+## I puntatori
+Sono un sistema per avere un passaggio per **riferimento** senza implementarlo.
 
+Prendendo come esempio lo swap la funzione con passaggio per copia **scambierebbe le copie e non i valori originali**
 
-
-
-Il passaggio avviene per **riferimento**
-Prendendo come esempio lo swap la funzione **scambia le copie e non i valori originali**
-
-Se il cliente passa per copia gli indirizzi delle celle contenenti i valori e non i valori stessi ottengo gli stessi vantaggi del passaggio per riferimento
+Se il cliente **passa per copia gli indirizzi delle celle contenenti i valori** e non i valori stessi ottengo gli **stessi vantaggi** del passaggio per **riferimento**
 ![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=13&rect=162,83,757,325|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.13|400]]
+E' necessario un operatore apposito che **prende in ingresso il nome della variabile** e **restituisce l'indirizzo** e un operatore che **interpreta l'indirizzo** come tale e **legge il valore corrispondente**
+- operatore **estrazione di indirizzo** &
+- operatore di **dereferenziamento** *
+![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=17&rect=116,278,647,426|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.17|300]]
+![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=17&rect=117,110,646,224|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.17|300]]
 
-E' necessario un operatore apposito che prende in ingresso il nome della variabile e restituisce l'indirizzo e un operatore che interpreta lindirizzo come tale e legge il valore corrispondente
-operatore estrazione di indirizzo &
-operatore di dereferenziamento *
-
-Vedi slide per simboli
-
-
-
-
-Puntatori
+**Il tipo puntatore** a **T**  è un tipo che denota l’indirizzo di memoria di una variabile di tipo T
+Un **puntatore a T** è una variabile di “tipo puntatore a T” destinata a  contenere l’indirizzo di una variabile di tipo T
+Il tipo del puntatore indica il tipo del dato contenuto nell’indirizzo di memoria puntato.
+La funzione non dovrebbe **MAI alterare il valore del puntatore**
 ```cpp
 <tipo> * <nomevariabile> ;
-```
-FINIRE
 
+int *p;
+int* p;
+int * p;
+int * p = NULL; //punta a una zona di memoria non accessibile (equivale allo 0)
+```
 
 Esempio swap con puntatori
 ```cpp
@@ -635,3 +635,4 @@ int main(){
 	scambia(&x, &y); //fornisco due indirizzi
 }
 ```
+![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=23&rect=95,201,639,353|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.23|400]]
