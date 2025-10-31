@@ -226,7 +226,7 @@ Per ragioni di **sicurezza** la scanf è deprecata
 // per usarla aggiungo all'inizio
 #define _CRT_SECURE_NO_DEPRECATE
 //oppure posso usare:
-scanfs("%c %c", a, 1, b, 4)
+scanf_s("%c %c", a, 1, b, 4)
 ```
 la scanfs ( solo per i caratteri char devo **specificare il numero di caratteri accettati**)
 
@@ -428,7 +428,8 @@ void saveToFile(int buffer[], int bufferSize);
 - **define**
   definisce una **regola di ricerca e sostituzione**: ogni occorrenza di Identificatore verrà sostituita da testo
 ```cpp
-#define Identificatore_testo
+#define Identificatore_testo corrispondente
+#define BOOLEAN int //esempio
 
 //PRIMA DEL PROCESSING
 #define RADICEDI2 1.4142F
@@ -636,3 +637,5 @@ int main(){
 }
 ```
 ![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=23&rect=95,201,639,353|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.23|400]]
+
+## Suddivisione si più file
