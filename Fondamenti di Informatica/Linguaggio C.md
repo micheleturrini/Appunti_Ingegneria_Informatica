@@ -121,6 +121,9 @@ per avere una variabile float devo aggiungere una f
 ```cpp
 float a = 0.3f;
 ```
+### Array
+collezione finita di n variabili dello stesso tipo
+sono sempre numerati a partire da 0
 ### Modificatori
 - `short` → almeno **16 bit**
 - `long` → almeno **32 bit**
@@ -165,6 +168,7 @@ Nella **conversione** da reali a binario si **perdono cifre significative** e al
 **ASCII**
 convenzione che **associa numeri a ogni carattere**
 mettono le lettere in ordine alfabetico per poter **utilizzare gli stessi operatori per mettere in ordine lettere e numeri.**
+
 ## Operatori
 ### Operatori di calcolo
 ![[04-TipiDato.pdf#page=23&rect=155,156,558,390|04-TipiDato, p.23|300]]
@@ -639,3 +643,24 @@ int main(){
 ![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=23&rect=95,201,639,353|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.23|400]]
 
 ## Suddivisione si più file
+'E comodo e "obbligatorio" dividere i progetti in più file dichiarando le funzioni in un file diverso dal main.
+Sono necessari tre elementi:
+- **Main**.c
+```cpp
+# include "header.h"
+
+int main() {
+	chiamata funzione
+}
+```
+- **Header**.h (contiene le dichiarazioni)
+```cpp
+int funzione (dichiarazione ingressi);
+```
+- **Funzione**.c (contiene la funzione)
+```cpp
+int funzione (dichiarazione ingressi){
+	lavoro funzione
+	return;
+}
+```
