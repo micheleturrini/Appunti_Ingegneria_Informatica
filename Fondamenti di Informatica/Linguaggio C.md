@@ -122,8 +122,105 @@ per avere una variabile float devo aggiungere una f
 float a = 0.3f;
 ```
 ### Array
-collezione finita di n variabili dello stesso tipo
-sono sempre numerati a partire da 0
+**collezione** finita di n variabili dello **stesso tipo**
+sono **sempre numerati a partire da 0**
+La dimensione è una **costante** (il computer alloca in precedenza da memoria necessaria)
+```cpp
+<tipo><nome>[ <espr-costante-postiva> ];
+```
+> [!attention]
+> è possibile **accedere** a celle di memoria **non appartenenti** all'array
+>  - casco in una **cella inesistente**
+>  - casco in una cella non appartenente al programma (**access violation**)
+>  - casco all'interno del programma --> pericolo
+```cpp
+#define DIM 4
+
+int v[DIM] = {43,12,7,86};
+```
+
+Teoricamente se inserisco meno valori quelli non dichiarati vanno a 0 e se ne metto troppi gli ultimi vengono ignorati ma non è detto.
+
+FARE SPECIFICA DI PRIMO E SECONDO LIVELLO
+
+Gli array si utilizzano **elemento per elemento**
+```cpp
+int F[25], frequenza[25]; F = frequenza; /* NO */
+
+for (i=0; i<25; i++){
+	F[i] = frequenza[i];
+}
+```
+### Stringhe
+Una stringa di caratteri in C è **un array di caratteri terminato dal carattere '\0’** (codificato come 0 in codice ascii)
+![[12a-ArrayStringhe.pdf#page=18&rect=180,207,539,313|12a-ArrayStringhe, p.18|200]]
+*Un vettore di N caratteri può dunque ospitare stringhe lunghe al più N-1 caratteri, perché una cella è destinata al terminatore '\0'*
+Un array di N caratteri può essere usato per **memorizzare anche stringhe più corte di N-1**
+```cpp
+char s[4] = {'a', 'p', 'e', '\0'};
+char s[4] = "ape"
+
+// forma esplicita
+char str[4]; int i;
+for (i=0; i < 3; i++){
+	scanf(“%c”, &str[i]);
+	str[3] = ‘\0’
+}
+
+// forma comoda
+char str[4] ;
+scanf(“%s”, str); //non c'è l'operatore &
+```
+> [!attention]
+> Nella **scanf** lo spazio è un **separatore e conclude la stringa**
+
+Esempio ordinamento stringhe
+```cpp
+int main() {
+	char s1[] = ”Maria";
+	char s2[] = ”Marta";
+	int i=0, risultato;
+	while (s1[i]!='\0' && s2[i]!='\0' && s1[i]==s2[i]){
+	i++;
+	risultato = s1[i]-s2[i]; 
+	……
+}
+```
+![[12a-ArrayStringhe.pdf#page=24&rect=395,32,691,125|12a-ArrayStringhe, p.24|200]]
+
+Esempio copia di una stringa
+```cpp
+int main() {
+	char s[] = "Nel mezzo del cammin di";
+	char s2[40]; // dimensione larga per sicurezza
+	int i=0;
+	for (i=0; s[i]!='\0';i++){
+		s2[i] = s[i];
+		s2[i] = '\0'; // inserimento del terminatore
+	}
+}
+```
+
+In C un **array è in realtà un puntatore** che **punta a un’area di memoria pre-allocata**, di dimensione prefissata
+![[12a-ArrayStringhe.pdf#page=29&rect=119,185,570,274|12a-ArrayStringhe, p.29|300]]
+Il nome dell’array è un **sinonimo per il suo indirizzo iniziale**
+![[12a-ArrayStringhe.pdf#page=29&rect=438,75,673,104|12a-ArrayStringhe, p.29|150]]
+**I valori vengono passati agli array per riferimento** quindi non è possibile
+- assegnare un array a un altro array
+- che una funzione restituisca un array
+- passare un array come parametro a una funzione non significa affatto passare l’intero array
+si può adottare direttamente la **notazione a puntatori** 
+![[12a-ArrayStringhe.pdf#page=36&rect=275,83,448,117|12a-ArrayStringhe, p.36|100]]
+![[12a-ArrayStringhe.pdf#page=37&rect=235,237,487,356|12a-ArrayStringhe, p.37|150]]
+
+ARITMETICA DEI PUNTATORI DA FARE
+```cpp
+double a[2], *p, *q;
+p=a;
+q=p+1; /* q =&a[1] */
+printf(“%d\n”, q-p);/* stampa 1 */
+printf(“%d\n”, (int) q - (int) p); /* stampa 8 */
+```
 ### Modificatori
 - `short` → almeno **16 bit**
 - `long` → almeno **32 bit**
