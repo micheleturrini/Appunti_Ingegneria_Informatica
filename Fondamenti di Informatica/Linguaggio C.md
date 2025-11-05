@@ -141,8 +141,6 @@ int v[DIM] = {43,12,7,86};
 
 Teoricamente se inserisco meno valori quelli non dichiarati vanno a 0 e se ne metto troppi gli ultimi vengono ignorati ma non è detto.
 
-FARE SPECIFICA DI PRIMO E SECONDO LIVELLO
-
 Gli array si utilizzano **elemento per elemento**
 ```cpp
 int F[25], frequenza[25]; F = frequenza; /* NO */
@@ -212,8 +210,13 @@ Il nome dell’array è un **sinonimo per il suo indirizzo iniziale**
 si può adottare direttamente la **notazione a puntatori** 
 ![[12a-ArrayStringhe.pdf#page=36&rect=275,83,448,117|12a-ArrayStringhe, p.36|100]]
 ![[12a-ArrayStringhe.pdf#page=37&rect=235,237,487,356|12a-ArrayStringhe, p.37|150]]
-
-ARITMETICA DEI PUNTATORI DA FARE
+Oltre alle operazioni di somma e sottrazione di una costante si possono fare **Assegnamento e differenza fra puntatori**
+```cpp
+int *p,*q;
+p=q; p-q; p=p-q;
+```
+Le altre operazioni NON sono consentite
+Esempio
 ```cpp
 double a[2], *p, *q;
 p=a;
@@ -221,6 +224,22 @@ q=p+1; /* q =&a[1] */
 printf(“%d\n”, q-p);/* stampa 1 */
 printf(“%d\n”, (int) q - (int) p); /* stampa 8 */
 ```
+
+Esempio Massimo di un array
+```cpp
+int findMax(int v[], int dim) {
+	int i, max;
+	for (max=v[0], i=1; i<dim; i++){
+		if (v[i]>max) max=v[i];
+	}
+	return max;
+}
+
+// scritture complicate
+while (*source) {......} // *source restituisce un valore diverso da 0 pino a che non arrivo al carattere terminatore e quindi il while prosegue
+```
+> [!important]
+> per passare un array a una funzione devo **passare nome e dimensione e implementare in ciclo all'interno dell'array**
 ### Modificatori
 - `short` → almeno **16 bit**
 - `long` → almeno **32 bit**
