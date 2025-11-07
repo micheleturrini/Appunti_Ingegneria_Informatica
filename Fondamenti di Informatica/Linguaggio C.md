@@ -149,6 +149,48 @@ for (i=0; i<25; i++){
 	F[i] = frequenza[i];
 }
 ```
+In C un **array è in realtà un puntatore** che **punta a un’area di memoria pre-allocata**, di dimensione prefissata
+![[12a-ArrayStringhe.pdf#page=29&rect=119,185,570,274|12a-ArrayStringhe, p.29|300]]
+Il nome dell’array è un **sinonimo per il suo indirizzo iniziale**
+![[12a-ArrayStringhe.pdf#page=29&rect=438,75,673,104|12a-ArrayStringhe, p.29|150]]
+**I valori vengono passati agli array per riferimento** quindi non è possibile
+- assegnare un array a un altro array
+- che una funzione restituisca un array
+- passare un array come parametro a una funzione non significa affatto passare l’intero array
+si può adottare direttamente la **notazione a puntatori** 
+![[12a-ArrayStringhe.pdf#page=36&rect=275,83,448,117|12a-ArrayStringhe, p.36|100]]
+![[12a-ArrayStringhe.pdf#page=37&rect=235,237,487,356|12a-ArrayStringhe, p.37|150]]
+Oltre alle operazioni di somma e sottrazione di una costante si possono fare **Assegnamento e differenza fra puntatori**
+```cpp
+int *p,*q;
+p=q; p-q; p=p-q;
+```
+Le altre operazioni NON sono consentite
+Esempio
+```cpp
+double a[2], *p, *q;
+p=a;
+q=p+1; /* q =&a[1] */
+printf(“%d\n”, q-p);/* stampa 1 */
+printf(“%d\n”, (int) q - (int) p); /* stampa 8 */
+```
+
+Esempio Massimo di un array
+```cpp
+int findMax(int v[], int dim) {
+	int i, max;
+	for (max=v[0], i=1; i<dim; i++){
+		if (v[i]>max) max=v[i];
+	}
+	return max;
+}
+
+// scritture complicate
+while (*source) {......} // *source restituisce un valore diverso da 0 pino a che non arrivo al carattere terminatore e quindi il while prosegue
+```
+> [!important]
+> per passare un array a una funzione devo **passare nome e dimensione e implementare in ciclo all'interno dell'array**
+
 ### Stringhe
 Una stringa di caratteri in C è **un array di caratteri terminato dal carattere '\0’** (codificato come 0 in codice ascii)
 ![[12a-ArrayStringhe.pdf#page=18&rect=180,207,539,313|12a-ArrayStringhe, p.18|200]]
@@ -199,47 +241,6 @@ int main() {
 }
 ```
 
-In C un **array è in realtà un puntatore** che **punta a un’area di memoria pre-allocata**, di dimensione prefissata
-![[12a-ArrayStringhe.pdf#page=29&rect=119,185,570,274|12a-ArrayStringhe, p.29|300]]
-Il nome dell’array è un **sinonimo per il suo indirizzo iniziale**
-![[12a-ArrayStringhe.pdf#page=29&rect=438,75,673,104|12a-ArrayStringhe, p.29|150]]
-**I valori vengono passati agli array per riferimento** quindi non è possibile
-- assegnare un array a un altro array
-- che una funzione restituisca un array
-- passare un array come parametro a una funzione non significa affatto passare l’intero array
-si può adottare direttamente la **notazione a puntatori** 
-![[12a-ArrayStringhe.pdf#page=36&rect=275,83,448,117|12a-ArrayStringhe, p.36|100]]
-![[12a-ArrayStringhe.pdf#page=37&rect=235,237,487,356|12a-ArrayStringhe, p.37|150]]
-Oltre alle operazioni di somma e sottrazione di una costante si possono fare **Assegnamento e differenza fra puntatori**
-```cpp
-int *p,*q;
-p=q; p-q; p=p-q;
-```
-Le altre operazioni NON sono consentite
-Esempio
-```cpp
-double a[2], *p, *q;
-p=a;
-q=p+1; /* q =&a[1] */
-printf(“%d\n”, q-p);/* stampa 1 */
-printf(“%d\n”, (int) q - (int) p); /* stampa 8 */
-```
-
-Esempio Massimo di un array
-```cpp
-int findMax(int v[], int dim) {
-	int i, max;
-	for (max=v[0], i=1; i<dim; i++){
-		if (v[i]>max) max=v[i];
-	}
-	return max;
-}
-
-// scritture complicate
-while (*source) {......} // *source restituisce un valore diverso da 0 pino a che non arrivo al carattere terminatore e quindi il while prosegue
-```
-> [!important]
-> per passare un array a una funzione devo **passare nome e dimensione e implementare in ciclo all'interno dell'array**
 ### Modificatori
 - `short` → almeno **16 bit**
 - `long` → almeno **32 bit**
@@ -763,13 +764,13 @@ int main(){
 Sono necessari tre elementi:
 - **Main**.c
 ```cpp
-# include "header.h"
+# include "Funzione.h"
 
 int main() {
 	chiamata funzione
 }
 ```
-- **Header**.h (contiene le dichiarazioni)
+- **funzione**.h (contiene le dichiarazioni) -header
 ```cpp
 int funzione (dichiarazione ingressi);
 ```
