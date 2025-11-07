@@ -187,7 +187,6 @@ int findMax(int v[], int dim) {
 ```
 > [!important]
 > per passare un array a una funzione devo **passare nome e dimensione e implementare in ciclo all'interno dell'array**
-
 ### Stringhe
 Una stringa di caratteri in C è **un array di caratteri terminato dal carattere '\0’** (codificato come 0 in codice ascii)
 ![[12a-ArrayStringhe.pdf#page=18&rect=180,207,539,313|12a-ArrayStringhe, p.18|200]]
@@ -248,14 +247,14 @@ void strcpy(char dest[], char source[]) {
 while (*source) {......} // *source restituisce un valore diverso da 0 pino a che non arrivo al carattere terminatore e quindi il while prosegue
 ```
 *La seconda versione è causa di gravi problemi di sicurezza (se tento di copiare una stringa troppo lunga inizio a sovrascrivere la memoria del pc)*
-
-**Libreria string.h**
-- String **length**
+#### Libreria string.h
+String **length**
 ```cpp
 int strlen(char* str);
 ```
 restituisce la lunghezza della stringa (non conta il carattere terminatore).
-- String **compare**
+
+String **compare**
 ```cpp
 int strcmp(char* str1, char* str2);
 ```
@@ -264,12 +263,13 @@ int strcmp(char* str1, char* str2);
 	- **>0** se str1 **segue** lessicograficamente str2
 	- **=0** se str1 e str2 sono **identiche**
 
-- String **cat** 
+String **cat** 
 ```cpp
 char* strcat(char* dest, char* src)
 ```
-La funzione **appende** la stringa src in coda alla stringa dest (se dest le puo contenere entrambe)
-- String **Search**
+La funzione **appende** la stringa src in coda alla stringa dest (se dest le può contenere entrambe)
+
+String **Search**
 ```cpp
 char* strchr(char* str, char car);
 ```
@@ -277,7 +277,7 @@ La funzione **ricerca il carattere car all’interno della stringa** str (compre
 - La posizione della prima occorrenza del carattere nella stringa
 - NULL se il carattere non viene trovato
 
-- String **str**
+String **str**
 ```cpp
 char* strstr(char* str, char* sub);
 ```
