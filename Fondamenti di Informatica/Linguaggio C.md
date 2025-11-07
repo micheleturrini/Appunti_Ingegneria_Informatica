@@ -248,6 +248,42 @@ void strcpy(char dest[], char source[]) {
 while (*source) {......} // *source restituisce un valore diverso da 0 pino a che non arrivo al carattere terminatore e quindi il while prosegue
 ```
 *La seconda versione è causa di gravi problemi di sicurezza (se tento di copiare una stringa troppo lunga inizio a sovrascrivere la memoria del pc)*
+
+**Libreria string.h**
+- String **length**
+```cpp
+int strlen(char* str);
+```
+restituisce la lunghezza della stringa (non conta il carattere terminatore).
+- String **compare**
+```cpp
+int strcmp(char* str1, char* str2);
+```
+- La funzione restituisce un valore
+	- **<0** se str1 **precede** lessicograficamente str2
+	- **>0** se str1 **segue** lessicograficamente str2
+	- **=0** se str1 e str2 sono **identiche**
+
+- String **cat** 
+```cpp
+char* strcat(char* dest, char* src)
+```
+La funzione **appende** la stringa src in coda alla stringa dest (se dest le puo contenere entrambe)
+- String **Search**
+```cpp
+char* strchr(char* str, char car);
+```
+La funzione **ricerca il carattere car all’interno della stringa** str (compreso il terminatore) e restituisce
+- La posizione della prima occorrenza del carattere nella stringa
+- NULL se il carattere non viene trovato
+
+- String **str**
+```cpp
+char* strstr(char* str, char* sub);
+```
+La funzione **ricerca la stringa sub all’interno della stringa** str e restituisce
+- La posizione della prima occorrenza della stringa sub
+- NULL se la stringa non viene trovata
 ### Modificatori
 - `short` → almeno **16 bit**
 - `long` → almeno **32 bit**
