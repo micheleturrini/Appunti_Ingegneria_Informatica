@@ -184,9 +184,6 @@ int findMax(int v[], int dim) {
 	}
 	return max;
 }
-
-// scritture complicate
-while (*source) {......} // *source restituisce un valore diverso da 0 pino a che non arrivo al carattere terminatore e quindi il while prosegue
 ```
 > [!important]
 > per passare un array a una funzione devo **passare nome e dimensione e implementare in ciclo all'interno dell'array**
@@ -239,8 +236,18 @@ int main() {
 		s2[i] = '\0'; // inserimento del terminatore
 	}
 }
-```
 
+void strcpy(char dest[], char source[]) {
+	while (*source) {
+		*(dest++) = *(source++);
+	}
+	*dest = '\0';
+}
+
+// scritture complicate
+while (*source) {......} // *source restituisce un valore diverso da 0 pino a che non arrivo al carattere terminatore e quindi il while prosegue
+```
+*La seconda versione è causa di gravi problemi di sicurezza (se tento di copiare una stringa troppo lunga inizio a sovrascrivere la memoria del pc)*
 ### Modificatori
 - `short` → almeno **16 bit**
 - `long` → almeno **32 bit**
