@@ -824,3 +824,4 @@ int funzione (dichiarazione ingressi){
 	return;
 }
 ```
+
