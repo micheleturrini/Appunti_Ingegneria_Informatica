@@ -284,6 +284,8 @@ char* strstr(char* str, char* sub);
 La funzione **ricerca la stringa sub all’interno della stringa** str e restituisce
 - La posizione della prima occorrenza della stringa sub
 - NULL se la stringa non viene trovata
+### Strutture
+
 ### Modificatori
 - `short` → almeno **16 bit**
 - `long` → almeno **32 bit**
