@@ -286,18 +286,102 @@ La funzione **ricerca la stringa sub all’interno della stringa** str e restitu
 - NULL se la stringa non viene trovata
 ### Strutture
 sono necessarie per rappresentare **strutture di dati complesse** presenti nella mente umana.
+![[12d-Strutture_251111_093346.pdf#page=1&rect=155,185,705,370|12d-Strutture_251111_093346, p.1|400]]
 ```cpp
-struttura bnf
+struct [<etichetta>] {
+	{ <definizione-di-variabile> }
+} <nomeVariabile> ;
+```
+**definizione**
+```cpp
+struct persona {
+	char nome[20];
+	int eta;
+	float stipendio;
+} pers ;
+
+struct punto {
+	int x, y;
+} p1, p2 ; // definisco due punti distinti secondo la struttura punto
+
+struct linea { //posso innestare le strutture
+	struct punto coord1;
+	struct punto coord2;
+} l1;
+```
+**accesso valori**
+```cpp
+p1.x = 10; p1.y = 20;
+p2.x = -1; p2.y = 12;
+
+nomeVariabileStruct.NomeCampo = ....
+```
+**Vengono utilizzate come normalissime variabili**
+
+esempio
+```cpp
+int main(){
+	struct frutto {
+		char nome[20];
+		int peso;
+		} f1 = {"mela", 70};
+	struct frutto f2 = {"arancio", 50};
+	int peso = f1.peso + f2.peso;
+} 
+```
+Persona è solo un' etichetta, è **opzionale** e serve per dichiarare altre variabili dello stesso tipo
+L’indirizzo di memoria di una variabile di tipo struct coincide con l’indirizzo di memoria del suo primo membro.
+Possiamo verificare la dimensione in byte di una struttura utilizzando l’operator **sizeof**.
+
+A **differenza** di quanto accade con gli **array**, **il nome della struttura rappresenta la struttura nel suo complesso**. (l'intera struttura viene passata per copia - **tutti i campi vengono copiati, uno per uno**)
+Creando una **struttura** che **contiene un array** posso **passarlo** interamente **per copia**
+```cpp
+int main(){
+	struct string20 {
+	char s[20];
+	}
+	s1 = {"Paolino Paperino" }, s2 = {"Gastone Paperone" };
+	s1 = s2; /* FUNZIONA! */
+}
 ```
 
-### Modificatori
-- `short` → almeno **16 bit**
-- `long` → almeno **32 bit**
-- `signed` → con segno (positivi + negativi)
-- `unsigned` → senza segno (solo positivi)
+ESEMPIO DA FARE pag 16
+Esemio pag 20 da fare
 
-`sizeof(long int) >= sizeof(int) >= sizeof(short int)`
-I booleani non esistono (Convenzione: `0 = falso`, valore ≠ 0 = vero.)
+#### Tipi definiti dall'utente
+In C, l’utente può introdurre nuovi tipi tramite una definizione di tipo
+- aumenta la leggibilità del programma
+- consente di ragionare per astrazioni
+E' possibile:
+- **ridefinire** tipi esistenti
+```cpp
+typedef TipoEsistente NuovoTipo;
+
+//esempio
+typedef int MioIntero;
+MioIntero X,Y,Z;
+int W;
+```
+- definire **tipi strutturati**
+Ciò consente di **non dover più ripetere la definizione** per esteso ogni volta che si definisce una nuova variabile
+```cpp
+typedef struct {... } persona;
+persona p1, p2; /* due strutture “persona” */
+```
+Slide 26 DA FARE
+
+FINIRE PACCO SLIDE
+#### Tipi enumerativi
+PACO SLIDE PACCHETTI ENIMERATIVI
+
+### Modificatori
+- **`short` → almeno 16 bit**
+- **`long` → almeno 32 bit**
+- **`signed` → con segno (positivi + negativi)**
+- **`unsigned` → senza segno (solo positivi)**
+
+**`sizeof(long int) >= sizeof(int) >= sizeof(short int)`**
+**I booleani non esistono (Convenzione: `0 = falso`, valore ≠ 0 = vero.)**
 ### Rappresentazione in memoria.
 ![[04-TipiDato.pdf#page=5&rect=84,83,614,204|04-TipiDato, p.5|300]]
 **Interi**
