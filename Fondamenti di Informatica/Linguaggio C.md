@@ -285,6 +285,10 @@ La funzione **ricerca la stringa sub all’interno della stringa** str e restitu
 - La posizione della prima occorrenza della stringa sub
 - NULL se la stringa non viene trovata
 ### Strutture
+sono necessarie per rappresentare **strutture di dati complesse** presenti nella mente umana.
+```cpp
+struttura bnf
+```
 
 ### Modificatori
 - `short` → almeno **16 bit**
