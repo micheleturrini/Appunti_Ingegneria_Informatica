@@ -349,7 +349,7 @@ ESEMPIO DA FARE pag 16
 Esemio pag 20 da fare
 
 #### Tipi definiti dall'utente
-In C, l’utente può introdurre nuovi tipi tramite una definizione di tipo
+In C l’utente può introdurre nuovi tipi tramite una definizione di tipo
 - aumenta la leggibilità del programma
 - consente di ragionare per astrazioni
 E' possibile:
@@ -365,12 +365,24 @@ int W;
 - definire **tipi strutturati**
 Ciò consente di **non dover più ripetere la definizione** per esteso ogni volta che si definisce una nuova variabile
 ```cpp
-typedef struct {... } persona;
+typedef struct {... } Persona;
 persona p1, p2; /* due strutture “persona” */
 ```
+I tipi personalizzati si scrivono pero convenzione con la Maiuscola (rappresentano la categoria -> un concetto più ampio)
+
 Slide 26 DA FARE
 
 FINIRE PACCO SLIDE
+
+Per dichiarare struttura e tipo insieme:
+```cpp
+typedef struct addressStruct {
+	char street[80];
+	char postalCode[8];
+	char city[30];
+	char state[20];
+} Address;
+```
 #### Tipi enumerativi
 PACO SLIDE PACCHETTI ENIMERATIVI
 
