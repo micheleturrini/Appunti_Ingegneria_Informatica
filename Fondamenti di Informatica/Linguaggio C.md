@@ -971,3 +971,23 @@ int funzione (dichiarazione ingressi){
 }
 ```
 
+
+## Librerie standard
+| Uso          | Libreria    |
+| ------------ | ----------- |
+| input/output | **stdio.h** |
+FINIRE
+
+### Stdio.h
+Esistono 3 canali standard (**stream**)
+- **stdin** (collegato alla tastiera)
+- **stdout** (collegato alla consolle)
+- **stderr** (collegato alla console - per gli errori)
+sui canali I/O fluiscono **sequenze di caratteri** terminate dal carattere **End-Of-File** che non è contenuto nel file.
+
+```cpp
+putchar(ch); // scrive 1 carattere
+ch = getchar(); // legge un carattere
+```
+
+**printf** e **scanf** sono molto più pratiche.
