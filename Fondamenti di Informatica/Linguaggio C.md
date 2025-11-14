@@ -187,6 +187,50 @@ int findMax(int v[], int dim) {
 ```
 > [!important]
 > per passare un array a una funzione devo **passare nome e dimensione e implementare in ciclo all'interno dell'array**
+#### Array di puntatori
+Posso riempire un array con qualsiasi elemento tra cui i puntatori.
+I vari puntatori sono memorizzati in celle contigue. Possono invece non essere contigue le celle che loro puntano
+```cpp
+char * mesi[] = {“Gennaio”,”Febbraio”, ”Marzo”,”Aprile”,”Maggio”,”Giugno”, ”Luglio”,”Agosto”, ”Settembre”,”Ottobre”, ”Novembre”,”Dicembre”};
+```
+![[14-Matricishort.pdf#page=16&rect=137,40,574,414|14-Matricishort, p.16|300]]
+```cpp
+int a[10][4]; int *d[10];
+```
+la prima alloca 40 celle di ampiezza pari alla dim di un int mentre la seconda alloca 10 celle per contenere 10 puntatori a int Uno dei vantaggi offerti dall’uso di vettori di puntatori consiste nel fatto che si possono realizzare righe di lunghezza variabile
+### Matrici
+Le matrici in c sono **array di array**.
+Le matrici in memoria sono rappresentate tramite **linearizzazione** per righe (le righe vengono scritte una dopo l'altra)
+```cpp
+<tipo> <identificatore>[dim1][dim2]…[dimn]
+
+float M[20][30];
+int Q[20][30][40][40];
+```
+![[14-Matricishort.pdf#page=1&rect=491,34,712,236|14-Matricishort, p.1|150]]
+Per accedere all’ elemento che si trova nella **riga i e nella colonna j** si utilizza la notazione
+```cpp
+M[i][j]
+Elemento: *(&M[0][0] + 30*i+j)
+```
+![[14-Matricishort.pdf#page=3&rect=13,299,706,341|14-Matricishort, p.3]]
+Posso definire il tipo di vettore multidimensionale
+```cpp
+typedef <tipo> <ident>[dim1][dim2]…[dimn]
+
+typedef float MatReali [20][30];
+MatReali Mat;
+```
+Per inizializzare la matrice mi comporto come in un array (una **riga** alla volta)
+```cpp
+int matrix[4][4]={{1,0,0,0},{0,1,0,0}, {0,0,1,0}, {0,0,0,1}}
+```
+Per passare una matrice a una funzione
+```cpp
+f(float par[20][30],…);
+```
+> [!attention]
+> Come negli array è responsabilità del programmatore **controllare di non accedere a zone di memoria non appartenenti alla matrice**.
 ### Stringhe
 Una stringa di caratteri in C è **un array di caratteri terminato dal carattere '\0’** (codificato come 0 in codice ascii)
 ![[12a-ArrayStringhe.pdf#page=18&rect=180,207,539,313|12a-ArrayStringhe, p.18|200]]
