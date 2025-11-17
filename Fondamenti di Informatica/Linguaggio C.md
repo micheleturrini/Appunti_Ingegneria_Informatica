@@ -195,9 +195,11 @@ char * mesi[] = {“Gennaio”,”Febbraio”, ”Marzo”,”Aprile”,”Maggi
 ```
 ![[14-Matricishort.pdf#page=16&rect=137,40,574,414|14-Matricishort, p.16|300]]
 ```cpp
-int a[10][4]; int *d[10];
+char * stringhe[4]; //definisce un vettore di 4 puntatori a carattere
+
+int *d[10];
 ```
-la prima alloca 40 celle di ampiezza pari alla dim di un int mentre la seconda alloca 10 celle per contenere 10 puntatori a int Uno dei vantaggi offerti dall’uso di vettori di puntatori consiste nel fatto che si possono realizzare righe di lunghezza variabile
+Uno dei vantaggi offerti dall’**uso di vettori di puntatori** consiste nel fatto che si possono **realizzare righe di lunghezza variabile**
 ### Matrici
 Le matrici in c sono **array di array**.
 Le matrici in memoria sono rappresentate tramite **linearizzazione** per righe (le righe vengono scritte una dopo l'altra)
@@ -336,7 +338,7 @@ struct [<etichetta>] {
 	{ <definizione-di-variabile> }
 } <nomeVariabile> ;
 ```
-**definizione**
+**Definizione**
 ```cpp
 struct persona {
 	char nome[20];
@@ -353,14 +355,17 @@ struct linea { //posso innestare le strutture
 	struct punto coord2;
 } l1;
 ```
-**accesso valori**
+Persona è solo un' etichetta, è **opzionale** e serve per dichiarare altre variabili dello stesso tipo
+
+**Accesso valori**
 ```cpp
 p1.x = 10; p1.y = 20;
 p2.x = -1; p2.y = 12;
 
 nomeVariabileStruct.NomeCampo = ....
 ```
-**Vengono utilizzate come normalissime variabili**
+> [!important]
+> Vengono utilizzate come normalissime variabili
 
 esempio
 ```cpp
@@ -373,9 +378,8 @@ int main(){
 	int peso = f1.peso + f2.peso;
 } 
 ```
-Persona è solo un' etichetta, è **opzionale** e serve per dichiarare altre variabili dello stesso tipo
 L’indirizzo di memoria di una variabile di tipo struct coincide con l’indirizzo di memoria del suo primo membro.
-Possiamo verificare la dimensione in byte di una struttura utilizzando l’operator **sizeof**.
+Possiamo verificare la dimensione in byte di una struttura utilizzando l’operatore **sizeof**.
 
 A **differenza** di quanto accade con gli **array**, **il nome della struttura rappresenta la struttura nel suo complesso**. (l'intera struttura viene passata per copia - **tutti i campi vengono copiati, uno per uno**)
 Creando una **struttura** che **contiene un array** posso **passarlo** interamente **per copia**
@@ -388,10 +392,6 @@ int main(){
 	s1 = s2; /* FUNZIONA! */
 }
 ```
-
-ESEMPIO DA FARE pag 16
-Esemio pag 20 da fare
-
 #### Tipi definiti dall'utente
 In C l’utente può introdurre nuovi tipi tramite una definizione di tipo
 - aumenta la leggibilità del programma
@@ -414,9 +414,16 @@ persona p1, p2; /* due strutture “persona” */
 ```
 I tipi personalizzati si scrivono pero convenzione con la Maiuscola (rappresentano la categoria -> un concetto più ampio)
 
-Slide 26 DA FARE
+> [!attention]
+> typedef **cambia la semantica nelle dichiarazioni/definizioni**
+```cpp
+//time risulta una variabile se
+struct { int hour, minute, second; } time ;
+// time risulta un tipo di dato se
+typedef { int hour, minute, second; } time ;
+```
 
-FINIRE PACCO SLIDE
+E' possibile **innestare** le strutture
 
 Per dichiarare struttura e tipo insieme:
 ```cpp
@@ -428,8 +435,20 @@ typedef struct addressStruct {
 } Address;
 ```
 #### Tipi enumerativi
-PACO SLIDE PACCHETTI ENIMERATIVI
+Un tipo enumerativo è un tipo di dato che consiste in un **insieme ristretto di valori.**
+La loro funzione è semplicemente quella di rendere più leggibile il codice.
+```cpp
+typedef enum { lu, ma, me, gi, ve, sa, dom} Giorni;
 
+Giorni Giorno = dom;
+if (Giorno == dom) /* giorno festivo */
+else /* giorno feriale */
+```
+Gli indici (che non vedo mai) vengono assegnati come in un array
+```cpp
+g = 5; /* equivale a g = sa */
+```
+SCONSIGLIATO!
 ### Modificatori
 - **`short` → almeno 16 bit**
 - **`long` → almeno 32 bit**
@@ -970,14 +989,15 @@ int funzione (dichiarazione ingressi){
 	return;
 }
 ```
-
-
 ## Librerie standard
-| Uso          | Libreria    |
-| ------------ | ----------- |
-| input/output | **stdio.h** |
-FINIRE
-
+| Uso                             | Libreria    |
+| ------------------------------- | ----------- |
+| input/output                    | **stdio.h** |
+| funzioni matematiche            | math.h      |
+| gestione di stringhe            | string.h    |
+| operazioni su caratteri         | ctype.h     |
+| gestione dinamica della memoria | stdlib.h    |
+| ricerca e ordinamento           | stdlib.h    |
 ### Stdio.h
 Esistono 3 canali standard (**stream**)
 - **stdin** (collegato alla tastiera)
