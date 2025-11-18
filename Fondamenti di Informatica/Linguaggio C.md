@@ -1011,3 +1011,61 @@ ch = getchar(); // legge un carattere
 ```
 
 **printf** e **scanf** sono molto più pratiche.
+## Files
+Un file è un’astrazione di memorizzazione di dimensione potenzialmente illimitata ad **accesso sequenziale**
+A livello di sistema operativo **un file è denotato univocamente dal suo nome assoluto,** che comprende il **percorso** e il **nome relativo**
+```
+Windows
+	C:\temp\prova1.c
+Linux
+	/usr/temp/prova1.c
+```
+
+Esistono 2 tipi di file
+- File **BINARI** (sono sequenze ordinate di bytes)
+- File di **TESTO** (sono sequenze ordinate di caratteri organizzati in righe)
+I file **binari basterebbero** ma l'uomo ragiona in caratteri
+
+Per utilizzare un file è necessario **associare l'indirizzo al nome di una variabile**.
+```cpp
+#include <stdio.h>
+
+FILE * prova;
+prova = fopen("indirizzo/nome", "modo");
+```
+Il valore restituito da `fopen()` è un puntatore a FILE
+- **NULL** in caso l’apertura sia fallita
+- controllarlo è il solo modo per sapere se il file si sia davvero aperto
+-  se non si è aperto, il programma usualmente non deve proseguire -> funzione `exit()`
+
+**Modo**
+| r | read |
+| - | - |
+Finire tabella
+
+> [!attention]
+> Al termine del programma **tutti i file aperti devono essere chiusi**
+```cpp
+fclose(prova);
+```
+Il valore restituito da `fclose()` è un intero
+- 0 se tutto è andato bene
+- EOF (valore intero negativo) in caso di errore
+Prima della chiusura **tutti i buffer vengono svuotati**
+
+Per capire se il file è finito provo a leggere e **se la lettura fallisce sono in fondo**.
+Se fallisce restituisce **EOF** (non è un carattere ma un **codice di errore**)
+
+![[16a-filetesto.pdf#page=14&rect=56,230,678,428|16a-filetesto, p.14]]
+`getchar()` e `putchar()` sono semplicemente delle scorciatoie linguistiche per `fgetc()` e `fputc()`
+![[16a-filetesto.pdf#page=14&rect=127,39,478,85|16a-filetesto, p.14|300]]
+
+esempio
+```cpp
+N=fscanf(fd, "%d %d", &x, &y);
+```
+N puo essere:
+- **2** sono stati letti (convertiti con successo) due inter
+- **1** un solo intero è stato letto con successo
+- **0** non è stato possibile leggere nessuno dei due numeri interi
+- **EOF** nessun intero è stato letto da file, perchè si è incontrata la fine del file prima ancora di riuscire a leggere il primo intero
