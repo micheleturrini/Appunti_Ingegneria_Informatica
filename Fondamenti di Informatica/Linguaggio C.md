@@ -1069,3 +1069,28 @@ N puo essere:
 - **1** un solo intero è stato letto con successo
 - **0** non è stato possibile leggere nessuno dei due numeri interi
 - **EOF** nessun intero è stato letto da file, perchè si è incontrata la fine del file prima ancora di riuscire a leggere il primo intero
+
+FAI GLI ESEMPI
+
+
+### File binari
+Un file binario è una **pura sequenza di byte** usabile per memorizzare su file **informazioni di qualsiasi natura**. (snapshot della memoria, immagini, audio, musica).
+La **fine del file** è SEMPRE rilevata in base all’**esito** delle operazioni di **lettura**.
+
+```cpp
+int fwrite(addr, int dim, int n, FILE *f);
+```
+- scrive sul file **n** elementi, ognuno grande **dim** byte
+- gli elementi da scrivere vengono prelevati dalla memoria a partire dall’indirizzo **addr**
+- restituisce il numero di elementi (non di byte) effettivamente scritti
+```cpp
+int fread(addr, int dim, int n, FILE *f);
+```
+- legge dal file **n** elementi, ognuno grande dim **byte** (complessivamente, tenta di leggere quindi **n*dim** byte)
+- gli elementi da leggere vengono scritti in memoria a partire dall’indirizzo **addr**
+- restituisce il numero di elementi (non di byte) effettivamente letti
+> [!attention]
+> Controllare il valore restituito è il SOLO MODO per sapere che cosa è stato letto, e in particolare per scoprire se il file è terminato.
+
+
+FAI GLI ESEMPI
