@@ -1096,3 +1096,49 @@ int fread(addr, int dim, int n, FILE *f);
 FAI GLI ESEMPI
 
 
+```cpp
+int readField(char buffer[], char sep, FILE *f) {
+	int i = 0;
+	char ch = fgetc(f);
+	while (ch != sep && ch != 10 && ch != EOF) {
+		buffer[i] = ch;
+		i++;
+		ch = fgetc(f);
+	}
+	buffer[i] = '\0';
+	return i;
+}
+```
+
+## Ambiente locale e globale
+**Variabili Globali**
+Le variabili possono essere dichiarate anche **all'esterno di una funzione** e questo le rende **variabili globali**.
+> [!attention]
+> Usarle è PERICOLOSO e quindi vanno dichiarate solo se necessario.
+> Se tutti possono modificarle **facilmente vengono danneggiate**
+
+Per dichiarare (non definire) una variabile globale uso
+```cpp
+extern int trentadue;
+```
+La definisco come una normale variabile.
+
+esempio su più file
+```cpp
+extern int trentadue;
+float fahrToCelsius(float f) {
+	return 5.0/9 * (f-trentadue);
+}
+```
+```cpp
+int trentadue = 32;
+```
+
+**Variabili Static**
+Sono variabili visibile da tutti **solo all'interno del file in cui vengono dichiarate**.
+```cpp
+static int ultimoValore = 0;
+int prossimoDispari(void){
+	return 1 + 2 * ultimoValore++;
+}
+```
