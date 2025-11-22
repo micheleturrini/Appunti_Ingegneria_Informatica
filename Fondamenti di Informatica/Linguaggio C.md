@@ -1038,10 +1038,14 @@ Il valore restituito da `fopen()` è un puntatore a FILE
 - controllarlo è il solo modo per sapere se il file si sia davvero aperto
 -  se non si è aperto, il programma usualmente non deve proseguire -> funzione `exit()`
 
-**Modo**
-| r | read |
-| - | - |
-Finire tabella
+| Keyletter | Mode                                     |
+| --------- | ---------------------------------------- |
+| r         | apertura in **lettura** (read)           |
+| w         | apertura in **scrittura** (write)        |
+| a         | apertura in **aggiunta** (append)        |
+| t         | apertura in modalità **testo** (default) |
+| b         | apertura in modalità **binaria**         |
+| +         | apertura con possibilità di **modifica** |
 
 > [!attention]
 > Al termine del programma **tutti i file aperti devono essere chiusi**
@@ -1070,9 +1074,38 @@ N puo essere:
 - **0** non è stato possibile leggere nessuno dei due numeri interi
 - **EOF** nessun intero è stato letto da file, perchè si è incontrata la fine del file prima ancora di riuscire a leggere il primo intero
 
-FAI GLI ESEMPI
+esempio compilazione di una struttura
+```
+Rossi Mario M 1947
+Ferretti Paola F 1982
+Verdi Marco M 1988
+Bolognesi Annarita F 1976
+```
+```cpp
+#define DIM 30
+#include <stdio.h>
+#include <stdlib.h>
 
+typedef struct { char cognome[31], nome[31], sesso[2]; int anno;} persona;
 
+int main(void) {
+	persona v[DIM];
+	int k=0;
+	FILE* f;ù
+	//verifica se il file esiste
+	if ((f=fopen("people.txt", "r"))==NULL) {
+			perror("Il file non esiste!"); exit(1);
+	}
+	// legge finchè ci sono caratteri
+	while(fscanf(f,"%s%s%s%d\n", v[k].cognome, v[k].nome, v[k].sesso, &(v[k].anno)) != EOF){
+		k++;
+	}
+}
+```
+Nell'esempio non viene gestita la lunghezza dell'array (rischio di overflow)
+
+Per leggere anche campi che contengono spazi è possibile
+- Assegnare un numero definito di caratteri a ogni campo `fscanf(f,"%10c",…)` (occorre aggiungere un terminatore)
 ### File binari
 Un file binario è una **pura sequenza di byte** usabile per memorizzare su file **informazioni di qualsiasi natura**. (snapshot della memoria, immagini, audio, musica).
 La **fine del file** è SEMPRE rilevata in base all’**esito** delle operazioni di **lettura**.
@@ -1092,9 +1125,16 @@ int fread(addr, int dim, int n, FILE *f);
 > [!attention]
 > Controllare il valore restituito è il SOLO MODO per sapere che cosa è stato letto, e in particolare per scoprire se il file è terminato.
 
-
-FAI GLI ESEMPI
-
+esempio stampo una serie di caratteri
+```cpp
+int main(void){
+	FILE *fp; char msg[] = "Ah, l'esame\nsi avvicina!";
+	if ((fp = fopen("testo.txt","wb"))==NULL){
+		exit(1); /* Errore di apertura */}
+	fwrite(msg, strlen(msg)+1, 1, fp); //salva anche il terminatore di stringa
+	fclose(fp);
+}
+```
 
 ```cpp
 int readField(char buffer[], char sep, FILE *f) {
