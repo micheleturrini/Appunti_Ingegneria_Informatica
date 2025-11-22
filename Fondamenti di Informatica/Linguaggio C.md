@@ -1136,6 +1136,8 @@ int main(void){
 }
 ```
 
+Fai 17 esi fules
+Da allocare
 ```cpp
 int readField(char buffer[], char sep, FILE *f) {
 	int i = 0;
@@ -1163,9 +1165,19 @@ extern int trentadue;
 ```
 La definisco come una normale variabile.
 
+esempio
+```cpp
+int ultimoValore = 0;
+int prossimoDispari(void){
+	return 1 + 2 * ultimoValore++; }
+```
+```cpp
+int prossimoDispari(void);
+```
+
 esempio su più file
 ```cpp
-extern int trentadue;
+extern int trentadue;// da inserire in tutti i file in cui si usa
 float fahrToCelsius(float f) {
 	return 5.0/9 * (f-trentadue);
 }
