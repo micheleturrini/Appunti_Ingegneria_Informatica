@@ -1136,8 +1136,7 @@ int main(void){
 }
 ```
 
-Fai 17 esi fules
-Da allocare
+esempio lettura e compilazione CSV
 ```cpp
 int readField(char buffer[], char sep, FILE *f) {
 	int i = 0;
