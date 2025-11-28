@@ -1193,3 +1193,105 @@ int prossimoDispari(void){
 	return 1 + 2 * ultimoValore++;
 }
 ```
+## Allocazione della memoria
+Esistono aree dati separate nel sistema.
+- Area ad **allocazione automatica** -> Riguarda le variabili (non static) con scope locale. La memoria viene automaticamente allocata sullo stack (record di attivazione) e automaticamente deallocata al termine della funzione in cui è dichiarata .
+- Area ad **allocazione statica** -> Riguarda le variabili globali e le variabili locali dichiarate static. La memoria viene allocata prima dell’esecuzione del programma e rilasciata al termine.
+- Area ad **allocazione dinamica** -> Memoria richiesta a runtime esplicitamente dal programmatore (mediante specifiche funzioni di libreria). Viene allocata dinamicamente nella **memoria heap** a cui si può accedere solo mediante puntatori. Deve anche essere rilasciata esplicitamente.
+
+Dover specificare a priori la dimensione di ogni array è inefficiente.
+Sarebbe molto utile poter dimensionare un array dopo aver scoperto quanto grande deve essere
+
+Per chiedere memoria a runtime si usa
+```cpp
+#include <stdlib.h>
+
+void * malloc(size_t dim);
+```
+- **dim** = dimensione in byte dell'area da allocare
+- restituisce **NULL** se non basta la memoria
+- malloc() restituisce un puro indirizzo, ossia un **puntatore “senza tipo"** (devo utilizzare un casting)
+
+```cpp
+float *p;
+p = (float*) malloc(12);
+
+int *p;
+p = (int*) malloc(5*sizeof(int));
+```
+
+Per riconsegnare la memoria a runtime
+```cpp
+void free(void* p);
+```
+
+
+Per semplificare la sintassi inizializzo la funzione
+```cpp
+#include <stdlib.h>
+char* alloca(int n){
+	return (char*) malloc(n*sizeof(char));
+}
+```
+
+
+L'array non può essere espanso secondo necessita
+
+Genero un nuovo array con la nuova dimensione, copio i valori dal vecchio al nuovo e sostituisco il vecchio
+
+RISCHI
+- **Dangling reference**
+```cpp
+int *p;
+p=(int*)malloc(5*sizeof(int));
+free(p); p[0] = 13;
+p[1] = 18;...
+*(p+4) = -20;
+```
+Il puntatore esiste ancora anche se la memoria non è più allocata (punto a ciarpame)
+- **Memory leak** 1
+Lenta perdita di memoria
+```cpp
+a = malloc (...);
+b = malloc (...);
+a = b;
+```
+la **memoria** originaria di **a è allocata ma non posso liberarla**.
+Corretto
+```cpp
+a = malloc (...);
+b = malloc (...);
+free(a);
+a = b;
+
+```
+- **Memory leak** 2
+```cpp
+void func(void) {
+	void* c = malloc( 50 );
+}
+
+int main(void) {
+	while (1) func();
+}
+```
+Lentamente tutta la memoria viene allocata e...
+
+
+## Tipi di dato astratto
+definisce una categoria concettuale con le sue proprietà
+
+esempio counter
+counter.h
+```cpp
+typedef unsigned int counter;
+void reset(counter*);
+void inc(counter*);
+```
+counter.c
+```cpp
+#include "counter.h"
+void reset(counter *c){ *c=0; }
+void inc(counter* c){ (*c)++; }
+```
+
