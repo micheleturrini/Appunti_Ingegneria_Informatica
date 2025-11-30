@@ -1295,3 +1295,51 @@ void reset(counter *c){ *c=0; }
 void inc(counter* c){ (*c)++; }
 ```
 
+## Liste
+Sono strutture dati che permettono di aggiungere elementi liberamente.
+Gli elementi all'interno di una lista hanno lo stesso tipo.
+![[22-liste.pdf#page=5&rect=40,54,685,301|22-liste, p.5|500]]
+### Rappresentazione ad elementi collegati
+La lista è un insieme di **nodi** formati da
+- elemento (**payload**)
+- **collegamento** al prossimo nodo (arco)
+![[22-liste.pdf#page=9&rect=33,42,655,128|22-liste, p.9|500]]
+La **sequenzialità** degli elementi della lista **non è più rappresentata mediante l’adiacenza** delle locazioni di memorizzazione
+
+//CAPIRE
+```cpp
+typedef struct list_element {
+	int value;
+	struct list_element *next;
+} node;
+typedef node *list;
+
+int main() {
+	list root = NULL, L;
+	root = (list) malloc(sizeof(item));
+	root->value = 1;
+	root->next = NULL;
+	L = root;
+}
+```
+
+Capire structure sharing
+
+
+esercizio ricerca in una lista
+```cpp
+int ricerca(int e, list l) {
+	int trovato = 0;
+	while ((l!=NULL)&&!trovato)
+		if (l->value == e) trovato = 1;
+		else l = l->next;
+	return trovato;
+}
+```
+esercizio
+
+
+
+Costruzione di una lista
+Sono definite nel file header hce possiamo portare all'esame
+
