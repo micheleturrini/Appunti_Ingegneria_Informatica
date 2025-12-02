@@ -1299,6 +1299,7 @@ void inc(counter* c){ (*c)++; }
 Sono strutture dati che permettono di aggiungere elementi liberamente.
 Gli elementi all'interno di una lista hanno lo stesso tipo.
 ![[22-liste.pdf#page=5&rect=40,54,685,301|22-liste, p.5|500]]
+Per invocare la head e la tail devo sempre verificare che la lista non sia vuota.
 ### Rappresentazione ad elementi collegati
 La lista è un insieme di **nodi** formati da
 - elemento (**payload**)
@@ -1322,7 +1323,6 @@ int main() {
 	L = root;
 }
 ```
-
 Capire structure sharing
 
 
@@ -1343,3 +1343,9 @@ esercizio
 Costruzione di una lista
 Sono definite nel file header hce possiamo portare all'esame
 
+Per comodità si definiscono altre funzioni per operare sulle liste
+![[22-liste.pdf#page=27&rect=35,65,679,410|22-liste, p.27|500]]
+
+Per usare in modo sicuro la condivisione di strutture, è necessario:
+- NON effettuare free() -> uso inefficiente heap in linguaggi privi di garbage collection (evitare rischio di riferimenti pendenti)
+- realizzare liste come entità non modificabili: ogni modifica comporta la creazione di nuova lista (evitare rischio di effetti collaterali indesiderati)
