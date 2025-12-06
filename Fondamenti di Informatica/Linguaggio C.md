@@ -1349,3 +1349,42 @@ Per comodità si definiscono altre funzioni per operare sulle liste
 Per usare in modo sicuro la condivisione di strutture, è necessario:
 - NON effettuare free() -> uso inefficiente heap in linguaggi privi di garbage collection (evitare rischio di riferimenti pendenti)
 - realizzare liste come entità non modificabili: ogni modifica comporta la creazione di nuova lista (evitare rischio di effetti collaterali indesiderati)
+
+**Deallocazione** di una lista
+```cpp
+void freelist(list l) {
+	if (empty(l)) return;
+	else { freelist(tail(l)); free(l); }
+	return;
+}
+```
+Da fare solo se non c'è structure sharing e se le informazioni non servono più
+
+**Ordinamento** di una lista
+```cpp
+list inputordlist(int n) {
+	element e;
+	if (n<0) exit(1);
+	else if (n == 0) return emptyList();
+	else { 
+		scanf(“%d”, &e);
+		return insord(e, inputordlist(n-1));
+	}
+}
+```
+
+### Liste di tipi non interi
+Le funzioni definite in list.h operano sugli interi, in particolare:
+- **showList** dipende da printf() che svela il tipo dell’elemento
+- **insord** dipende dal tipo dell’elemento nel momento del confronto
+Può quindi essere utile generalizzare queste necessità, e **definire un ADT element che fornisca funzioni per**: 
+- verificare **relazione d’ordine** fra due elementi 
+- verificare l’**uguaglianza** fra due elementi 
+- leggere da **input** un elemento 
+- scrivere su **output** un elemento
+//VEDI SLIDE
+
+//CAPIRE BENE LE LISTE
+## Stack code
+
+MMMMMMMM boh
