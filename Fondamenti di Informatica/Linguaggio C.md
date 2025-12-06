@@ -1304,7 +1304,8 @@ Sono strutture dati che permettono di aggiungere elementi liberamente.
 Gli elementi all'interno di una lista hanno lo stesso tipo.
 ![[22-liste.pdf#page=5&rect=40,54,685,301|22-liste, p.5|500]]
 Per invocare la head e la tail devo sempre verificare che la lista non sia vuota.
-### Rappresentazione ad elementi collegati
+ 
+ **Rappresentazione ad elementi collegati**
 La lista è un insieme di **nodi** formati da
 - elemento (**payload**)
 - **collegamento** al prossimo nodo (arco)
