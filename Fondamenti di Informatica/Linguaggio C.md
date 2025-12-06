@@ -1234,12 +1234,11 @@ char* alloca(int n){
 }
 ```
 
-
-L'array non può essere espanso secondo necessita
+L'array non può essere espanso secondo necessità
 
 Genero un nuovo array con la nuova dimensione, copio i valori dal vecchio al nuovo e sostituisco il vecchio
 
-RISCHI
+**RISCHI**
 - **Dangling reference**
 ```cpp
 int *p;
@@ -1276,10 +1275,15 @@ int main(void) {
 }
 ```
 Lentamente tutta la memoria viene allocata e...
-
-
 ## Tipi di dato astratto
 definisce una categoria concettuale con le sue proprietà
+definire un tipo significa definire:
+- dominio
+- **funzioni** (agiscono in vario modo sugli oggetti)
+- **predicati** (verificano la presenza di una proprietà sull' oggetto, restituendo vero o falso)
+- trasformatori
+- costruttori
+- trasformatori
 
 esempio counter
 counter.h
