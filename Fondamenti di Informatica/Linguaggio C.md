@@ -1158,7 +1158,7 @@ Le variabili possono essere dichiarate anche **all'esterno di una funzione** e q
 > Usarle è PERICOLOSO e quindi vanno dichiarate solo se necessario.
 > Se tutti possono modificarle **facilmente vengono danneggiate**
 
-Per dichiarare (non definire) una variabile globale uso
+Per dichiarare (non definire) una variabile globale definita in un altro file uso
 ```cpp
 extern int trentadue;
 ```
