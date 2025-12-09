@@ -1412,5 +1412,8 @@ typedef struct queue_element {
 	element value;
 	struct queue_element * next;
 } queueNode;
+
+typedef queueNode *startQueue;
+typedef queueNode * endQueue;
 ```
 Se inserisco 2 puntatori a struttura ottengo una struttura ad albero.
