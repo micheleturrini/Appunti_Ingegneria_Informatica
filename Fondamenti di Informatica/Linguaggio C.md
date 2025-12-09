@@ -1390,6 +1390,27 @@ Può quindi essere utile generalizzare queste necessità, e **definire un ADT el
 //VEDI SLIDE
 
 //CAPIRE BENE LE LISTE
-## Stack code
+## Stack code (ADT)
 
 MMMMMMMM boh
+
+## Coda FiFo (ADT)
+First-In -- First-Out
+
+Le operazioni sono simili a quelle di uno stack: in particolare, `enQueue()` **inserisce** un elemento, e `deQueue()` lo **estrae** (**rimuovendolo**)
+Conviene avere **accesso** sia al **primo** elemento (estrazione) sia all ’**ultimo** (inserimento)
+
+Applicazioni
+- **accesso a** **risorse condivise in mutua esclusione** (coda di accesso alla CPU, spooling di stampa, …)
+- **code di pacchetti** nei dispositivi di rete
+![[23-StackCode.pdf#page=25&rect=284,46,695,279|23-StackCode, p.25|400]]
+
+![[23-StackCode.pdf#page=27&rect=65,50,655,327|23-StackCode, p.27|500]]
+
+```cpp
+typedef struct queue_element {
+	element value;
+	struct queue_element * next;
+} queueNode;
+```
+Se inserisco 2 puntatori a struttura ottengo una struttura ad albero.
