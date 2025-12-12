@@ -1312,7 +1312,6 @@ La lista è un insieme di **nodi** formati da
 ![[22-liste.pdf#page=9&rect=33,42,655,128|22-liste, p.9|500]]
 La **sequenzialità** degli elementi della lista **non è più rappresentata mediante l’adiacenza** delle locazioni di memorizzazione
 
-//CAPIRE
 ```cpp
 typedef struct list_element {
 	int value;
@@ -1328,25 +1327,9 @@ int main() {
 	L = root;
 }
 ```
-Capire structure sharing
 
-
-esercizio ricerca in una lista
-```cpp
-int ricerca(int e, list l) {
-	int trovato = 0;
-	while ((l!=NULL)&&!trovato)
-		if (l->value == e) trovato = 1;
-		else l = l->next;
-	return trovato;
-}
-```
-esercizio
-
-
-
-Costruzione di una lista
-Sono definite nel file header hce possiamo portare all'esame
+> [!success]
+> Le funzioni sono definite nel list.h e nelle slide (da aggiungere)
 
 Per comodità si definiscono altre funzioni per operare sulle liste
 ![[22-liste.pdf#page=27&rect=35,65,679,410|22-liste, p.27|500]]
@@ -1363,7 +1346,7 @@ void freelist(list l) {
 	return;
 }
 ```
-Da fare solo se non c'è structure sharing e se le informazioni non servono più
+Da fare **solo se non c'è structure sharing** e se le informazioni non servono più
 
 **Ordinamento** di una lista
 ```cpp
@@ -1387,13 +1370,13 @@ Può quindi essere utile generalizzare queste necessità, e **definire un ADT el
 - verificare l’**uguaglianza** fra due elementi 
 - leggere da **input** un elemento 
 - scrivere su **output** un elemento
-//VEDI SLIDE
 
-//CAPIRE BENE LE LISTE
-## Stack code (ADT)
+## Stack LiFo (ADT)
+usata dal sistema operativo per **record attivazione**
+![[23-StackCode.pdf#page=1&rect=428,45,670,356|23-StackCode, p.1|200]]
 
-MMMMMMMM boh
-
+![[23-StackCode.pdf#page=5&rect=42,25,668,336|23-StackCode, p.5 |500]]
+Le funzioni sono definite in diversi modi nelle slide
 ## Coda FiFo (ADT)
 First-In -- First-Out
 
