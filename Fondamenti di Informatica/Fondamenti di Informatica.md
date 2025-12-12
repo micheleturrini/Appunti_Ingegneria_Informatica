@@ -223,3 +223,14 @@ Python, Java
 	    - allocazione della memoria
 	    - gestione dei registri
 	- **Ottimizzatore di codice** → migliora l’efficienza del codice (può essere disattivato).
+
+## Rappresentazione binaria dei numeri
+### Numeri naturali
+Definisco delle basi che hanno il valore delle potenze di 2.
+sommandole posso ottenere ogni numero.
+Per rappresentare un numero si utilizza una rappresentazione diretta.
+
+Naturali negativi
+il primo numero rappresenta il segno (0 = +)
+### Caratteri
+Per rappresentare un carattere si sfrutta la tabella ascii.
