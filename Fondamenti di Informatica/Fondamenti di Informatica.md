@@ -67,67 +67,53 @@ Piccoli programmi
 - sistema multi utente
 - GUI
 ## La macchina di Turing
-Turing calcola il numero minimo di istruzioni per risolvere tutte le operazioni computabili.
-Immagina un automa esecutore (non sa come realizzarlo fisicamente) che
-- prenda ingresso un metodo risolutivo
-- prenda in ingresso i Dati
-- mandi in uscita i risultati
+### Il Concetto di Automa Esecutore
+Alan Turing si pone l'obiettivo di calcolare il numero minimo di istruzioni necessarie per risolvere tutte le operazioni computabili. Immagina un "automa esecutore" (senza sapere inizialmente come realizzarlo fisicamente) che funzioni secondo questo schema:
+- Prende in ingresso un **metodo risolutivo**.
+- Prende in ingresso i **Dati**.
+- Manda in uscita i **risultati**.
+> [!attention] La macchina è costruita di un numero finito di parti ma deve muoversi nell'ambiente matematico che è infinito -> siamo costretti all'approssimazione
+### La Tesi di Turing e la Computabilità
+Nella sua tesi di laurea, Turing dimostra che la sua macchina è, in teoria, la più potente di sempre (primato che detiene ancora oggi). Turing stabilisce un principio fondamentale:
+- Se la sua macchina è la più potente possibile, allora **ciò che è computabile dipende da quello che la sua macchina è in grado di fare**.
+- **Definizione di Computabilità:** Se esiste un meccanismo per raggiungere la soluzione in un numero _finito_ di passi, l'operazione è computabile.
+Turing capisce inoltre che la realizzazione fisica della macchina deve basarsi su un modello simile a quello che sarà poi il calcolatore elettronico basato sull'architettura di Von Neumann.
+### Linguaggio e Simboli
+> [!attention] E' necessario un linguaggio per spiegare alla macchina come risolvere le Operazioni
 
-> [!attention]
-> La macchina è costruita di un numero finito di parti ma deve muoversi nell'ambiente matematico che è infinito -> siamo costretti all'approssimazione
-
-Turing capisce che la macchina deve essere realizzata basandosi sul modello del calcolatore elettronico basato sull'architettura di Von Neumann
-
-Nella sua tesi di laurea Turing dimostra che la sua macchina in teoria è la più potente di sempre (ancora oggi)
-Turing stabilisce che se la sua macchina è la più potente ciò che è computabile dipende da quello che la sua macchina è in grado di fare.
-Se esiste un meccanismo per raggiungere la soluzione in un numero finito di passi l'operazione è computabile
-
-> [!attention]
-> E' necessario un linguaggio per spiegare alla macchina come risolvere le Operazioni
-
-**Il linguaggio naturale è ambiguo.**
-La macchina è un interprete di questo linguaggio (a livello basso oggi si usa il linguaggio macchina a livello alto i linguaggi di alto livello)
-Il numero è un concetto rappresentato da un simbolo quindi la macchina (che non può pensare concetti) deve lavorare coi simboli.
-
-La macchina è **composta** da
-- una testina capace di scrivere e leggere simboli
-- un nastro che scorre sotto la testina
-- un dispositivo di controllo che muove a destra o sinistra la testina
-	- Il dispositivo è dotato di uno stato interno
-	la macchina decide come muoversi in base a cosa scrive cosa legge e allo stato.
+Tuttavia, **il linguaggio naturale è ambiguo**. La macchina agisce come un interprete di un linguaggio (oggi si distingue tra linguaggio macchina a basso livello e linguaggi di alto livello). Poiché la macchina non può "pensare" concetti astratti, il numero viene trattato come un concetto rappresentato da un **simbolo**; la macchina deve quindi lavorare manipolando simboli.
+### Architettura della Macchina
+La macchina è fisicamente **composta** da:
+- Una **testina** capace di scrivere e leggere simboli.
+- Un **nastro** che scorre sotto la testina.
+- Un **dispositivo di controllo** che muove a destra o sinistra la testina.
+    - Il dispositivo è dotato di uno **stato interno**.    
+    - La macchina decide come muoversi in base a:    
+        1. Cosa scrive.        
+        2. Cosa legge.
+        3. Il suo stato corrente.
 ![[01b-algoritmiNew.pdf#page=14&rect=82,49,549,181|01b-algoritmiNew, p.14|400]]
+### Istruzioni e Programmazione (Le Quintuple)
+Turing deve **definire una simbologia in grado di rappresentare dati iniziali e risultati**.
+> [!success] Il comportamento della macchina è definito da un insieme di quintuple (Primo linguaggio di programmazione)
+> (stato-corrente, simbolo-letto, nuovo-stato, simboloscritto, direzione)
+### La Macchina Universale
+Inizialmente, sorge un limite:
+> [!failure] La macchina è in grado di risolvere un solo compito.
 
-Turing sa che deve **definire una simbologia in grado di rappresentare dati iniziali e risultati**
-> [!success]
-> Il comportamento della macchina è definito da un insieme di quintuple (Primo linguaggio di programmazione)
-> [!PDF|yellow] [[01b-algoritmiNew.pdf#page=16&selection=43,0,44,19&color=yellow|01b-algoritmiNew, p.16]]
-> > (stato-corrente, simbolo-letto, nuovo-stato, simboloscritto, direzione)
-> 
+L'unica variabile sono le istruzioni. Turing idea quindi un modo per cambiare le istruzioni fornite: **scrive le istruzioni direttamente sul nastro**; la macchina le legge, le "impara" e inizia a operare. Questo è il principio valido tuttora: all'avvio, il computer legge le istruzioni in memoria e avvia il sistema operativo.
+> [!success] La macchina è **universale e programmabile** Tutte le istruzioni sono in memoria La macchina di Turing è l'interprete di un linguaggio
 
-> [!failure]
-> La macchina è in grado di risolvere un solo compito.
+Il ciclo di funzionamento si basa su tre fasi:
+1. **Fetch** (cerca le istruzioni).
+2. **Decode** (interpreta). 
+3. **Execute** (esegue).
+_Nota sulle interfacce:_ Nella macchina di Turing originale non sono previsti dispositivi di interfaccia (input/output verso l'uomo), i quali verranno ideati successivamente da Von Neumann.
+### Limiti della Computabilità e Cenni Storici
+> [!attention] **Problema dell'Halt (Problema della Terminazione)** 
+> È possibile stabilire con un programma se un altro programma finisce solo se il secondo programma finisce. **Il problema è definibile ma non computabile.**
 
-L'unica cosa che cambia sono le istruzioni quindi Turing idea un modo per cambiare le istruzioni fornite alla macchina.
-**Scrive le istruzioni sul nastro, la macchina le legge le impara e inizia a operare.**
-Tuttora il computer a ogni avvio legge le istruzioni in memoria e avvia il sistema operativo.
-> [!success]
-> La macchina è **universale e programmabile**
-> Tutte le istruzioni sono in memoria
-> La macchina di Turing è l'interprete di un linguaggio
-
-- **fetch** (cerca le istruzioni)
-- **decode** (interpreta)
-- **execute** (esegue)
-
-Nella macchina di **Turing** non sono previsti dispositivi di interfaccia che vengono ideati da Von Neumann.
-
-> [!attention]
-> Problema dell'Halt
-è possibile stabilire con un programma se un altro programma finisce solo se il secondo programma finisce.
-**Il problema è definibile ma non computabile.**
-
-La prima che immagina il concetto di programmazione è Ada Byron.
-Ha una serie di intuizioni che si avvicinano al linguaggio Assembly.
+**Ada Byron:** È la prima a immaginare il concetto di programmazione. Ebbe una serie di intuizioni che si avvicinano molto al funzionamento del moderno linguaggio Assembly.
 ## Algoritmo
 > [!PDF|yellow] [[01b-algoritmiNew.pdf#page=50&selection=4,0,21,11&color=yellow|01b-algoritmiNew, p.50]]
 > > Un algoritmo è una sequenza finita di mosse che risolve in un tempo finito una classe di problemi
@@ -224,13 +210,3 @@ Python, Java
 	    - gestione dei registri
 	- **Ottimizzatore di codice** → migliora l’efficienza del codice (può essere disattivato).
 
-## Rappresentazione binaria dei numeri
-### Numeri naturali
-Definisco delle basi che hanno il valore delle potenze di 2.
-sommandole posso ottenere ogni numero.
-Per rappresentare un numero si utilizza una rappresentazione diretta.
-
-Naturali negativi
-il primo numero rappresenta il segno (0 = +)
-### Caratteri
-Per rappresentare un carattere si sfrutta la tabella ascii.
