@@ -7,6 +7,9 @@ Il linguaggio **C** (creato da Dennis Ritchie, 1972) è:
 - **Basato su espressioni** → ogni istruzione è spesso un’espressione che produce un valore.
 - Essendo il codice salvato in memoria posso modificarlo (esclusivo per c e assembler)
 ![[03-IntroCompilatori+LinguaggioC.pdf#page=20&rect=40,115,652,317|03-IntroCompilatori+LinguaggioC, p.20|500]]
+Espressioni **riservate**, con significato predefinito (non possono essere usate come identificatori).  
+Esempi:  
+`int`, `return`, `if`, `else`, `while`, `for`, `switch`, `break`, `continue`, `void`, `struct`, `typedef`, `const`, `static` …
 ## Struttura
 - **Direttive al preprocessore** (`#include`, `#define`) → vengono eseguite prima della compilazione.
 - Il **punto di ingresso** di ogni programma è la funzione `main()`
@@ -27,12 +30,6 @@ int main(void) {
 }
 
 ```
-## Elementi del linguaggio
-Variabili e espressioni discusse a parte
-### Parole chiave
-Espressioni **riservate**, con significato predefinito (non possono essere usate come identificatori).  
-Esempi:  
-`int`, `return`, `if`, `else`, `while`, `for`, `switch`, `break`, `continue`, `void`, `struct`, `typedef`, `const`, `static` …
 ### Costanti
 Valori fissi
 ```cpp
@@ -53,11 +50,6 @@ righe */
 
 // commento su una riga
 ```
-## Variabili
-Una variabile è un’**astrazione di una cella di memoria**.
-- **L-Value** → l’indirizzo della variabile (dove sta in memoria).
-- **R-Value** → il contenuto della variabile.
-- **Identificatore** -> deve avere un nome 
 #### Definizione di variabili
 Si **definiscono** all'**inizio** del blocco e poi si usano
 Ogni variabile deve avere:
@@ -89,7 +81,7 @@ int i = i-3;
 int j = 0;
 int i = j-3; // assegnamento
 
-int i += 1 // incrementa di 1 (+,-,*.%,...)
+int i += 1; // incrementa di 1 (+,-,*.%,...)
 ```
 #### Espressioni eterogenee
 eseguendo un'espressione eterogenea entrambi gli operandi vengono **trasformati** temporaneamente in float (**promotion**) ma poi se necessario il risultato è **arrotondato per troncamento** (perdita di informazioni)
@@ -107,8 +99,11 @@ int main() {
   return (0); 
 }
 ```
-
-## Tipi di Dato 
+## Tipi di Dato e Variabili
+Una variabile è un’**astrazione di una cella di memoria**.
+- **L-Value** → l’indirizzo della variabile (dove sta in memoria).
+- **R-Value** → il contenuto della variabile.
+- **Identificatore** -> deve avere un nome 
 ### Specificatori
 - `void` → indefiniti
 - `char` → caratteri (1 byte)    
@@ -116,8 +111,7 @@ int main() {
 - `float` → reali **precisione singola** (~6 cifre, 32 bit)
 - `double` → reali **precisione doppia** (~15 cifre, 64 bit)
 - `long double` → precisione quadrupla (128 bit, dipende dal compilatore)
-Dichiarando un **float** il compilatore di default considera la variabile **double**
-per avere una variabile float devo aggiungere una f
+Scrivendo una **costante decimale** (es. 3.14), il compilatore di default la considera **double**. Per indicarla come float bisogna aggiungere una **f** (es. 3.14f)
 ```cpp
 float a = 0.3f;
 ```
@@ -278,8 +272,8 @@ int main() {
 	int i=0;
 	for (i=0; s[i]!='\0';i++){
 		s2[i] = s[i];
-		s2[i] = '\0'; // inserimento del terminatore
 	}
+	s2[i] = '\0'; // inserimento del terminatore
 }
 
 void strcpy(char dest[], char source[]) {
@@ -387,8 +381,7 @@ Creando una **struttura** che **contiene un array** posso **passarlo** interamen
 int main(){
 	struct string20 {
 	char s[20];
-	}
-	s1 = {"Paolino Paperino" }, s2 = {"Gastone Paperone" };
+	} s1 = {"Paolino Paperino" }, s2 = {"Gastone Paperone" };
 	s1 = s2; /* FUNZIONA! */
 }
 ```
@@ -420,7 +413,7 @@ I tipi personalizzati si scrivono pero convenzione con la Maiuscola (rappresenta
 //time risulta una variabile se
 struct { int hour, minute, second; } time ;
 // time risulta un tipo di dato se
-typedef { int hour, minute, second; } time ;
+typedef struct { int hour, minute, second; } time ;
 ```
 
 E' possibile **innestare** le strutture
@@ -449,6 +442,46 @@ Gli indici (che non vedo mai) vengono assegnati come in un array
 g = 5; /* equivale a g = sa */
 ```
 SCONSIGLIATO!
+### I puntatori
+Sono un sistema per avere un passaggio per **riferimento** senza implementarlo.
+
+Prendendo come esempio lo swap la funzione con passaggio per copia **scambierebbe le copie e non i valori originali**
+
+Se il cliente **passa per copia gli indirizzi delle celle contenenti i valori** e non i valori stessi ottengo gli **stessi vantaggi** del passaggio per **riferimento**
+![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=13&rect=162,83,757,325|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.13|400]]
+E' necessario un operatore apposito che **prende in ingresso il nome della variabile** e **restituisce l'indirizzo** e un operatore che **interpreta l'indirizzo** come tale e **legge il valore corrispondente**
+- operatore **estrazione di indirizzo** &
+- operatore di **dereferenziamento** *
+![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=17&rect=116,278,647,426|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.17|300]]
+![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=17&rect=117,110,646,224|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.17|300]]
+
+**Il tipo puntatore** a **T**  è un tipo che denota l’indirizzo di memoria di una variabile di tipo T
+Un **puntatore a T** è una variabile di “tipo puntatore a T” destinata a  contenere l’indirizzo di una variabile di tipo T
+Il tipo del puntatore indica il tipo del dato contenuto nell’indirizzo di memoria puntato.
+La funzione non dovrebbe **MAI alterare il valore del puntatore**
+```cpp
+<tipo> * <nomevariabile> ;
+
+int *p;
+int* p;
+int * p;
+int * p = NULL; //punta a una zona di memoria non accessibile (equivale allo 0)
+```
+
+Esempio swap con puntatori
+```cpp
+void scambia(int* a, int* b) { //ricevo due indirizzi
+	int t; //variabile temporanea
+	t = *a; //eseguo l'operazione di scambio fra i valori
+	*a = *b;
+	*b = t;
+}
+int main(){
+	int y=5, x=33;
+	scambia(&x, &y); //fornisco due indirizzi
+}
+```
+![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=23&rect=95,201,639,353|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.23|400]]
 ### Modificatori
 - **`short` → almeno 16 bit**
 - **`long` → almeno 32 bit**
@@ -457,6 +490,29 @@ SCONSIGLIATO!
 
 **`sizeof(long int) >= sizeof(int) >= sizeof(short int)`**
 **I booleani non esistono (Convenzione: `0 = falso`, valore ≠ 0 = vero.)**
+### Tipi di dato astratto
+definisce una categoria concettuale con le sue proprietà
+definire un tipo significa definire:
+- dominio
+- **funzioni** (agiscono in vario modo sugli oggetti)
+- **predicati** (verificano la presenza di una proprietà sull' oggetto, restituendo vero o falso)
+- trasformatori
+- costruttori
+- trasformatori
+
+esempio counter
+counter.h
+```cpp
+typedef unsigned int counter;
+void reset(counter*);
+void inc(counter*);
+```
+counter.c
+```cpp
+#include "counter.h"
+void reset(counter *c){ *c=0; }
+void inc(counter* c){ (*c)++; }
+```
 ### Rappresentazione in memoria.
 ![[04-TipiDato.pdf#page=5&rect=84,83,614,204|04-TipiDato, p.5|300]]
 **Interi**
@@ -493,7 +549,6 @@ Nella **conversione** da reali a binario si **perdono cifre significative** e al
 **ASCII**
 convenzione che **associa numeri a ogni carattere**
 mettono le lettere in ordine alfabetico per poter **utilizzare gli stessi operatori per mettere in ordine lettere e numeri.**
-
 ## Operatori
 ### Operatori di calcolo
 ![[04-TipiDato.pdf#page=23&rect=155,156,558,390|04-TipiDato, p.23|300]]
@@ -655,8 +710,6 @@ Le **istruzioni non si escludono** a vicenda quindi devo inserire il **break**
 Se il programma deve valutare una sequenza di condizioni in presenza di un **||**  appena ne trova una **vera non valuta le seguenti** e esce dall' if.
 Se il programma deve valutare una sequenza di condizioni in presenza di un **&&**  appena ne trova una **falsa non valuta le seguenti** e esce dall' if.
 (se le seguenti condizioni includono delle operazioni queste non vengono eseguite)
-
-AGGIUNGERE CODICE E SPOSTARE DOVE HA SENSO; AGGIUNGERE C
 ### Ciclo
 **Eseguono** un blocco di codice **fino a quando una condizione non si verifica**
 hanno u**n solo punto di ingresso e un solo punto di uscita**
@@ -908,7 +961,6 @@ In caso di funzioni innestate **i record si accumulano secondo una logica LIFO**
 record di una **funzione ricorsiva**
 ![[09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA.pdf#page=34&rect=132,113,447,425|Microsoft PowerPoint - 09a-ricorsioneRA.ppt - Compatibility Mode - 09a-ricorsioneRA, p.34|200]]
 
-
 **Ricorsiva Tail**
 E' una funzione in cui le cui **chiamate ricorsive** sono **l'ultima operazione eseguita** dalla funzione stessa
 
@@ -926,91 +978,6 @@ Funzioni che non restituiscono un valore
 ```cpp
 void p(int x) { x = x * 2; printf(“%d”, x); }
 ```
-## I puntatori
-Sono un sistema per avere un passaggio per **riferimento** senza implementarlo.
-
-Prendendo come esempio lo swap la funzione con passaggio per copia **scambierebbe le copie e non i valori originali**
-
-Se il cliente **passa per copia gli indirizzi delle celle contenenti i valori** e non i valori stessi ottengo gli **stessi vantaggi** del passaggio per **riferimento**
-![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=13&rect=162,83,757,325|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.13|400]]
-E' necessario un operatore apposito che **prende in ingresso il nome della variabile** e **restituisce l'indirizzo** e un operatore che **interpreta l'indirizzo** come tale e **legge il valore corrispondente**
-- operatore **estrazione di indirizzo** &
-- operatore di **dereferenziamento** *
-![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=17&rect=116,278,647,426|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.17|300]]
-![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=17&rect=117,110,646,224|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.17|300]]
-
-**Il tipo puntatore** a **T**  è un tipo che denota l’indirizzo di memoria di una variabile di tipo T
-Un **puntatore a T** è una variabile di “tipo puntatore a T” destinata a  contenere l’indirizzo di una variabile di tipo T
-Il tipo del puntatore indica il tipo del dato contenuto nell’indirizzo di memoria puntato.
-La funzione non dovrebbe **MAI alterare il valore del puntatore**
-```cpp
-<tipo> * <nomevariabile> ;
-
-int *p;
-int* p;
-int * p;
-int * p = NULL; //punta a una zona di memoria non accessibile (equivale allo 0)
-```
-
-Esempio swap con puntatori
-```cpp
-void scambia(int* a, int* b) { //ricevo due indirizzi
-	int t; //variabile temporanea
-	t = *a; //eseguo l'operazione di scambio fra i valori
-	a = *b;
-	*b = t;
-}
-int main(){
-	int y=5, x=33;
-	scambia(&x, &y); //fornisco due indirizzi
-}
-```
-![[10a-Procedure.ppt - Compatibility Mode - 10a-Procedure.pdf#page=23&rect=95,201,639,353|10a-Procedure.ppt - Compatibility Mode - 10a-Procedure, p.23|400]]
-
-## Suddivisione si più file
-'E comodo e "obbligatorio" dividere i progetti in più file dichiarando le funzioni in un file diverso dal main.
-Sono necessari tre elementi:
-- **Main**.c
-```cpp
-# include "Funzione.h"
-
-int main() {
-	chiamata funzione
-}
-```
-- **funzione**.h (contiene le dichiarazioni) -header
-```cpp
-int funzione (dichiarazione ingressi);
-```
-- **Funzione**.c (contiene la funzione)
-```cpp
-int funzione (dichiarazione ingressi){
-	lavoro funzione
-	return;
-}
-```
-## Librerie standard
-| Uso                             | Libreria    |
-| ------------------------------- | ----------- |
-| input/output                    | **stdio.h** |
-| funzioni matematiche            | math.h      |
-| gestione di stringhe            | string.h    |
-| operazioni su caratteri         | ctype.h     |
-| gestione dinamica della memoria | stdlib.h    |
-| ricerca e ordinamento           | stdlib.h    |
-### Stdio.h
-Esistono 3 canali standard (**stream**)
-- **stdin** (collegato alla tastiera)
-- **stdout** (collegato alla consolle)
-- **stderr** (collegato alla console - per gli errori)
-sui canali I/O fluiscono **sequenze di caratteri** terminate dal carattere **End-Of-File** che non è contenuto nel file.
-
-```cpp
-putchar(ch); // scrive 1 carattere
-ch = getchar(); // legge un carattere
-```
-
-**printf** e **scanf** sono molto più pratiche.
 ## Files
 Un file è un’astrazione di memorizzazione di dimensione potenzialmente illimitata ad **accesso sequenziale**
 A livello di sistema operativo **un file è denotato univocamente dal suo nome assoluto,** che comprende il **percorso** e il **nome relativo**
@@ -1151,6 +1118,50 @@ int readField(char buffer[], char sep, FILE *f) {
 }
 ```
 
+## Suddivisione su più file e Librerie
+'E comodo e "obbligatorio" dividere i progetti in più file dichiarando le funzioni in un file diverso dal main.
+Sono necessari tre elementi:
+- **Main**.c
+```cpp
+# include "Funzione.h"
+
+int main() {
+	chiamata funzione
+}
+```
+- **funzione**.h (contiene le dichiarazioni) -header
+```cpp
+int funzione (dichiarazione ingressi);
+```
+- **Funzione**.c (contiene la funzione)
+```cpp
+int funzione (dichiarazione ingressi){
+	lavoro funzione
+	return;
+}
+```
+### Librerie standard
+| Uso                             | Libreria    |
+| ------------------------------- | ----------- |
+| input/output                    | **stdio.h** |
+| funzioni matematiche            | math.h      |
+| gestione di stringhe            | string.h    |
+| operazioni su caratteri         | ctype.h     |
+| gestione dinamica della memoria | stdlib.h    |
+| ricerca e ordinamento           | stdlib.h    |
+### Stdio.h
+Esistono 3 canali standard (**stream**)
+- **stdin** (collegato alla tastiera)
+- **stdout** (collegato alla consolle)
+- **stderr** (collegato alla console - per gli errori)
+sui canali I/O fluiscono **sequenze di caratteri** terminate dal carattere **End-Of-File** che non è contenuto nel file.
+
+```cpp
+putchar(ch); // scrive 1 carattere
+ch = getchar(); // legge un carattere
+```
+
+**printf** e **scanf** sono molto più pratiche.
 ## Ambiente locale e globale
 **Variabili Globali**
 Le variabili possono essere dichiarate anche **all'esterno di una funzione** e questo le rende **variabili globali**.
@@ -1229,7 +1240,7 @@ void free(void* p);
 Per semplificare la sintassi inizializzo la funzione
 ```cpp
 #include <stdlib.h>
-char* alloca(int n){
+char* CharAlloc(int n){
 	return (char*) malloc(n*sizeof(char));
 }
 ```
@@ -1275,30 +1286,6 @@ int main(void) {
 }
 ```
 Lentamente tutta la memoria viene allocata e...
-## Tipi di dato astratto
-definisce una categoria concettuale con le sue proprietà
-definire un tipo significa definire:
-- dominio
-- **funzioni** (agiscono in vario modo sugli oggetti)
-- **predicati** (verificano la presenza di una proprietà sull' oggetto, restituendo vero o falso)
-- trasformatori
-- costruttori
-- trasformatori
-
-esempio counter
-counter.h
-```cpp
-typedef unsigned int counter;
-void reset(counter*);
-void inc(counter*);
-```
-counter.c
-```cpp
-#include "counter.h"
-void reset(counter *c){ *c=0; }
-void inc(counter* c){ (*c)++; }
-```
-
 ## Liste
 Sono strutture dati che permettono di aggiungere elementi liberamente.
 Gli elementi all'interno di una lista hanno lo stesso tipo.
@@ -1370,7 +1357,6 @@ Può quindi essere utile generalizzare queste necessità, e **definire un ADT el
 - verificare l’**uguaglianza** fra due elementi 
 - leggere da **input** un elemento 
 - scrivere su **output** un elemento
-
 ## Stack LiFo (ADT)
 usata dal sistema operativo per **record attivazione**
 ![[23-StackCode.pdf#page=1&rect=428,45,670,356|23-StackCode, p.1|200]]
