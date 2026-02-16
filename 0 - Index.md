@@ -1,8 +1,12 @@
 # Primo anno
 ## Primo semestre
-- [ ] **Algebra e Geometria**
-	- [ ] [[Algebra e Geometria]]
-- [ ] **Analisi Matematica**
-	- [ ] [[Analisi 1]]
+- [x] **Algebra e Geometria**
+- [x] **Analisi Matematica**
 - [ ] **Fondamenti di Informatica**
-	- [ ] [[Fondamenti di Informatica]]
+	- [x] [[Fondamenti di Informatica]]
+	- [ ] [[Linguaggio C]]
+## Secondo Semestre
+- [ ] **Reti Logiche**
+	- [ ] [[Reti Logiche]]
+- [ ] **Analisi 2**
+- [ ] 
