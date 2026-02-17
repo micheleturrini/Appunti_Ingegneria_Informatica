@@ -43,3 +43,6 @@ I **Transistor**
 Un transistor è un interruttore ad azionamento elettronico
 - estremamente precisi ed economici.
 - **ingresso ed uscita della stessa natura**, entrambe elettriche: è possibile usare l’**uscita di un transistor per pilotarne altri**.
+
+Liv. di astrazione slide 37.
+
