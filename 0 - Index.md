@@ -3,10 +3,12 @@
 - [x] **Algebra e Geometria**
 - [x] **Analisi Matematica**
 - [ ] **Fondamenti di Informatica**
-	- [x] [[Fondamenti di Informatica]]
-	- [ ] [[Linguaggio C]]
+	-  [[Fondamenti di Informatica]]
+	-  [[Linguaggio C]]
 ## Secondo Semestre
 - [ ] **Reti Logiche**
-	- [ ] [[Reti Logiche]]
+	-  [[Reti Logiche]]
 - [ ] **Analisi 2**
-- [ ] 
+- [ ] **Sistemi di softwhare a oggetti**
+	- [[Sistemi di software a oggetti]]
+	- 
