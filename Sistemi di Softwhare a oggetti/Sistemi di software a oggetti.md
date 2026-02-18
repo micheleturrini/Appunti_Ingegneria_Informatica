@@ -14,3 +14,6 @@ I collegamenti del linker vengono eseguiti a runtime rendendo il programma più 
 Perchè il codice possa funzionare su diversi processori la compilazione viene effettuata su JVM (java virtual machine) e poi tradotta nell'assembly specifico del processore.
 
 FARE APPUNTI PART SU JAVA
+
+
+
