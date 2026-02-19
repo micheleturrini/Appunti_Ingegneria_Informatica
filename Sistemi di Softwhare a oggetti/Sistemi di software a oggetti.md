@@ -87,3 +87,65 @@ Perm eseguire il programma devo attivare l'infrastruttura java
 javac MyProg.java
 ## Classi
 Il **nome** della classe **inizia con una maiuscola** (CamelCase) e deve essere contenuta in fun file con lo stesso nome .java
+
+Le classi **partizionano** lo spazio dei **nomi** (possono esistere nomi uguali in classi diverse)
+```java
+Math.sin(Math.PI/3)
+```
+
+## Documentazione
+La costruzione della **documentazione** è fatta in automatico da **javadoc** a patto che i commenti vengano fatti secondo la sintassi specifica.
+Es.
+```java
+/**
+*commento col doppio asterisco all'inizio
+*/
+
+/** File Esempio.java
+* Applicazione Java da linea di comando
+* Stampa la classica frase di benvenuto
+@author Enrico Denti
+@version 1.0, 02/02/2025
+*/
+```
+Per comodità è possibile utilizzare il markdown
+```java
+///Tre sbarre su ogni riga
+/// ## Titoli
+///- elenchi puntati
+```
+Per richiedere la generazione della documentazione si usa
+`javadoc –d docs Esempio0.java`  (-d indica la directory)
+
+## Tipi di Base
+**Boolean** (separato dagli interi) ammette solo **false** e **true** che non sono 0 e 1
+
+**Int** (le diverse lunghezze vengono standardizzate e la sintassi semplificata)
+- **byte**  (1 byte) -128 ... +127
+- **short**  (2 byte) -32768 ... +32767
+- **int** (4 byte) -2 10^9  …... +2 10^9
+- **long** (8 byte) -9 10^18 ……+9 10^18 
+**Float**
+- **float** (4 byte) - 10^45 ... +10^38
+- **double** (8 byte) -10^324 ... +10^308
+
+Sono ammessi solo gli assegnamenti che non generano una perdita di informazioni
+```java
+double x = 3.54F; /// permesso
+float f = 3.54; /// da errore
+```
+oppure posso fare un **cast**
+```java
+float f = (float) 3.54; 
+```
+
+**Caratteri**
+127 caratteri non bastano quindi si assegnano più byte a ogni carattere 1-4
+(1.114.112 caratteri)
+![[102-Linguaggi e piattaforme.pdf#page=81&rect=229,48,682,241|102-Linguaggi e piattaforme, p.81|300]]
+C'è ancora la corrispondenza diretta fra caratteri e numeri come in C.
+```java
+char ch = 'A';
+ch = 72;
+char cStran = '\u2122'
+```
