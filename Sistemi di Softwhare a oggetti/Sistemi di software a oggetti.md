@@ -149,3 +149,30 @@ char ch = 'A';
 ch = 72;
 char cStran = '\u2122'
 ```
+
+
+
+
+
+## il Deployment del softwhare
+L'eseguibile non è un file unico ma un **archivio zippato .jar** (non da estrarre) che contiene
+- Per **librerie**, bastano le classi (file .class)
+- Per **applicazioni**, occorre anche specificare la posizione del main (in un file di testo)
+![[103-Deployment.pdf#page=4&rect=540,208,703,431|103-Deployment, p.4|150]]
+Per creare un file JAR come archivio di classi (zip) `jar cf nomearchivio.jar classi`
+- un elenco di classi (.class) da includerem DAFINIRE
+
+Per creare un jar eseguibile
+`jar cmf info.txt nomeapp.jar classi`dove info.txt contiene "Main-Class: NomeclasseMain"
+oppure
+`jar cef NomeclasseMain nomeapp.jar classi`
+`jar --create --main-class NomeclasseMain --file nomeapp.jar classi`
+es.
+`jar cmf infoApp MyApp.jar Esempio.class CodFisc.class`
+`jar cmf infoApp MyApp.jar Esempio.class *.class` (prende tutte e sole le classi contenute nella cartella)
+
+Per eseguire un jar aprendo il terminale `java -jar nomefile.jar` 
+
+Per compilare includendo delle librerie.
+![[103-Deployment.pdf#page=14&rect=10,56,325,429|103-Deployment, p.14||200]]
+Vedi esempio comoleto
