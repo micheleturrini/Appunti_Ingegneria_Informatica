@@ -94,7 +94,7 @@ Questi gate possono essere ottenuti combinandone altri ma per comodità e ottimi
 ## Diagrammi a occhio
 Il diagramma riposta anche la fase di transito del transistor.
 ![[1_segnali_codifica.pdf#page=50&rect=87,5,653,237|1_segnali_codifica, p.50|400]]
-## bus di segnali
+## Bus di segnali
 L’**evoluzione di un gruppo di bit** può anche essere descritta scrivendone la **configurazione binaria nel diagramma.**
 Un gruppo di segnali viene anche detto un **bus**.
 Quando il valore **cambia** le linee si **intrecciano** (**non rappresentano il valore dei bit**)
@@ -118,5 +118,40 @@ I ritardi sono:
 > [!danger]
 > **NON** si possono **collegare tra loro** **uscite** di gate
 
-## Il codice binario
+## La rappresentazione Binaria
 Funzione dall’insieme delle 2^n configurazioni di n bit ad un insieme di M informazioni (simboli alfanumerici, colori, numeri, ecc.).
+
+
+**es**. codifica della **posizione**
+Vogliamo conoscere in ogni instante la posizione di un carrello lungo una rotaia.
+![[1_segnali_codifica.pdf#page=74&rect=97,0,563,304|1_segnali_codifica, p.74|400]]
+Potrei codificare le posizioni come **numeri binari** ma basterebbe un lievissimo **disallineamento** dei riquadri per farmi leggere un numero **sbagliato**
+> [!Codice di Gray]
+> La soluzione è avere una codifica in cui **cambia un solo bit alla volta**
+
+![[1_segnali_codifica.pdf#page=75&rect=89,-1,685,368|1_segnali_codifica, p.75|400]]
+### La conversione di codice
+![[1_segnali_codifica.pdf#page=77&rect=57,225,614,451|1_segnali_codifica, p.77|400]]
+Il **codice interno** è di norma non ridondante per minimizzare il numero di bit da elaborare e da memorizzare.
+Il **codice esterno** è di norma 
+- **ridondante**, per semplificare la generazione e l’interpretazione delle informazioni
+- **standard**, per rendere possibile la connessione di macchine realizzate da costruttori diversi.
+
+**Codice proprietario** - Realizzato da un'azienda per ottimizzare e proteggere il suo mercato
+**Codice standard** - Codice scelto da una norma di legge o da una marcata superiorità (PDF)
+
+### Il codice ASCII
+Primo standard per i caratteri basato su una codifica a 7 bit.
+Il numero di caratteri è **largamente insufficiente**.
+Viene poi esteso aggiungendo altri caratteri ma ormai è datato.
+### I codici UNICODE
+Le architetture sono ottimizzate per operare su gruppi di byte (= 8 bit) che seguono le potenze di 2.
+Sono stati quindi definiti 3 standard per mappare un carattere Unicode da 21 bit:
+- **UTF-32**, ovvero usare **32 bit** (4 byte) per codificare i 21 bit necessari per ogni carattere, aggiungendo 11 volte «0» a sinistra.
+- **UTF-16**, usare 2 byte (= **16 bit**) per i 63,000 caratteri Unicode più comuni, e **4 byte** per i restanti caratteri
+- **UTF-8**, ovvero usare **1 byte** per i 128 caratteri ASCII (**retrocompatibile con ASCII**), **2 byte** per altri 1920 caratteri relativamente comuni (lingue europee e arabe), **3 e 4 byte** per gli altri caratteri più rari.
+![[1_segnali_codifica.pdf#page=83&rect=20,18,711,462|1_segnali_codifica, p.83|600]]
+(CAPIRE LA STRUTTURA)
+
+### Bitmap
+DA FARE
