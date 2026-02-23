@@ -47,59 +47,66 @@ Un transistor è un interruttore ad azionamento elettronico
 **Livelli di astrazione**
 ![[1_segnali_codifica.pdf#page=35&rect=12,5,703,456|1_segnali_codifica, p.35|500]]
 
-## La rete logica
+## Gli elementi di una rete
 Una rete logica è quindi un’**astrazione per una combinazione di interruttori** che elaborano segnali binari.
-I componenti elementari sono i **Gate**
+I componenti elementari sono i **Gate** (transistor astratti a entità teoriche)
 ![[1_segnali_codifica.pdf#page=38&rect=24,28,688,212|1_segnali_codifica, p.38|500]]
 
-Il numero di funzioni diverse con n ingressi e un uscita binaria sono 
-$$2^(2^(n))$$
+Il numero di funzioni diverse con n ingressi e un uscita binaria sono  $2^{2^n}$
 ### Gate con 1 ingresso
-Slide OSUCRa
-![[1_segnali_codifica.pdf#page=39&rect=261,147,456,232|1_segnali_codifica, p.39|300]]
-L'unica funzione interessante è il **gate not**
+con un solo ingresso ci sono 4 opzioni
+![[1_segnali_codifica.pdf#page=39&rect=261,147,456,232|1_segnali_codifica, p.39|200]]
+Tolte le funzioni prive di significato (identità e costanti) l'unica funzione interessante è f2.
+**Il gate NOT**
 ![[1_segnali_codifica.pdf#page=40&rect=66,16,601,140|1_segnali_codifica, p.40|400]]
 Restituisce sempre l'opposto
-
 ### Gate con 2 ingressi
-![[1_segnali_codifica.pdf#page=42&rect=76,193,645,341|1_segnali_codifica, p.42]]
-Le uniche funzioni commutative e non banali sono quelle cerchiate in rosso.
+Ci sono 16 combinazioni.
+Tolte l'identità, le costanti, i NOT e le funzioni non commutative le uniche funzioni commutative e non banali sono quelle cerchiate in rosso.
+![[1_segnali_codifica.pdf#page=42&rect=76,193,645,341|1_segnali_codifica, p.42|500]]
 
 **Il gate AND**
 è l'astrazione di due interruttori in **serie**
-![[1_segnali_codifica.pdf#page=43&rect=67,10,608,195|1_segnali_codifica, p.43]]
-
+![[1_segnali_codifica.pdf#page=43&rect=67,10,608,195|1_segnali_codifica, p.43|400]]
 ![[1_segnali_codifica.pdf#page=43&rect=395,217,712,413|1_segnali_codifica, p.43|200]]
+L’uscita assume valore logico «1» se **entrambi gli ingressi hanno valore «1».**
 
 **Il gate OR**
+è l’astrazione di due interruttori in **parallelo**
+![[1_segnali_codifica.pdf#page=44&rect=65,9,611,198|1_segnali_codifica, p.44|400]]
 ![[1_segnali_codifica.pdf#page=44&rect=373,199,710,458|1_segnali_codifica, p.44|200]]
-![[1_segnali_codifica.pdf#page=44&rect=65,9,611,198|1_segnali_codifica, p.44]]
+L’uscita assume valore logico «1» se almeno un ingresso ha valore «1».
 
-And e or possono avere piu ingressi ma il loro senso non cambia
-Il numero di ingressi è il fan-in
+> [!important]
+> And e or possono avere **più ingressi** ma il loro **senso non cambia**
+Il numero di ingressi è il **fan-in**
 
-il Gate Xor
-![[1_segnali_codifica.pdf#page=46&rect=373,199,715,453|1_segnali_codifica, p.46]]
-![[1_segnali_codifica.pdf#page=46&rect=68,8,612,194|1_segnali_codifica, p.46]]
-
+**Il Gate XOR**
+è l’astrazione di due **deviatori**, ovvero interruttori che chiudono il circuito verso uno di due possibili percorsi.
+![[1_segnali_codifica.pdf#page=46&rect=373,199,715,453|1_segnali_codifica, p.46|200]]
+![[1_segnali_codifica.pdf#page=46&rect=68,8,612,194|1_segnali_codifica, p.46|400]]
 Somma in complemento a due
 Se il numero di 1 è dispari restituisce 1
 
-Le restanti funzioni sono il not delle precedenti
-![[1_segnali_codifica.pdf#page=48&rect=68,10,609,458|1_segnali_codifica, p.48]]
-
+**Le restanti funzioni sono il NOT delle precedenti**
+![[1_segnali_codifica.pdf#page=48&rect=68,10,609,458|1_segnali_codifica, p.48|400]]
 Questi gate possono essere ottenuti combinandone altri ma per comodità e ottimizzazione viene realizzato un operatore dedicato.
-
 ## Diagrammi a occhio
-![[1_segnali_codifica.pdf#page=50&rect=335,0,657,238|1_segnali_codifica, p.50|300]]
-
-
+Il diagramma riposta anche la fase di transito del transistor.
+![[1_segnali_codifica.pdf#page=50&rect=87,5,653,237|1_segnali_codifica, p.50|400]]
 ## bus di segnali
-le linee quando si intrecciano dicono che il bus cambia valore ma non rappresentano il valore dei bit
-![[1_segnali_codifica.pdf#page=51&rect=10,4,659,198|1_segnali_codifica, p.51|400]]
-
+L’**evoluzione di un gruppo di bit** può anche essere descritta scrivendone la **configurazione binaria nel diagramma.**
+Un gruppo di segnali viene anche detto un **bus**.
+Quando il valore **cambia** le linee si **intrecciano** (**non rappresentano il valore dei bit**)
+es. Bus Colore $COLORE[2..0]$
+![[1_segnali_codifica.pdf#page=51&rect=10,4,659,198|1_segnali_codifica, p.51|500]]
 ## Ritardi di propagazione
-![[1_segnali_codifica.pdf#page=52&rect=46,2,686,197|1_segnali_codifica, p.52|400]]
+I transistor hanno un **limite fisico di velocità**
+
+![[1_segnali_codifica.pdf#page=52&rect=46,2,686,197|1_segnali_codifica, p.52|500]]
+I ritardi sono:
+- **INERZIALI** (un impulso di **durata inferiore** a $\tau_p$ su uno degli ingressi **non appare in uscita**.)
+- **SEMPLICI** (quando cambia un ingresso **l'uscita non cambia istantaneamente**.)
 ## Possibili configurazioni
 - In **serie** ovvero l’uscita del gate a monte è uno degli ingressi del gate a valle
 ![[1_segnali_codifica.pdf#page=53&rect=430,324,659,379|1_segnali_codifica, p.53|200]]
