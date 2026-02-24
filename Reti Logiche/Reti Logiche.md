@@ -139,7 +139,6 @@ Il **codice esterno** è di norma
 
 **Codice proprietario** - Realizzato da un'azienda per ottimizzare e proteggere il suo mercato
 **Codice standard** - Codice scelto da una norma di legge o da una marcata superiorità (PDF)
-
 ### Il codice ASCII
 Primo standard per i caratteri basato su una codifica a 7 bit.
 Il numero di caratteri è **largamente insufficiente**.
@@ -151,7 +150,7 @@ Sono stati quindi definiti 3 standard per mappare un carattere Unicode da 21 bit
 - **UTF-16**, usare 2 byte (= **16 bit**) per i 63,000 caratteri Unicode più comuni, e **4 byte** per i restanti caratteri
 - **UTF-8**, ovvero usare **1 byte** per i 128 caratteri ASCII (**retrocompatibile con ASCII**), **2 byte** per altri 1920 caratteri relativamente comuni (lingue europee e arabe), **3 e 4 byte** per gli altri caratteri più rari.
 ![[1_segnali_codifica.pdf#page=83&rect=20,18,711,462|1_segnali_codifica, p.83|600]]
-(CAPIRE LA STRUTTURA)
-
 ### Bitmap
-DA FARE
+Rappresentazione binaria dei **simboli grafici dei caratteri**
+Esistono diverse colorazioni che variano le dimensioni del carattere in memoria.
+Un **font** è un gruppo di caratteri bitmap.
