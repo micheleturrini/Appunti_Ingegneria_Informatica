@@ -10,5 +10,5 @@
 	-  [[Reti Logiche]]
 - [ ] **Analisi 2**
 - [ ] **Sistemi di softwhare a oggetti**
-	- [[Sistemi di software a oggetti]]
+	- [[Ingegneria informatica/Sistemi di Softwhare a oggetti/Sistemi di software a oggetti]]
 	- 
