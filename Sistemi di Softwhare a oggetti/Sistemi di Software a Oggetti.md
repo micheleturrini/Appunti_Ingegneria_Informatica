@@ -255,3 +255,45 @@ Main
 - non occorre creare esplicitamente il contatore perché esso coincide con la **classe**, che è un’entità **statica e preesistente**
 - non occorre alcuna include: le **classi vengono caricate al momento del bisogno**, cercandole nel classpath
 Collaudo
+- il collaudo è nativo tramite la funzione assert (il programma restituisce errore se la condizione non si verifica)
+
+![[105-Classi e oggetti.pdf#page=34&rect=16,48,703,435|105-Classi e oggetti, p.34|500]]
+#### L'ADT
+In **C**
+```cpp
+typedef struct {int value;} contatore;
+void reset(contatore*);
+void inc(contatore*);
+int getValue(contatore);
+
+void reset(contatore* pc){ pc -> value =0; }
+void inc(contatore* pc) { (pc ->value)++; }
+int getValue(contatore c){ return c.value; }
+
+```
+in **JAVA**
+```java
+public class Counter {
+	private int value;
+	public void reset() { value = 0; }
+	public void inc() { value++; }
+	public int getValue(){ return value; }
+}
+
+//main
+public class MyMain {
+	public static void main(String[] args) {
+	int v1, v2; Counter c1, c2;
+	c1 = new Counter(); c2 = new Counter();
+	c1.reset(); c2.reset();
+	c1.inc(); c1.inc(); c2.inc();
+	v1 = c1.getValue(); v2 = c2.getValue();
+	System.out.println(v1); System.out.println(v2);
+	}
+}
+```
+
+GLI OGGETTI SONO ISTANZE DI UN TIPO
+
+
+Sistema appunti e capisci differenza fra oggetti e Classi e costruttori
