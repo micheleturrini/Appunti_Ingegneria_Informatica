@@ -193,5 +193,82 @@ Il "-" del **don't care** è esclusivamente per il progettista (il bit resta sol
 Es. il convertitore BCD/**7 Segmenti**
 Sono in realtà 7 funzioni in parallelo di 4 ingressi
 (non tutte le combinazioni di segmenti hanno senso)
-## L'algebra di commutazione
-è un'algebra binaria basata solo su OR, AND e NOT.
+## Algebre Binarie
+sono sistemi matematici formati da un insieme di **operatori** definiti assiomaticamente ed atti a descrivere con una **espressione** **ogni possibile funzione di variabili binarie**.
+### Algebra di commutazione
+è un'algebra **binaria** {0, 1} basata solo su **OR** "+", **AND** "." e **NOT** " ’".
+#### Da Schemi logici a Espressioni
+**Schema logico** - **Descrizione grafica** di una struttura formata da simboli di gate e da collegamenti tra le loro linee di ingresso e di uscita.
+> [!Relazione]
+> Ogni **struttura** formata da gate connessi in serie e/o in parallelo **è descritta da una sola espressione**
+
+![[2_reti_combinatorie.pdf#page=23&rect=12,11,703,227|2_reti_combinatorie, p.23|500]]
+#### Da Espressioni a Schemi logici
+> [!Relazione]
+> Ogni **espressione** descrive **una sola struttura** formata da gate connessi in serie e/o in parallelo.
+
+![[2_reti_combinatorie.pdf#page=25&rect=117,355,702,452|2_reti_combinatorie, p.25|400]]
+**Multiplexer**
+![[2_reti_combinatorie.pdf#page=25&rect=45,131,712,286|2_reti_combinatorie, p.25|500]]
+
+**Valutazione di una espressione di n variabili per una n-pla di valori**
+- Si sostituisce ad ogni variabile il valore che ha nella n-upla
+- **Partendo dalle parentesi più interne**, si sostituisce ogni operazione con il suo risultato fino ad ottenere o la costante 0 o la costante 1.
+valutando l'espressione per tutte le possibili combinazioni ottengo la tabella delle verità.
+> [!success]
+> Il procedimento di **ANALISI** (da struttura a comportamento) ha quindi un **risultato univoco**
+#### Da TdV a Espressioni
+> [!problem]
+> Problema della **SINTESI**: partendo da un comportamento dato quale scegliere tra i **vari schemi logici** che lo realizzano?
+
+Si utilizzano le **espressioni canoniche**:
+- **Prima forma canonica (SP - Somma di Prodotti)**:
+    - Ogni funzione di n variabili binarie è descritta da una **somma logica di tanti prodotti quanti sono i casi in cui la funzione vale 1**.
+    - In ciascun prodotto (chiamato **mintermine**), appare ogni variabile: **in forma vera se vale 1, in forma negata se vale 0**.
+- **Seconda forma canonica (PS - Prodotto di Somme)**:
+    - Ogni funzione è descritta da un **prodotto logico di tante somme quante sono le configurazioni in cui la funzione vale 0**.
+    - In ciascuna somma (chiamata **maxtermine**), appare ogni variabile: **in forma vera se vale 0, in forma negata se vale 1**.
+**Ogni rete combinatoria** può in principio essere **realizzata con due soli livelli di gate** (non si considerano i NOT).
+
+Esempio **Full Adder**
+è una rete logica fondamentale per le operazioni aritmetiche, dotata di 3 ingressi (a,b,r) e 2 uscite (S,R)
+- S = 1 quando il numero di ingressi = 1 è dispari
+- R = 1 quando ci sono 2 o più 1
+![[2_reti_combinatorie.pdf#page=35&rect=42,22,324,447|2_reti_combinatorie, p.35|150]]
+Sintesi **SP**
+- S=a′b′r+a′br′+ab′r′+abr.
+- R=a′br+ab′r+abr′+abr.
+*Se uno stesso gate **compare in più espressioni,** nello schema fisico **lo si inserisce una volta sola collegando la sua uscita a più** ingressi a valle.*
+Sintesi **PS**
+- S=(a+b+r)(a+b′+r′)(a′+b+r′)(a′+b′+r).
+- R=(a+b+r)(a+b+r′)(a+b′+r)(a′+b+r).
+
+**Notazione Simbolica (Σ e Π)**
+- I **mintermini** sono indicati con **m(i)** e i **maxtermini** con **M(i)**, dove i è l'indice della configurazione corrispondente.
+- Mintermini e maxtermini sono complementari tra loro.
+- L'operatore **Σ** denota la **somma** di **mintermini**, l'operatore **Π** il **prodotto** di **maxtermini**; il pedice indica il numero di variabili.
+- Per il Full Adder, la notazione compatta è:
+    - $S(a,b,r) = \Sigma_3 m(1,2,4,7) = \Pi_3 M(0,3,5,6)$. 
+    - $R(a,b,r) = \Sigma_3 m(3,5,6,7) = \Pi_3 M(0,1,2,4).$
+ **Equivalenza e Funzioni Incomplete**
+- Due espressioni sono equivalenti (E1​=E2​) se e solo **se descrivono la stessa funzione** (TdV).
+- **Complessità differente**: Espressioni equivalenti possono generare schemi logici di costo molto diverso.
+- **Funzioni Incomplete (Don't Care)**: Per le reti come l'Encoder (che traduce da codice "1 su N" a binario), alcune configurazioni di ingresso sono impossibili.
+    - Assegnando valori strategici (1 invece di 0) a queste configurazioni "indifferenti", si possono ottenere espressioni equivalenti ma molto più semplici.
+
+Es. **Encoder** (trascodifica da 1/n a binario)
+![[2_reti_combinatorie.pdf#page=43&rect=84,18,643,350|2_reti_combinatorie, p.43|400]]
+
+Posso ridurre la complessità utilizzando **espressioni di equivalenza**
+- **Commutativa**: $x+y = y+x$ e $x \cdot y = y \cdot x$
+* **Associativa**: $(x+y)+z = x+y+z$ e $(x \cdot y) \cdot z = x \cdot y \cdot z$ (utile per ridurre il fan-in) 
+* **Distributiva**: $x \cdot (y+z) = (x \cdot y) + (x \cdot z)$ e, tipica dell'algebra binaria, $x + (y \cdot z) = (x+y) \cdot (x+z)$
+* **Idempotenza**: $x+x = x$ e $x \cdot x = x$ 
+* **Identità**: $x+0 = x$ e $x \cdot 1 = x$ 
+* **Limite**: $x+1 = 1$ e $x \cdot 0 = 0$
+* **Involuzione**: $(x')' = x$
+* **Limitazione**: $x+x' = 1$ e $x \cdot x' = 0$
+* **Combinazione**: $xy + xy' = x$ e $(x+y) \cdot (x+y') = x$ (proprietà fondamentale per la semplificazione algebrica)
+* **Leggi di De Morgan**: $(x+y)' = x' \cdot y'$ e $(x \cdot y)' = x' + y'$ Permettono di sostituire gate OR con gate AND (e viceversa) negando l'uscita e tutti gli ingressi 
+* **Consenso**: $xy + x'z + yz = xy + x'z$ e $(x+y) \cdot (x'+z) \cdot (y+z) = (x+y) \cdot (x'+z)$.
+Non è facile definire la rete migliore (più veloce, più economica...)
