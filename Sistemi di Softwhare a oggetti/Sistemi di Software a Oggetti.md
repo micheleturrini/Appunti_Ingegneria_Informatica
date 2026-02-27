@@ -252,7 +252,7 @@ Contatore
 	- lo **stato** è **privato** per **proteggere** il valore
 - è tutto **statico** perché la memoria **non** è allocata **dinamicamente**
 Main
-- non occorre creare esplicitamente il contatore perché esso coincide con la **classe**, che è un’entità **statica e preesistente**
+- non occorre creare esplicitamente il contatore perché esso coincide con la **classe**, che è un’entità **statica e preesistente** (**esiste solo un contatore**)
 - non occorre alcuna include: le **classi vengono caricate al momento del bisogno**, cercandole nel classpath
 Collaudo
 - il collaudo è nativo tramite la funzione assert (il programma restituisce errore se la condizione non si verifica)
@@ -293,7 +293,6 @@ public class MyMain {
 }
 ```
 
-GLI OGGETTI SONO ISTANZE DI UN TIPO
 
 
 Sistema appunti e capisci differenza fra oggetti e Classi e costruttori
