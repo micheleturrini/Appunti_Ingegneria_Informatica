@@ -154,3 +154,44 @@ Sono stati quindi definiti 3 standard per mappare un carattere Unicode da 21 bit
 Rappresentazione binaria dei **simboli grafici dei caratteri**
 Esistono diverse colorazioni che variano le dimensioni del carattere in memoria.
 Un **font** è un gruppo di caratteri bitmap.
+
+# Le reti logiche
+Modello astratto composto di **Gate** che realizza comportamenti complessi.
+![[2_reti_combinatorie.pdf#page=2&rect=165,120,549,289|2_reti_combinatorie, p.2|300]]
+> [!Convenzioni]
+> **ingressi** **a sinistra, uscite a destra, nomi dei segnali di ingresso/uscita della rete indicati all’interno della rete**
+> > [!danger]
+> è FONDAMENTALE scrivere sempre i **nomi degli ingressi** di una macchina
+## Macchina combinatoria
+L'**output dipende solo dagli ingressi**
+
+Es Il **DISPLAY A 7 SEGMENTI**
+Il bit più significativo va collegato a D
+![[2_reti_combinatorie.pdf#page=3&rect=136,246,579,467|2_reti_combinatorie, p.3|300]]
+## Macchina sequenziale
+L'output dipende anche **dall'ordine di input**.
+
+Es. La **CASSAFORTE**
+per aprirla (z = 1) bisogna premere in sequenza i tasti collegati a x e y
+![[2_reti_combinatorie.pdf#page=6&rect=444,11,678,130|2_reti_combinatorie, p.6|200]]
+
+> [!riassunto]
+> Se in presenza di una **stessa configurazione** di ingressi la rete deve fornire **2 o più uscite diverse**, allora è una rete **sequenziale**, altrimenti è una rete **combinatoria**
+## Composizione di macchine
+La **disposizione in serie e/o in parallelo** di reti logiche combinatorie è ancora una rete logica combinatoria.
+Per progettare una rete con M uscite si possono quindi progettare **M reti con una sola uscita**, operanti in **parallelo**.
+![[2_reti_combinatorie.pdf#page=9&rect=78,11,721,295|2_reti_combinatorie, p.9|400]]
+## Funzioni complete e incomplete
+Funzione **COMPLETA** - Per **ognuno dei possibili ingressi ha un'uscita** definita
+Funzione **INCOMPLETA** - vi è almeno una configurazione degli ingressi per cui **non è specificato il valore dell’uscita**
+
+La **tabella delle verità** descrive univocamente il comportamento di una rete combinatoria.
+Se una funzione è incompleta righe non definite possono essere omesse oppure avere output "-".
+Il "-" del **don't care** è esclusivamente per il progettista (il bit resta solo 1  o 0)
+![[2_reti_combinatorie.pdf#page=12&rect=14,8,621,199|2_reti_combinatorie, p.12|400]]
+
+Es. il convertitore BCD/**7 Segmenti**
+Sono in realtà 7 funzioni in parallelo di 4 ingressi
+(non tutte le combinazioni di segmenti hanno senso)
+## L'algebra di commutazione
+è un'algebra binaria basata solo su OR, AND e NOT.
