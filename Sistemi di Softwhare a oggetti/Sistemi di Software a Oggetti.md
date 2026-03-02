@@ -292,7 +292,19 @@ public class MyMain {
 	}
 }
 ```
-
-
-
-Sistema appunti e capisci differenza fra oggetti e Classi e costruttori
+- **La classe come "Progetto":** La classe definisce un modello che specifica la struttura interna e il comportamento condiviso.
+- **L'oggetto come "Istanza":** Ogni volta che si usa il timbro, si crea un nuovo oggetto distinto (un'istanza) con la propria identità e il proprio stato indipendente.
+- **Passaggio dei parametri implicito:** Poiché dati e funzioni sono uniti, le funzioni interne alla classe accedono direttamente ai dati dell'oggetto senza bisogno di passare puntatori come argomenti.
+> [!Gli OGGETTI]
+> Gli oggetti sono **istanze di una classe**
+   Se la classe è il progetto di una macchina l'oggetto è la macchina stessa
+   la creazione di un nuovo oggetto (**allocazione dinamica**) è affidata all'operatore **new**
+### Le frazioni
+```java
+public class Frazione {
+	private int num, den;
+	public void init(int n, int d){ num = n; den = d; }
+	public int getNum() { return num; }
+	public int getDen() { return den; }
+	public boolean equals(Frazione other){ return … // condizione di equivalenza } public Frazione minTerm(){ return … // la nuova frazione ridotta } }
+```
