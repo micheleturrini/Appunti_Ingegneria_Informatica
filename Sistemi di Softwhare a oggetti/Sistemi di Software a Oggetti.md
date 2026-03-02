@@ -171,6 +171,8 @@ ch = 72;
 char cStran = '\u2122'
 ```
 
+- **Var** (tipo generico) permette l'inferenza del tipo deducendolo dal contesto --> snellisce la sintassi ma va usato solo quando è facile capire il tipo
+
 **Assegnamenti e Cast:**
 Sono ammessi implicitamente solo gli assegnamenti che non generano una perdita di informazioni.
 ```java
@@ -212,7 +214,6 @@ Generazione automatica manuale HTML: `javadoc -d docs NomeFile.java`.
 * **Pattern "Make":** Si aggira il problema unendo i due step in un'unica funzione `make()` (che prefigura i "costruttori" dei linguaggi a oggetti).
 * **Collaudo (Testing):** Abbandono dei `printf` manuali a favore delle **asserzioni** (`<assert.h>`), per verificare in automatico i risultati attesi.  (es. `assert(getValue() == 1);`)
 ## Classi e Oggetti
-### Contatore
 seguendo l'esempio di un contatore:
 #### Singleton
 In **C**
@@ -292,19 +293,74 @@ public class MyMain {
 	}
 }
 ```
-- **La classe come "Progetto":** La classe definisce un modello che specifica la struttura interna e il comportamento condiviso.
+
+> [!important]
+> Contents- **La classe come "Progetto":** La classe definisce un modello che specifica la struttura interna e il comportamento condiviso.
 - **L'oggetto come "Istanza":** Ogni volta che si usa il timbro, si crea un nuovo oggetto distinto (un'istanza) con la propria identità e il proprio stato indipendente.
 - **Passaggio dei parametri implicito:** Poiché dati e funzioni sono uniti, le funzioni interne alla classe accedono direttamente ai dati dell'oggetto senza bisogno di passare puntatori come argomenti.
 > [!Gli OGGETTI]
 > Gli oggetti sono **istanze di una classe**
    Se la classe è il progetto di una macchina l'oggetto è la macchina stessa
    la creazione di un nuovo oggetto (**allocazione dinamica**) è affidata all'operatore **new**
-### Le frazioni
+#### Il costruttore
+seguendo l'esempio di una frazione:
 ```java
 public class Frazione {
-	private int num, den;
-	public void init(int n, int d){ num = n; den = d; }
-	public int getNum() { return num; }
-	public int getDen() { return den; }
-	public boolean equals(Frazione other){ return … // condizione di equivalenza } public Frazione minTerm(){ return … // la nuova frazione ridotta } }
+    private int num, den;
+    // Costruttore primario a due argomenti
+    public Frazione(int n, int d) {
+        num = n;
+        den = d;
+    }
+    // Costruttore ausiliario a un argomento (per numeri interi)
+    public Frazione(int n) {
+        num = n;
+        den = 1;
+    }
+    public int getNum() { return num; }
+    public int getDen() { return den; }   
+    // Metodi omessi per brevità: equals() e minTerm()
+}
+
+
+// Esempio d'uso
+public class MyMain {
+    public static void main(String[] args) {
+        Frazione f1 = new Frazione(3,4); // costruttore primario
+        Frazione f2 = new Frazione(2);   // costruttore ausiliario (den=1)
+        System.out.println(f1.getNum() + "/" + f1.getDen()); // L'operatore + concatena e converte i numeri in stringhe
+    }
+}
+```
+Inizializzare significa assegnare un valore iniziale a un oggetto che esiste già in memoria.
+Creare significa esclusivamente allocare la memoria necessaria per un nuovo oggetto.
+Java permette di **creare un oggetto senza inizializzarlo** --> alta probabilità di introdurre bug.
+**Costruire** rappresenta l'unione logica delle due azioni, ovvero **creare l'oggetto e contemporaneamente inizializzarlo**.
+
+- Il metodo **costruttore** ha sempre **nome uguale alla classe**
+- viene **invocato automaticamente** ogni volta che si istanzia un **nuovo oggetto**
+- non può **mai essere richiamato** esplicitamente **dall'utente**
+- si possono creare costruttori diversi (stesso nome) con parametri diversi
+- il costruttore di default (no argomenti) inizializza le **variabili numeriche a zero** e i **riferimenti a** `null`
+## Riferimenti
+- **Puntatori (Stile C):** Contengono l'i**ndirizzo di memoria di una variabile** e permettono di **manipolarlo liberamente** tramite l'**aritmetica** dei puntatori. Sono potenti ma **pericolosi**, poiché richiedono il **dereferencing esplicito** (tramite l'operatore `*`) ed espongono al rischio di **invadere aree di memoria** non pertinenti.
+- **Riferimenti (Java):** Rappresentano un'astrazione di più alto livello. **Contengono l'indirizzo di un oggetto** ma **non consentono di vederlo né di manipolarlo**.
+    - **Non esiste l'aritmetica** dei puntatori, garantendo così l'inviolabilità della barriera di astrazione.
+    - Il **dereferencing avviene in automatico** tramite la notazione puntata (es. `c.inc()`), azzerando i rischi del dereferencing manuale.
+- **Tipi di Dati (Java)** Il linguaggio impone il **passaggio per valore per i tipi primitivi e il passaggio per riferimento per gli oggetti**.
+
+**Operazioni sui Riferimenti e Aliasing**
+- **Dichiarazione:** Definirli senza inizializzarli (es. `Counter c;`).
+- **Assegnazione a null:** Assegnare la costante `null` per indicare che il riferimento non punta a nulla. PERICOLOSO
+- **Creazione:** Usarli per allocare nuovi oggetti tramite la keyword `new` (es. `c = new Counter();`).
+- **Confronto:** Verificare se due riferimenti puntano al medesimo indirizzo.
+- **Aliasing:** Assegnare un riferimento a un altro (es. `Counter c2 = c1;`).
+Se si assegna `c1` a `c2`, entrambi i riferimenti punteranno allo stesso identico oggetto in memoria. Di conseguenza, un'operazione che muta lo stato dell'oggetto tramite `c2` (es. `c2.inc();`) si rifletterà istantaneamente anche su `c1`.
+```java
+Counter c1 = new Counter();
+c1.reset(); 
+c1.inc(); // c1 ora vale 1
+Counter c2 = c1; // Creazione dell'alias
+c2.inc(); // Incrementa c2
+System.out.println(c1.getValue()); // Stamperà 2, perché c1 e c2 sono lo stesso oggetto
 ```
