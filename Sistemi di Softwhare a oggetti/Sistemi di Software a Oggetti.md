@@ -364,3 +364,20 @@ Counter c2 = c1; // Creazione dell'alias
 c2.inc(); // Incrementa c2
 System.out.println(c1.getValue()); // Stamperà 2, perché c1 e c2 sono lo stesso oggetto
 ```
+
+**Confronto: Identità (**`==`**) vs. Uguaglianza (**`equals`**)**
+- **Identità (`==`):** In Java, l'operatore `==` **confronta esclusivamente l'identità di due oggetti**. L'espressione `c1 == c2` è vera se e solo se `c1` e `c2` sono alias, **ovvero puntano allo stesso identico spazio di memoria**. Se due oggetti hanno lo **stesso contenuto** ma sono **istanze distinte** create con due `new` separati, il confronto con `==` darà `false`.
+- **Uguaglianza Semantica (`equals`):** Quando serve confrontare il "valore" o il significato logico di due oggetti, il progettista deve specificare un **criterio personalizzato** implementando il metodo `equals`.
+es. counter
+```java
+public boolean equals(Counter x) {return value == x.value;}
+```
+ *due Counter sono uguali se il valore dell’oggetto corrente («questo») è uguale a quello dell’oggetto ricevuto come argomento" («l’altro»)*
+
+Per meglio evidenziare la simmetria fra i due oggetti del confronto si usa
+- `this` serve a denotare esplicitamente **l'oggetto corrente**
+- `that` **non è una parola chiave** del linguaggio. È una convenzione, ovvero un nome di variabile scelto liberamente dal programmatore per indicare l'**oggetto ricevuto come argomento**.
+```java
+public boolean equals(Counter that) {this.value == that.value;}
+```
+*Essendo all'interno della classe posso usare that.value*
