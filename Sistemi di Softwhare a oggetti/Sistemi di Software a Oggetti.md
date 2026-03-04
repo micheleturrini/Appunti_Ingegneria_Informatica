@@ -381,3 +381,73 @@ Per meglio evidenziare la simmetria fra i due oggetti del confronto si usa
 public boolean equals(Counter that) {this.value == that.value;}
 ```
 *Essendo all'interno della classe posso usare that.value*
+
+la keyword this si utilizza anche nei costruttori
+```java
+public Counter() {this.value = 1; }
+```
+Eclipse può generare i costruttori automaticamente
+
+La keyword `this` può essere utilizzata per **richiamare un costruttore dall'interno di un altro costruttore della stessa classe**.
+```java
+public class Point {
+    double x, y, z;
+    // Costruttore a 3 argomenti (il caso più generale)
+    public Point(double x, double y, double z) {
+        this.x = x; this.y = y; this.z = z;
+    }
+    // Costruttore a 2 argomenti: richiama quello a 3 argomenti
+    public Point(double x, double y) {
+        this(x, y, 0); 
+    }
+    // Costruttore a 1 argomento: richiama quello a 2 argomenti
+    public Point(double x) {
+        this(x, 0); 
+    }
+}
+```
+- economia di codice
+- collaudabilità
+- single entry
+
+**Pre-inizializzazioni**
+Quando ci sono **inizializzazioni** che sono identiche per tutti i costruttori è possibile specificarle **direttamente nella dichiarazione del campo**.
+```java
+public class Point {
+    double x, y, z = 18; // z è pre-inizializzato
+    // ...
+}
+```
+
+**Incapsulamento e Accesso ai Campi Privati**
+Java **permette** di **violare l'incapsulamento** nel definire i metodi di una classe
+```java
+public boolean equals(Frazione that){
+	return this.num * that.den == this.den * that.num;
+}
+```
+Una good practice è utilizzare comunque i getter
+```java
+public class Frazione {
+    private int num, den;
+    
+    public boolean equals(Frazione that) {
+        // Incapsulamento rispettato sia per "this" che per "that"
+        return this.getNum() * that.getDen() == this.getDen() * that.getNum();
+    }
+}
+```
+
+**Overloading di Funzioni**
+- in Java anche le funzioni ordinarie possono essere **omonime** all'interno della stessa classe, a condizione che siano **distinguibili dalla lista degli argomenti** (firme diverse).
+- **Il tipo di ritorno**, da solo, **non è sufficiente** per distinguere due metodi omonimi.
+- **Obiettivo:** Evitare la proliferazione di **nomi diversi** (es. `inc1()`, `inck(int k)`) per operazioni che sono  varianti della stessa azione.
+```java
+public class Counter {
+    // ...
+    // Metodo senza argomenti
+    public void inc() { this.value++; } 
+    // Metodo sovraccaricato con un argomento intero
+    public void inc(int k) { this.value += k; } 
+}
+```
