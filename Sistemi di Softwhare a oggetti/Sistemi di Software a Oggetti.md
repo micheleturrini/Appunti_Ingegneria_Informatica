@@ -451,3 +451,10 @@ public class Counter {
     public void inc(int k) { this.value += k; } 
 }
 ```
+## Le stringhe
+
+
+
+
+Es. codice fiscale
+(per criteri codice vedi slide)
