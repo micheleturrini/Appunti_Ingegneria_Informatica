@@ -155,7 +155,7 @@ Rappresentazione binaria dei **simboli grafici dei caratteri**
 Esistono diverse colorazioni che variano le dimensioni del carattere in memoria.
 Un **font** è un gruppo di caratteri bitmap.
 
-# Le reti logiche
+## Le reti logiche
 Modello astratto composto di **Gate** che realizza comportamenti complessi.
 ![[2_reti_combinatorie.pdf#page=2&rect=165,120,549,289|2_reti_combinatorie, p.2|300]]
 > [!Convenzioni]
@@ -272,3 +272,41 @@ Posso ridurre la complessità utilizzando **espressioni di equivalenza**
 * **Leggi di De Morgan**: $(x+y)' = x' \cdot y'$ e $(x \cdot y)' = x' + y'$ Permettono di sostituire gate OR con gate AND (e viceversa) negando l'uscita e tutti gli ingressi 
 * **Consenso**: $xy + x'z + yz = xy + x'z$ e $(x+y) \cdot (x'+z) \cdot (y+z) = (x+y) \cdot (x'+z)$.
 Non è facile definire la rete migliore (più veloce, più economica...)
+
+## Reti a costo minimo
+Sono le reti progettate per ottenere il massimo della velocità e la complessità minima
+
+Il ritardo nel caso peggiore è dato dal numero di gate sul percorso da ingresso a uscita più lungo moltiplicato per il ritardo di un singolo gate ${\tau}_p$
+
+![[3_reti_costo_minimo.pdf#page=3&rect=152,9,531,220|3_reti_costo_minimo, p.3|400]]
+
+La **complessità** di una rete si **misura** in base a 3 indicatori (> è più complesso):
+- $N_{gate}$ numero di gate **complessivo**
+- $N_{conn}$ numero di **ingressi**
+- $N_{casc}$ numero di **gate in serie** nel percorso più lungo
+![[3_reti_costo_minimo.pdf#page=4&rect=29,74,708,244|3_reti_costo_minimo, p.4|600]]
+
+**Rete di costo minimo** (tipo SP e tipo PS)
+- non più di 2 gate a cascata
+- minimo numero di gate
+- minimo numero di ingresso per gate
+E’ possibile che più espressioni dello stesso tipo (SP o PS) siano minime
+
+Per capire le mosse da fare per ridurre una rete al costo minimo occorrono le **Mappe di Karnaugh**
+
+**Implicante** termine prodotto di  o meno variabili che assume il valore 1 solo per configurazioni in cui la funzione vale 1 o indifferenza ?????
+PIEGONE C
+
+IMplicante primo
+
+
+Implicante primo essenziale
+
+
+L'espressione di costo minimo è la somma degli implicanti primi essenziali
+
+
+Implicati (implicanti con la somma)
+
+Metodo delle mappe di Karnaugh
+Rappresentazione bidimensionale della tabella della verità
