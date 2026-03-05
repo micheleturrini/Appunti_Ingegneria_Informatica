@@ -452,9 +452,17 @@ public class Counter {
 }
 ```
 ## Le stringhe
-
+In java le stringhe sono oggetti (classe String) e i singoli caratteri npon sono modificabili.
 
 
 
 Es. codice fiscale
 (per criteri codice vedi slide)
+Si utilizza il pattern di programmazione FACADE
+- i metodi pubblici costituiscono la "facciata" del componente
+- lavorano coordinando il lavoro di altri metodi (non visibili)
+
+Per distinguere vocali e consonanti verifico la loro appartenenza a una stringa di sole vocali o consonanti.
+
+## JUnit
+è uno strumento di testing più evoluto rispetto ad assert
