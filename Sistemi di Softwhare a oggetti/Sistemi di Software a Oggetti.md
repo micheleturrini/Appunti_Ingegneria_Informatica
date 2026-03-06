@@ -452,17 +452,154 @@ public class Counter {
 }
 ```
 ## Le stringhe
-In java le stringhe sono oggetti (classe String) e i singoli caratteri npon sono modificabili.
+le stringhe sono **oggetti** della classe `String`. Sono **immutabili**. Ogni stringa rappresenta una specifica sequenza di caratteri, se si vuole una stringa diversa, si crea un nuovo oggetto.
+la sintassi per la creazione di una stringa è semplificata
+```java
+String s = "ciao";
+```
 
+Le stringhe **non sono array di caratteri** (non si può usare l'operatore `[]`)
+```java
+String s = "Nel mezzo del cammin";
+char ch = s.charAt(4);       // OK, lettura
+// s.charAt(4) = 'Q';        // ERRORE: non si può modificare
+```
+
+|Metodo|Descrizione|Esempio|
+|---|---|---|
+|**`charAt(int index)`**|Restituisce il carattere alla posizione specificata (da 0 a length-1).|`"ciao".charAt(1) → 'i'`|
+|**`length()`**|Restituisce il numero di caratteri della stringa.|`"ciao".length() → 4`|
+|**`equals(Object obj)`**|Confronta il contenuto di due stringhe (case sensitive).|`"ciao".equals("CIAO") → false`|
+|**`equalsIgnoreCase(String s)`**|Confronta il contenuto ignorando maiuscole/minuscole.|`"ciao".equalsIgnoreCase("CIAO") → true`|
+|**`compareTo(String s)`**|Confronta lessicograficamente due stringhe (restituisce negativo, zero, positivo).|`"a".compareTo("b") → negativo`|
+|**`indexOf(String s)`**|Cerca la prima occorrenza di una sottostringa (o carattere).|`"banana".indexOf("na") → 2`|
+|**`lastIndexOf(String s)`**|Cerca l'ultima occorrenza di una sottostringa.|`"banana".lastIndexOf("na") → 4`|
+|**`startsWith(String prefix)`**|Verifica se la stringa inizia con un dato prefisso.|`"Java".startsWith("Ja") → true`|
+|**`endsWith(String suffix)`**|Verifica se la stringa termina con un dato suffisso.|`"file.txt".endsWith(".txt") → true`|
+|**`substring(int begin)`**|Estrae la sottostringa da begin fino alla fine.|`"programma".substring(4) → "gramma"`|
+|**`substring(int begin, int end)`**|Estrae la sottostringa da begin (incluso) a end (escluso).|`"programma".substring(4,7) → "gra"`|
+|**`replace(char old, char new)`**|Sostituisce tutte le occorrenze di un carattere.|`"casa".replace('a','o') → "coso"`|
+|**`toLowerCase()`**|Converte tutti i caratteri in minuscolo.|`"Java".toLowerCase() → "java"`|
+|**`toUpperCase()`**|Converte tutti i caratteri in maiuscolo.|`"Java".toUpperCase() → "JAVA"`|
+|**`trim()`**|Rimuove spazi bianchi iniziali e finali.|`" ciao ".trim() → "ciao"`|
+|**`split(String regex)`**|Divide la stringa in array usando un delimitatore (regex).|`"a,b,c".split(",") → ["a","b","c"]`|
+|**`concat(String s)`**|Concatena la stringa con un'altra (equivalente a `+`).|`"ciao".concat(" mondo") → "ciao mondo"`|
+|**`join(CharSequence delim, CharSequence... elems)`**|Metodo **statico** che unisce più stringhe con un delimitatore.|`String.join("-", "a","b","c") → "a-b-c"`|
+|**`valueOf(tipo primitivo)`**|Metodo **statico** che converte un valore primitivo in stringa.|`String.valueOf(123) → "123"`|
+|**`format(String format, Object... args)`**|Metodo **statico** che restituisce una stringa formattata.|`String.format("%d più %d fa %d", 2,3,5)`|
+
+**Concatenazione**
+L'operatore `+` crea un **nuovo oggetto** `String` che è la concatenazione degli operandi.
+```java
+String s1 = "ciao";
+String s2 = " mondo";
+String s3 = s1 + s2;  // nuovo oggetto "ciao mondo"
+```
+Se si riassegna `s1 = s1 + s2;`, il riferimento `s1` **punta al nuovo oggetto**, ma l'oggetto originale `"ciao"` **rimane in memoria** (eventualmente raccolto dal garbage collector se non più referenziato).
+
+**Carattere di nuova riga**
+Java usa `\n` ma i sistemi operativi hanno convenzioni diverse quindi per scrivere codice portabile si usa `System.lineSeparator()` (molto verboso).
+
+**Text Blocks**
+Consentono di scrivere multilinea con **sintassi alleggerita**
+Sintassi:
+```java
+String s = """
+            E' la prima volta che mi capita
+            Prima mi chiudevo in una scatola
+            Sempre un po' distante...
+            """;
+```
+
+**Uguaglianza di stringhe**
+In Java, **`==`** confronta i **riferimenti** (se due variabili puntano allo stesso oggetto).
+Per confrontare il contenuto si utilizza `equals` o `equalsIgnoreCase`
+```java
+String a = "ciao";
+String b = "ciao";
+String c = new String("ciao");
+System.out.println(a == b);       // true (stesso oggetto literal internato)
+System.out.println(a == c);       // false (oggetti diversi)
+System.out.println(a.equals(c));  // true (stesso contenuto)
+```
+
+**Metodo `toString`**
+Ogni classe in Java eredita il metodo `toString()` da `Object`
+La versione di default restituisce una stringa con il nome della classe e un codice hash (es. `Counter@15db9742`).
+```java
+Counter c = new Counter(5);
+System.out.println(c.toString());  // output: Counter@15db9742
+System.out.println(c);              // stessa cosa (println chiama toString automaticamente)
+```
+Le informazioni stampate di default sono poco utili quindi ha senso sovrascriverle (@Override)
+```java
+public class Counter {
+    private int value;
+    
+    // costruttori e altri metodi...
+    
+    @Override
+    public String toString() {
+        return "Counter di valore " + value;
+    }
+}
+```
+
+**Conversione dei metodi primitivi**
+I tipi primitivi (`int`, `double`, `boolean`, ecc.) **non sono oggetti**, quindi non hanno metodi come `toString()`.
+Java fornisce una serie di metodi **statici** nella classe `String` chiamati `valueOf`
+```java
+int a = 35;
+double d = 3.14;
+String s1 = String.valueOf(a);   // "35"
+String s2 = String.valueOf(d);   // "3.14"
+String s3 = String.valueOf(true); // "true"
+```
+L'utilizzo di questo metodo è sottointeso nell'utilizzo dell'operatore +
+
+**Formattazione stringhe --C**
+Metodo statico
+```java
+String s = String.format("%-20s canta la canzone %-35s", "Francesca Michielin", "Nessun grado di separazione");
+```
+Metodo di istanza
+```java
+String s = "%-20s canta la canzone %-35s".formatted("Francesca Michielin", "Nessun grado di separazione");
+```
+
+**StringBuilder**
+La concatenazione con `+` in un ciclo è inefficiente perché crea **nuovi oggetti** a ogni iterazione, copiando i caratteri e abbandonando i precedenti al garbage collector.
+```java
+StringBuilder sb = new StringBuilder();
+for (int i = 0; i < 1000; i++) {
+    sb.append("La nebbia agli irti colli");
+}
+String risultato = sb.toString();  // converte in String immutabile
+```
+- `StringBuilder` ha metodi come `append`, `insert`, `delete`, ecc.
+- È molto più veloce
+
+**StringJoiner** e **String.Join**
+**`StringJoiner`** è un contenitore progettato per concatenare più stringhe con un separatore, gestendo automaticamente l'assenza del separatore dopo l'ultimo elemento.
+```java
+StringJoiner sj = new StringJoiner(", ");
+for (String arg : args) {
+    sj.add(arg);
+}
+System.out.println(sj);  // "alfa, beta, gamma, delta" (senza virgola finale)
+```
 
 
 Es. codice fiscale
 (per criteri codice vedi slide)
-Si utilizza il pattern di programmazione FACADE
-- i metodi pubblici costituiscono la "facciata" del componente
+Si utilizza il **pattern di programmazione FACADE**
+- i **metodi pubblici costituiscono la "facciata"** del componente
 - lavorano coordinando il lavoro di altri metodi (non visibili)
 
 Per distinguere vocali e consonanti verifico la loro appartenenza a una stringa di sole vocali o consonanti.
 
 ## JUnit
-è uno strumento di testing più evoluto rispetto ad assert
+è uno strumento di testing più evoluto rispetto ad assert.
+- Notifica dei problemi in formato amichevole e analizzabile.
+- Esecuzione di tutti i test anche in caso di fallimenti.
+- Report chiaro e compatto sui risultati.
