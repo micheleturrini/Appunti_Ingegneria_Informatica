@@ -603,3 +603,246 @@ Per distinguere vocali e consonanti verifico la loro appartenenza a una stringa 
 - Notifica dei problemi in formato amichevole e analizzabile.
 - Esecuzione di tutti i test anche in caso di fallimenti.
 - Report chiaro e compatto sui risultati.
+JUnit sostituisce l'istruzione `assert` con una serie di **metodi statici** della classe `Assertions` (package `org.junit.jupiter.api.Assertions`).
+
+**Import Necessari**
+```java
+import org.junit.jupiter.api.*;           // per le annotazioni
+import static org.junit.jupiter.api.Assertions.*;  // per i metodi assert
+```
+
+|Metodo|Descrizione|
+|---|---|
+|`assertEquals(expected, actual)`|Verifica che due valori/oggetti siano uguali (usa `equals` per oggetti)|
+|`assertEquals(expected, actual, delta)`|Per valori floating-point: verifica uguaglianza entro un delta (tolleranza)|
+|`assertArrayEquals(expected, actual)`|Verifica che due array siano uguali (elemento per elemento)|
+|`assertTrue(condition)`|Verifica che la condizione sia vera|
+|`assertFalse(condition)`|Verifica che la condizione sia falsa|
+|`assertNull(value)`|Verifica che il valore sia nullo|
+|`assertNotNull(value)`|Verifica che il valore non sia nullo|
+|`assertSame(expected, actual)`|Verifica che i riferimenti puntino allo stesso oggetto (`==`)|
+|`assertNotSame(expected, actual)`|Verifica che i riferimenti puntino a oggetti diversi|
+|`fail()`|Forza il fallimento del test (utile per percorsi eccezionali)|
+esempio
+```java
+package counter;
+
+public class Counter {
+    private int val;
+
+    public Counter() { val = 1; }
+    public Counter(int v) { val = v; }
+    public void reset() { val = 0; }
+    public void inc() { val++; }
+    public void inc(int k) { val += k; }
+    public int getValue() { return val; }
+    public boolean equals(Counter x) { return val == x.val; }
+    public String toString() { return "Counter di valore " + val; }
+}
+```
+```java
+package counter.test;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import counter.Counter;
+
+class CounterTest {
+
+    // Test costruttori
+    @Test
+    void testConstructor0() {
+        Counter c = new Counter();
+        assertEquals(1, c.getValue());
+    }
+
+    @Test
+    void testConstructor1() {
+        Counter c = new Counter(10);
+        assertEquals(10, c.getValue());
+    }
+
+    @Test
+    void testConstructor1b() {
+        Counter c = new Counter(27);
+        assertEquals(27, c.getValue());
+    }
+
+    // Test reset
+    @Test
+    void testReset() {
+        Counter c = new Counter(5);
+        c.reset();
+        assertEquals(0, c.getValue());
+    }
+
+    // Test inc senza parametri
+    @Test
+    void testInc() {
+        Counter c = new Counter(5);
+        c.inc();
+        c.inc();
+        assertEquals(7, c.getValue());
+    }
+
+    // Test inc con parametro
+    @Test
+    void testIncWithK() {
+        Counter c = new Counter(5);
+        c.inc(3);
+        assertEquals(8, c.getValue());
+    }
+
+    @Test
+    void testIncWithKMultiple() {
+        Counter c = new Counter(5);
+        c.inc(2);
+        c.inc(3);
+        assertEquals(10, c.getValue());
+    }
+
+    // Test equals
+    @Test
+    void testEquals() {
+        Counter c1 = new Counter(7);
+        Counter c2 = new Counter(7);
+        Counter c3 = new Counter(10);
+        
+        assertTrue(c1.equals(c2));    // simmetria
+        assertFalse(c1.equals(c3));
+        assertTrue(c1.equals(c1));    // riflessività
+    }
+}
+```
+
+**Gestione in Eclipse**
+- Tasto destro sulla classe da testare → **New → JUnit Test Case**.
+- Wizard: scegliere i metodi da collaudare (opzionale).
+- Selezionare la source folder di destinazione (es. `tests`).
+- Eclipse crea automaticamente lo scheletro della classe di test con i metodi vuoti.
+- Se JUnit non è già nel build path, Eclipse lo aggiunge automaticamente (chiede conferma).
+Esecuzione
+- Tasto destro sulla classe di test → **Run As → JUnit Test**.
+- La vista JUnit mostra:
+    - **Barra verde**: tutti i test passano.
+    - **Barra rossa**: almeno un test fallisce.
+    - Dettaglio degli errori: blu per assertion fallite, rosso per eccezioni (stack trace).
+
+**Strutturazione dei test**
+Quando più test condividono operazioni di setup o cleanup, è utile fattorizzarle in metodi dedicati, annotati opportunamente.
+
+|Annotazione|Descrizione|
+|---|---|
+|`@BeforeAll`|Metodo **statico** eseguito **una sola volta** prima di tutti i test della classe.|
+|`@AfterAll`|Metodo **statico** eseguito **una sola volta** dopo tutti i test della classe.|
+|`@BeforeEach`|Metodo **non statico** eseguito **prima di ogni** metodo `@Test`.|
+|`@AfterEach`|Metodo **non statico** eseguito **dopo ogni** metodo `@Test`.|
+## Gestione delle Eccezioni
+In Java c'è un sistema integrato di gestione di errori e eccezioni.
+
+**Blocco Try Catch**
+```java
+try {
+    // codice che può generare eccezioni
+    System.out.println("Accedo all'elemento 5: " + numeri[5]);
+} catch (TipoEccezione e) {
+    // gestione dell'eccezione
+    System.out.println("Errore: indice dell'array non valido!");
+    System.out.println("Messaggio: " + e.getMessage());
+}
+System.out.println("Il programma continua normalmente...");
+```
+- Se avviene un'eccezione, l'esecuzione del `try` si interrompe e passa al `catch`
+- Dopo il `catch` il programma continua
+
+**Catch multiple**
+Per gestire eccezioni diverse si possono utilizzare più catch ordinate dalla più specifica alla più generale.
+```java
+// CORRETTO: dal più specifico al più generale
+catch (FileNotFoundException e) { ... }
+catch (IOException e) { ... }
+
+// ERRATO: IOException è più generale di FileNotFoundException
+catch (IOException e) { ... }
+catch (FileNotFoundException e) { ... } // Non raggiungibile!
+```
+
+**Finally**
+Codice che viene eseguito sempre dopo
+Tipicamente usato per operazioni di pulizia:
+- Chiudere file
+- Rilasciare connessioni al database
+- Liberare risorse
+```java
+FileReader file = null;
+try {
+    file = new FileReader("testo.txt");
+    // ... operazioni sul file
+} catch (IOException e) {
+    System.out.println("Errore nella lettura");
+} finally {
+    if (file != null) {
+        try {
+            file.close();  // Chiusura sicura
+        } catch (IOException e) {
+            System.out.println("Errore nella chiusura");
+        }
+    }
+}
+```
+
+**Throw**
+`throw` serve per **lanciare esplicitamente** un'eccezione.
+```java
+throw new TipoEccezione("Messaggio di errore");
+// oppure
+throw variabileEccezione;
+```
+Esempio
+```java
+    public static void verificaEta(int eta) {
+        if (eta < 0) {
+            throw new IllegalArgumentException("L'età non può essere negativa: " + eta);
+        }
+        System.out.println("Età valida: " + eta);
+    }
+```
+
+Se l'eccezione è unchecked deve essere dichiarata assieme al metodo
+```java
+    // Questo metodo dichiara di poter lanciare IOException
+    public static void leggiFile(String nomeFile) throws IOException {
+        //....
+    }
+```
+
+Esempio completo
+```java
+/**
+ * Legge un file e restituisce il contenuto come stringa.
+ * 
+ * @param percorso percorso del file
+ * @return contenuto del file
+ * @throws FileNotFoundException se il file non esiste
+ * @throws IOException per altri errori di I/O
+ */
+public String leggiFile(String percorso) throws IOException {
+    StringBuilder contenuto = new StringBuilder();
+    
+    try (BufferedReader reader = new BufferedReader(new FileReader(percorso))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            contenuto.append(linea).append("\n");
+        }
+    } catch (FileNotFoundException e) {
+        System.err.println("File non trovato: " + percorso);
+        throw e;  // rilancio per gestione a livello superiore
+    } catch (IOException e) {
+        System.err.println("Errore durante la lettura: " + e.getMessage());
+        throw e;
+    }
+    
+    return contenuto.toString();
+}
+```
+
