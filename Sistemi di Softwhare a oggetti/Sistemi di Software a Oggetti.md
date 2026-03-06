@@ -451,7 +451,7 @@ public class Counter {
     public void inc(int k) { this.value += k; } 
 }
 ```
-## Le stringhe
+## Stringhe
 le stringhe sono **oggetti** della classe `String`. Sono **immutabili**. Ogni stringa rappresenta una specifica sequenza di caratteri, se si vuole una stringa diversa, si crea un nuovo oggetto.
 la sintassi per la creazione di una stringa è semplificata
 ```java
@@ -465,28 +465,28 @@ char ch = s.charAt(4);       // OK, lettura
 // s.charAt(4) = 'Q';        // ERRORE: non si può modificare
 ```
 
-|Metodo|Descrizione|Esempio|
-|---|---|---|
-|**`charAt(int index)`**|Restituisce il carattere alla posizione specificata (da 0 a length-1).|`"ciao".charAt(1) → 'i'`|
-|**`length()`**|Restituisce il numero di caratteri della stringa.|`"ciao".length() → 4`|
-|**`equals(Object obj)`**|Confronta il contenuto di due stringhe (case sensitive).|`"ciao".equals("CIAO") → false`|
-|**`equalsIgnoreCase(String s)`**|Confronta il contenuto ignorando maiuscole/minuscole.|`"ciao".equalsIgnoreCase("CIAO") → true`|
-|**`compareTo(String s)`**|Confronta lessicograficamente due stringhe (restituisce negativo, zero, positivo).|`"a".compareTo("b") → negativo`|
-|**`indexOf(String s)`**|Cerca la prima occorrenza di una sottostringa (o carattere).|`"banana".indexOf("na") → 2`|
-|**`lastIndexOf(String s)`**|Cerca l'ultima occorrenza di una sottostringa.|`"banana".lastIndexOf("na") → 4`|
-|**`startsWith(String prefix)`**|Verifica se la stringa inizia con un dato prefisso.|`"Java".startsWith("Ja") → true`|
-|**`endsWith(String suffix)`**|Verifica se la stringa termina con un dato suffisso.|`"file.txt".endsWith(".txt") → true`|
-|**`substring(int begin)`**|Estrae la sottostringa da begin fino alla fine.|`"programma".substring(4) → "gramma"`|
-|**`substring(int begin, int end)`**|Estrae la sottostringa da begin (incluso) a end (escluso).|`"programma".substring(4,7) → "gra"`|
-|**`replace(char old, char new)`**|Sostituisce tutte le occorrenze di un carattere.|`"casa".replace('a','o') → "coso"`|
-|**`toLowerCase()`**|Converte tutti i caratteri in minuscolo.|`"Java".toLowerCase() → "java"`|
-|**`toUpperCase()`**|Converte tutti i caratteri in maiuscolo.|`"Java".toUpperCase() → "JAVA"`|
-|**`trim()`**|Rimuove spazi bianchi iniziali e finali.|`" ciao ".trim() → "ciao"`|
-|**`split(String regex)`**|Divide la stringa in array usando un delimitatore (regex).|`"a,b,c".split(",") → ["a","b","c"]`|
-|**`concat(String s)`**|Concatena la stringa con un'altra (equivalente a `+`).|`"ciao".concat(" mondo") → "ciao mondo"`|
-|**`join(CharSequence delim, CharSequence... elems)`**|Metodo **statico** che unisce più stringhe con un delimitatore.|`String.join("-", "a","b","c") → "a-b-c"`|
-|**`valueOf(tipo primitivo)`**|Metodo **statico** che converte un valore primitivo in stringa.|`String.valueOf(123) → "123"`|
-|**`format(String format, Object... args)`**|Metodo **statico** che restituisce una stringa formattata.|`String.format("%d più %d fa %d", 2,3,5)`|
+| Metodo                                                | Descrizione                                                                        | Esempio                                   |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------- |
+| **`charAt(int index)`**                               | Restituisce il carattere alla posizione specificata (da 0 a length-1).             | `"ciao".charAt(1) → 'i'`                  |
+| **`length()`**                                        | Restituisce il numero di caratteri della stringa.                                  | `"ciao".length() → 4`                     |
+| **`equals(Object obj)`**                              | Confronta il contenuto di due stringhe (case sensitive).                           | `"ciao".equals("CIAO") → false`           |
+| **`equalsIgnoreCase(String s)`**                      | Confronta il contenuto ignorando maiuscole/minuscole.                              | `"ciao".equalsIgnoreCase("CIAO") → true`  |
+| **`compareTo(String s)`**                             | Confronta lessicograficamente due stringhe (restituisce negativo, zero, positivo). | `"a".compareTo("b") → negativo`           |
+| **`indexOf(String s)`**                               | Cerca la prima occorrenza di una sottostringa (o carattere).                       | `"banana".indexOf("na") → 2`              |
+| **`lastIndexOf(String s)`**                           | Cerca l'ultima occorrenza di una sottostringa.                                     | `"banana".lastIndexOf("na") → 4`          |
+| **`startsWith(String prefix)`**                       | Verifica se la stringa inizia con un dato prefisso.                                | `"Java".startsWith("Ja") → true`          |
+| **`endsWith(String suffix)`**                         | Verifica se la stringa termina con un dato suffisso.                               | `"file.txt".endsWith(".txt") → true`      |
+| **`substring(int begin)`**                            | Estrae la sottostringa da begin fino alla fine.                                    | `"programma".substring(4) → "gramma"`     |
+| **`substring(int begin, int end)`**                   | Estrae la sottostringa da begin (incluso) a end (escluso).                         | `"programma".substring(4,7) → "gra"`      |
+| **`replace(char old, char new)`**                     | Sostituisce tutte le occorrenze di un carattere.                                   | `"casa".replace('a','o') → "coso"`        |
+| **`toLowerCase()`**                                   | Converte tutti i caratteri in minuscolo.                                           | `"Java".toLowerCase() → "java"`           |
+| **`toUpperCase()`**                                   | Converte tutti i caratteri in maiuscolo.                                           | `"Java".toUpperCase() → "JAVA"`           |
+| **`trim()`**                                          | Rimuove spazi bianchi iniziali e finali.                                           | `" ciao ".trim() → "ciao"`                |
+| **`split(String regex)`**                             | Divide la stringa in array usando un delimitatore (regex).                         | `"a,b,c".split(",") → ["a","b","c"]`      |
+| **`concat(String s)`**                                | Concatena la stringa con un'altra (equivalente a `+`).                             | `"ciao".concat(" mondo") → "ciao mondo"`  |
+| **`join(CharSequence delim, CharSequence... elems)`** | Metodo **statico** che unisce più stringhe con un delimitatore.                    | `String.join("-", "a","b","c") → "a-b-c"` |
+| **`valueOf(tipo primitivo)`**                         | Metodo **statico** che converte un valore primitivo in stringa.                    | `String.valueOf(123) → "123"`             |
+| **`format(String format, Object... args)`**           | Metodo **statico** che restituisce una stringa formattata.                         | `String.format("%d più %d fa %d", 2,3,5)` |
 
 **Concatenazione**
 L'operatore `+` crea un **nuovo oggetto** `String` che è la concatenazione degli operandi.
