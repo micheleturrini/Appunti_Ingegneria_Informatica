@@ -286,27 +286,83 @@ La **complessità** di una rete si **misura** in base a 3 indicatori (> è più 
 - $N_{casc}$ numero di **gate in serie** nel percorso più lungo
 ![[3_reti_costo_minimo.pdf#page=4&rect=29,74,708,244|3_reti_costo_minimo, p.4|600]]
 
-**Rete di costo minimo** (tipo SP e tipo PS)
-- non più di 2 gate a cascata
-- minimo numero di gate
-- minimo numero di ingresso per gate
-E’ possibile che più espressioni dello stesso tipo (SP o PS) siano minime
+### Rete di costo minimo (tipo SP e tipo PS)
+Una rete combinatoria di **costo minimo** (di tipo SP – Somma di Prodotti – o PS – Prodotto di Somme) è quella che realizza una funzione qualsiasi con:
+1. **Non più di 2 gate in cascata** tra ingressi e uscita (cioè Ncasc ≤ 2, quindi reti a due livelli).
+2. **Minimo numero di gate** (Ngate minimo).
+3. **Minimo numero di ingressi per gate** (Nconn minimo).
+Il numero di gate e connessioni può essere diverso tra la soluzione SP e quella PS. Possono esistere più espressioni minime equivalenti dello stesso tipo.
 
 Per capire le mosse da fare per ridurre una rete al costo minimo occorrono le **Mappe di Karnaugh**
 
-**Implicante** termine prodotto di  o meno variabili che assume il valore 1 solo per configurazioni in cui la funzione vale 1 o indifferenza ?????
-PIEGONE C
+### Implicanti e implicati
+**Implicanti (per espressioni SP)**
+- **Implicante**: termine prodotto (AND di letterali) che vale 1 solo per configurazioni in cui la funzione vale 1 o è indifferente (don't care).
+- **Implicante primo**: implicante che cessa di essere tale se si rimuove un qualsiasi letterale (cioè non è contenuto in un implicante più grande).
+- **Implicante primo essenziale**: implicante primo che è l'unico a coprire almeno una configurazione di ingresso per cui la funzione vale 1 (cioè quella configurazione non è coperta da altri implicanti primi).
 
-IMplicante primo
+**Proprietà**: L'espressione minima SP è la **somma di implicanti primi essenziali** (possono essercene anche altri non essenziali se necessari per coprire tutti gli 1, ma la minimalità richiede di selezionare un insieme minimo di implicanti primi che copra tutti gli 1).
 
+**Implicati (per espressioni PS)**
+- **Implicato**: termine somma (OR di letterali) che vale 0 solo per configurazioni in cui la funzione vale 0 o è indifferente.
+- **Implicato primo**: implicato che cessa di essere tale se si rimuove un letterale.
+- **Implicato primo essenziale**: implicato primo che è l'unico a coprire almeno una configurazione di zero.
 
-Implicante primo essenziale
+L'espressione minima PS è il **prodotto di implicati primi essenziali**.
 
+CAPIRE
 
-L'espressione di costo minimo è la somma degli implicanti primi essenziali
+### Mappe di Karnaugh
+Le mappe di Karnaugh sono un **metodo grafico** per semplificare funzioni booleane **fino a 6 variabili.** Sono una **rappresentazione bidimensionale della tabella di verità**.
 
+Full adder R
+![[3_reti_costo_minimo.pdf#page=12&rect=97,21,649,256|3_reti_costo_minimo, p.12|400]]
+Altri esempi
+![[3_reti_costo_minimo.pdf#page=13&rect=39,109,684,311|3_reti_costo_minimo, p.13|500]]
 
-Implicati (implicanti con la somma)
+**Adiacenza**
+- Due celle sono **adiacenti** se le loro coordinate differiscono per un solo bit.
+- In una mappa a n variabili, ogni cella ha **n celle adiacenti**.
+- Regola grafica: sono adiacenti celle con un lato in comune o agli estremi di una riga/colonna (adiacenza circolare).
+- Sono adiacenti celle che **occupano la stessa posizione in sotto-mappe adiacenti**.
+Due termini canonici corrispondenti a celle adiacenti che hanno lo stesso valore di uscita (1 per SP, 0 per PS) possono essere combinati in un unico termine con un letterale in meno (quello che cambia). Questo è il fondamento della semplificazione.
 
-Metodo delle mappe di Karnaugh
-Rappresentazione bidimensionale della tabella della verità
+Esempi fino a 4 variabili
+![[3_reti_costo_minimo.pdf#page=14&rect=36,22,719,270|3_reti_costo_minimo, p.14||500]] 
+
+Esempi 5 e 6 variabili
+![[3_reti_costo_minimo.pdf#page=15&rect=2,63,718,503|3_reti_costo_minimo, p.15|500]]
+
+**Raggruppamenti Rettangolari (RR)**
+- **RR di ordine p**: insieme di **2^p celle** in cui ogni cella ha esattamente p celle adiacenti all'interno del gruppo (devono formare un rettangolo o quadrato, anche "avvolgente" sui bordi).
+- **Numero di celle deve essere una potenza di 2** (non si possono fare gruppi da 6 o 10).
+
+**RR e implicanti (SP)**
+- Un RR formato da celle con valore **1** (e eventuali don't care) individua un **implicante**.
+- Il termine prodotto corrispondente contiene solo le variabili che **rimangono costanti** nel gruppo:
+    - Se la variabile vale 1 in tutto il gruppo → forma vera.
+    - Se vale 0 → forma negata.
+    - Se varia → non compare.
+- **RR di dimensione massima** (non contenuto in un RR più grande) individua un **implicante primo**.
+
+ **RR e implicati (PS)**
+- Un RR formato da celle con valore **0** (e don't care) individua un **implicato**.
+- Il termine somma corrispondente contiene le variabili costanti:
+    - Se la variabile vale 0 → forma vera.
+    - Se vale 1 → forma negata.
+- RR di dimensione massima → **implicato primo**.
+
+ **Copertura di una funzione**
+- **Copertura degli uni**: insieme di RR (implicanti) che include tutte le celle con 1 (e eventualmente don't care usati).
+- **Copertura degli zeri**: insieme di RR (implicati) che include tutte le celle con 0.
+- **Copertura minima**: copertura con il minor numero possibile di RR di dimensione massima (cioè implicanti/implicati primi) che copre tutti gli 1 (o 0). Corrisponde all'espressione minima.
+
+#### **Procedimento per trovare l'espressione minima con mappe di Karnaugh**
+- **Caso SP (copertura degli uni)**
+	1. **Individuare celle che possono essere coperte da un unico RR di dimensione massima**. Tracciare il RR e annotare il termine. Iniziare dalle celle che hanno una sola possibilità di essere raggruppate (implicanti primi essenziali).
+	2. **Ripetere il passo 2** considerando anche celle già coperte (possono essere coperte da più RR) e utilizzando don't care se presenti.
+	3. **Quando rimangono celle non ancora coperte** (o coperte solo parzialmente), valutare diverse alternative di copertura (spesso ci sono scelte) e scegliere quella che minimizza il numero di RR e/o il numero di letterali.
+	4. **Scrivere l'espressione** come somma dei termini corrispondenti ai RR scelti.
+- **Caso PS (copertura degli zeri)** Procedimento uguale: si cercano RR di zeri (implicati primi essenziali) e si scrive l'espressione come prodotto di somme.
+
+**Esempi notevoli**
