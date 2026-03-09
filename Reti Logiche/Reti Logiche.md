@@ -277,7 +277,6 @@ Non è facile definire la rete migliore (più veloce, più economica...)
 Sono le reti progettate per ottenere il massimo della velocità e la complessità minima
 
 Il ritardo nel caso peggiore è dato dal numero di gate sul percorso da ingresso a uscita più lungo moltiplicato per il ritardo di un singolo gate ${\tau}_p$
-
 ![[3_reti_costo_minimo.pdf#page=3&rect=152,9,531,220|3_reti_costo_minimo, p.3|400]]
 
 La **complessità** di una rete si **misura** in base a 3 indicatori (> è più complesso):
@@ -294,7 +293,6 @@ Una rete combinatoria di **costo minimo** (di tipo SP – Somma di Prodotti – 
 Il numero di gate e connessioni può essere diverso tra la soluzione SP e quella PS. Possono esistere più espressioni minime equivalenti dello stesso tipo.
 
 Per capire le mosse da fare per ridurre una rete al costo minimo occorrono le **Mappe di Karnaugh**
-
 ### Implicanti e implicati
 **Implicanti (per espressioni SP)**
 - **Implicante**: termine prodotto (AND di letterali) che vale 1 solo per configurazioni in cui la funzione vale 1 o è indifferente (don't care).
