@@ -307,9 +307,6 @@ Per capire le mosse da fare per ridurre una rete al costo minimo occorrono le **
 - **Implicato primo essenziale**: implicato primo che è l'unico a coprire almeno una configurazione di zero.
 
 L'espressione minima PS è il **prodotto di implicati primi essenziali**.
-
-CAPIRE
-
 ### Mappe di Karnaugh
 Le mappe di Karnaugh sono un **metodo grafico** per semplificare funzioni booleane **fino a 6 variabili.** Sono una **rappresentazione bidimensionale della tabella di verità**.
 
@@ -342,6 +339,7 @@ Esempi 5 e 6 variabili
     - Se vale 0 → forma negata.
     - Se varia → non compare.
 - **RR di dimensione massima** (non contenuto in un RR più grande) individua un **implicante primo**.
+![[3_reti_costo_minimo.pdf#page=21&rect=250,0,660,175|3_reti_costo_minimo, p.21|]]|
 
  **RR e implicati (PS)**
 - Un RR formato da celle con valore **0** (e don't care) individua un **implicato**.
@@ -349,16 +347,21 @@ Esempi 5 e 6 variabili
     - Se la variabile vale 0 → forma vera.
     - Se vale 1 → forma negata.
 - RR di dimensione massima → **implicato primo**.
+![[3_reti_costo_minimo.pdf#page=22&rect=232,248,688,415|3_reti_costo_minimo, p.22]]
 
  **Copertura di una funzione**
 - **Copertura degli uni**: insieme di RR (implicanti) che include tutte le celle con 1 (e eventualmente don't care usati).
 - **Copertura degli zeri**: insieme di RR (implicati) che include tutte le celle con 0.
-- **Copertura minima**: copertura con il minor numero possibile di RR di dimensione massima (cioè implicanti/implicati primi) che copre tutti gli 1 (o 0). Corrisponde all'espressione minima.
+- **Copertura minima**: copertura con il **minor numero possibile di RR di dimensione massima** (cioè implicanti/implicati primi) che copre tutti gli 1 (o 0). Corrisponde all'espressione minima.
 
+![[3_reti_costo_minimo.pdf#page=26&rect=30,6,675,165|3_reti_costo_minimo, p.26]]
+![[3_reti_costo_minimo.pdf#page=28&rect=342,76,690,259|3_reti_costo_minimo, p.28]]
+
+![[3_reti_costo_minimo.pdf#page=32&rect=27,148,715,336|3_reti_costo_minimo, p.32]]
 #### **Procedimento per trovare l'espressione minima con mappe di Karnaugh**
 - **Caso SP (copertura degli uni)**
 	1. **Individuare celle che possono essere coperte da un unico RR di dimensione massima**. Tracciare il RR e annotare il termine. Iniziare dalle celle che hanno una sola possibilità di essere raggruppate (implicanti primi essenziali).
-	2. **Ripetere il passo 2** considerando anche celle già coperte (possono essere coperte da più RR) e utilizzando don't care se presenti.
+	2. **Ripetere il passo 1** considerando anche celle già coperte (possono essere coperte da più RR) e utilizzando don't care se presenti.
 	3. **Quando rimangono celle non ancora coperte** (o coperte solo parzialmente), valutare diverse alternative di copertura (spesso ci sono scelte) e scegliere quella che minimizza il numero di RR e/o il numero di letterali.
 	4. **Scrivere l'espressione** come somma dei termini corrispondenti ai RR scelti.
 - **Caso PS (copertura degli zeri)** Procedimento uguale: si cercano RR di zeri (implicati primi essenziali) e si scrive l'espressione come prodotto di somme.
