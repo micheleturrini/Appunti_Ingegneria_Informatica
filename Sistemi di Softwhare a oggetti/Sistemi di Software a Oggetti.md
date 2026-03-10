@@ -846,3 +846,180 @@ public String leggiFile(String percorso) throws IOException {
 }
 ```
 
+## Array
+In Java gli array sono **oggetti** veri e propri, istanze di una classe speciale.
+
+**Dichiarazione e creazione**
+```java
+int[] v;          // dichiarazione di un riferimento
+v = new int[3];   // creazione dinamica dell'oggetto array
+```
+- `new int[3]` crea un array di **3 elementi,** ciascuno **inizializzato al valore di default** per il tipo (0 per interi, `false` per boolean, `\u0000` per char, `null` per riferimenti).
+
+**Differenza tra array di tipi primitivi e array di oggetti
+- **Primitivi**: ogni cella contiene direttamente il valore (es. `int`).
+- **Oggetti**: ogni cella contiene un **riferimento** a un oggetto (inizialmente `null`). Dopo la creazione dell'array, occorre creare singolarmente gli oggetti da inserire:
+```java
+Counter[] w = new Counter[6];   // tutti i riferimenti sono null
+w[0] = new Counter(11);         // ora w[0] punta a un oggetto
+```
+È possibile inserire riferimenti a oggetti già esistenti:
+```java
+Counter c1 = new Counter(3);
+w[2] = c1;
+```
+
+**Proprietà `length`**
+Ogni array in Java ha una proprietà pubblica `length` (finale) che indica il numero di elementi.
+```java
+int[] v = new int[3];
+System.out.println(v.length);   // stampa 3
+```
+
+**Inizializzazione degli array**
+- **Inizializzazione automatica**: al momento della creazione con `new`, tutti gli elementi sono posti al valore di default del tipo.
+- **Inizializzazione contestuale (solo al momento della dichiarazione)**:
+```java
+int[] v1 = {2, 3, 4};               // array di 3 elementi
+Counter[] w1 = { new Counter(2), new Counter(3) };
+```
+*Questa sintassi è valida solo nella dichiarazione, non per riassegnazioni successive.*
+- Inizializzazione al volo come argomento di una funzione
+```java
+void f(int[] v) { ... }
+f(new int[]{2, 3, 4});   // crea e passa un array anonimo
+```
+
+**Il problema del metodo `toString()`**
+La classe "array" non ha un metodo `toString` personalizzabile; eredita quello di `Object`, che produce una stringa del tipo `[I@6659c656` (dove `[I` indica array di int).
+
+Soluzioni per **stampare il contenuto**:
+-  Scrivere un ciclo esplicito.
+-  Usare i metodi statici della classe `java.util.Arrays`:
+    - **`Arrays.toString(array)` per array monodimensionali.**
+    - **`Arrays.deepToString(array)` per array multidimensionali.**
+-  Convertire l'array in una lista (ad es. `Arrays.asList()`), ma attenzione: funziona solo per array di oggetti, non per primitivi.
+ es.
+```java
+public class EsempioMain {
+    public static void main(String[] args) {
+        if (args.length == 0)
+            System.out.println("Nessun argomento");
+        else
+            for (int i = 0; i < args.length; i++)
+                System.out.println("argomento " + i + ": " + args[i]);
+    }
+}
+```
+
+**Array come valore di ritorno di una funzione**
+in Java una funzione può restituire un array:
+```java
+public static int[] creaTabella(int n) {
+    int[] tab = new int[n];
+    for (int i = 0; i < n; i++)
+        tab[i] = i * i;
+    return tab;
+}
+```
+
+> [!Metodo o static?]
+> - un **metodo** verrebbe **invocato su uno specifico oggetto** (ad es. c1 in c1.inc(), f2 in f2.getNum(), etc.). che dovrebbe quindi essere **preventivamente creato**
+> - una **funzione statica** («di libreria») viene invece **invocata semplicemente col suo nome** assoluto (Math.sin()): **non occorre creare nulla**, perché ci si rivolge a una classe
+
+Nel caso in questione non c’è uno specifico oggetto «creatore di tabelle» → meglio una funzione statica
+
+**Ciclo "for each" (enhanced for)**
+Sintassi che permette di iterare su tutti gli elementi senza usare un indice esplicito.
+```java
+for (int x : tab) {
+    System.out.println(x);
+}
+
+//main dell'es prec
+public static void main(String[] args){
+	int[] tab = creaTabella(4);
+	for (int x : tab) System.out.println(x);
+}
+```
+- A ogni iterazione, la variabile (`x`) contiene una **copia** del **valore dell'elemento** (per i primitivi) o una **copia del riferimento** (per oggetti).
+- **Non si può usare per modificare gli elementi dell'array** (nel caso di primitivi perché si modifica la copia; nel caso di oggetti si può modificare l'oggetto tramite il riferimento, ma non si può cambiare il riferimento stesso).
+- Utile solo per lettura o per operazioni che non richiedono l'indice.
+
+**Esempio di confronto di array (uguaglianza)**
+- per tipi primari
+```java
+public static boolean idem(int[] a, int[] b) {
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++)
+        if (a[i] != b[i]) return false;
+    return true;
+}
+```
+- Per array di oggetti, si usa il metodo `equals` della classe degli oggetti (che deve essere opportunamente sovrascritto)
+```java
+if (!a[i].equals(b[i])) return false;
+```
+
+**Funzioni di utilità della classe `java.util.Arrays`**
+La classe `Arrays` fornisce numerosi metodi statici per operare sugli array:
+
+| Metodo                       | Descrizione                                                   |
+| ---------------------------- | ------------------------------------------------------------- |
+| `sort(array)`                | Ordina l'array (per tipi primitivi e oggetti)                 |
+| `binarySearch(array, key)`   | Ricerca binaria (array deve essere ordinato)                  |
+| `copyOf(array, newLength)`   | Restituisce una copia dell'array con la lunghezza specificata |
+| `equals(array1, array2)`     | Confronto superficiale (shallow)                              |
+| `deepEquals(array1, array2)` | Confronto profondo (deep) per array annidati                  |
+| `fill(array, value)`         | Riempie l'array con un valore                                 |
+| `toString(array)`            | Rappresentazione in stringa (monodimensionale)                |
+| `deepToString(array)`        | Rappresentazione in stringa per array multidimensionali       |
+Es. Stampare il contenuto
+Si utilizza `toString(array)` da NON confondere con il metodo della classe [] 
+![[108-Array.pdf#page=58&rect=91,174,619,305|108-Array, p.58|500]]
+vedi altri es. nel pdf
+
+**Costanti (final)**
+```java
+final int DIM = 8;
+```
+
+**Array multidimensionali (matrici)**
+In Java non esistono array multidimensionali "veri", ma array di array.
+- Dichiarazione
+```java
+double[][] m;   // array di array di double
+```
+- Creazione in due fasi (per **matrici irregolari**):
+```java
+m = new double[3][];      // array esterno di 3 righe (riferimenti ad array)
+m[0] = new double[5];     // prima riga di 5 elementi
+m[1] = new double[5];     // seconda riga di 5 elementi
+m[2] = new double[5];     // terza riga di 5 elementi
+```
+- **Creazione concisa** per matrici regolari:
+```java
+double[][] m = new double[3][5];   // matrice 3x5
+```
+-  **Accesso** `m[i][j]` dove `i` è l'indice di riga, `j` di colonna.
+- Lunghezze
+	- `m.length` è il numero di righe.
+	- `m[i].length` è il numero di colonne della riga i-esima.
+- **Stampa** devo utilizzare la  `Arrays.deepToString(m)`
+- **Equals** `Arrays.equals(array1, array2)`confronta i riferimenti agli array interni, non i loro contenuti. Per confrontare in profondità si usa `Arrays.deepEquals(m1, m2)` che **confronta ricorsivamente il contenuto.**
+es.  somma di matrici
+```java
+public static double[][] sommaMatrici(double[][] a, double[][] b) {
+    // Supponiamo che a e b abbiano le stesse dimensioni
+    double[][] c = new double[a.length][a[0].length];
+    for (int i = 0; i < a.length; i++)
+        for (int j = 0; j < a[0].length; j++)
+            c[i][j] = a[i][j] + b[i][j];
+    return c;
+}
+```
+
+FAI PRODOTTO DI MATRICI
+
+## Package
+è un contenitore di classi (che possono intergagire fra loro) al di fuori del quela queste sono inaccessibili
