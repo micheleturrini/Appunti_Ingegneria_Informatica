@@ -1022,4 +1022,161 @@ public static double[][] sommaMatrici(double[][] a, double[][] b) {
 FAI PRODOTTO DI MATRICI
 
 ## Package
-è un contenitore di classi (che possono intergagire fra loro) al di fuori del quela queste sono inaccessibili
+Applicazioni complesse sono composte da **molte classi e librerie.** Senza una struttura, si incorre in due problemi principali:
+- **Conflitti di Nome (Name Clash):** Due classi con lo stesso nome (es. `Book`) potrebbero essere sviluppate da team diversi o per scopi diversi, rendendo impossibile utilizzarle insieme nello stesso progetto.
+- **Ingestibilità:** Un insieme "piatto" di centinaia di classi è caotico quanto una singola cartella piena di file senza sottocartelle.
+I **package** (in Java) introducono uno **spazio di nomi strutturato**. Permettono di raggruppare logicamente classi correlate in un "pacchetto software".
+- è un contenitore che raggruppa classi logicamente correlate.
+- Definisce un nuovo livello di visibilità intermedio tra `public` e `private`: la **visibilità nel package** (è di default, non va specificata)
+- Crea uno spazio di nomi: il nome completo di una classe è composto dal nome del package + il nome semplice della classe (es. `edenti.Book`).
+
+|Livello di Visibilità|Qualificatore Java|Descrizione|
+|---|---|---|
+|**Pubblico**|`public`|Visibile a qualsiasi classe di qualsiasi package.|
+|**Package**|_(nessuna parola chiave, è il default)_|Visibile solo alle classi che si trovano all'interno dello **stesso package**. È il livello di default in Java.|
+|**Privato**|`private`|Visibile solo all'interno della stessa classe.|
+
+```java
+// Nel file edenti/Book.java
+package edenti;
+
+class Book { // <-- Visibilità di package (default)
+    String title; // <-- Visibilità di package (default)
+
+    void printTitle() { // <-- Visibilità di package (default)
+        System.out.println(title);
+    }
+}
+```
+```java
+// Nello stesso package edenti/Library.java
+package edenti;
+
+public class Library {
+    public void addBook(String title) {
+        Book b = new Book(); // OK: Library è nello stesso package di Book
+        b.title = title;     // OK: title ha visibilità di package
+        b.printTitle();      // OK: printTitle ha visibilità di package
+    }
+}
+```
+```java
+// In un altro package, ad esempio un cliente
+import edenti.Book; // ERRORE: Book non è public, quindi non è importabile/visibile qui!
+public class Client {
+    public void test() {
+        Book b = new Book(); // NON COMPILA: Book non è visibile
+    }
+}
+```
+
+**Convenzioni di Nomenclatura**
+- **Nomi:** I nomi dei package sono convenzionalmente scritti in **minuscolo**.
+- **Nome Assoluto:** È il nome univoco di una classe, ottenuto concatenando il nome del package e il nome della classe (es. `it.unibo.utilities.Point`) r**everse internet naming**.
+- **Corrispondenza File System:** Java impone una rigida corrispondenza tra il nome del package e la struttura delle directory nel file system.
+    - Il **package** `edenti` deve risiedere in una cartella chiamata `edenti`.
+    - Il package **multilivello** `it.unibo.utilities` deve risiedere in una sequenza di cartelle innestate `it/unibo/utilities/`.
+    - La **classe** `it.unibo.utilities.Point` deve trovarsi fisicamente nel file `it/unibo/utilities/Point.java`.
+- **Default Package:** Se non si specifica un package, la classe finisce nel "default package".
+    - **È da evitare assolutamente in progetti reali.**
+    - Le classi nel default package non hanno un nome assoluto e non possono essere importate da classi che si trovano in un package con nome.
+
+**Utilizzo dei Package: `import`**
+Per usare una classe da un altro package, si deve usare il suo **nome assoluto**.
+```java
+public class MyClient {
+    public static void main(String[] args) {
+        // Uso del nome assoluto
+        edenti.Book myBook = new edenti.Book("Il Nome della Rosa");
+    }
+}
+```
+
+Per evitare di scrivere ogni volta il nome assoluto (che può essere molto lungo), si usa la direttiva **`import`** che permette di riferirsi a una classe di un altro package usando il suo **nome relativo (semplice)**. Non include il codice ma permette al compilatore di risolvere il nome.
+```java
+import edenti.Book; // Importa la singola classe Book
+
+public class MyClient {
+    public static void main(String[] args) {
+        // Uso del nome relativo grazie all'import
+        Book myBook = new Book("Il Nome della Rosa");
+    }
+}
+```
+Si può importare tutte le classi di un package con `import edenti.*;`.
+Se ci sono omonimie la soluzione è importare la classe più usata e usare il nome assoluto per l'altra.
+
+**Compilazione e esecuzione**
+I comandi `javac` e `java` devono essere eseguiti dalla **directory che sta al di sopra della radice dei package**.
+Nella stessa directory
+```bash
+javac edenti/Book.java edenti/Library.java
+
+java edenti.Library
+```
+In un'altra directory
+```bash
+# -cp .;..  (Su Windows) indica di cercare le classi nella cartella corrente (.) e in quella superiore (..)
+javac -cp .;.. MyClient.java
+
+java -cp .;.. MyClient
+```
+I percorsi sono separati da `;` (Windows) o `:` (Linux/macOS).
+
+**Importazione statica**
+Introdotta per permettere l'uso di membri `static` (campi e metodi) di una classe senza dover prefissare il nome della classe.
+```java
+// Senza import static
+public class TestMath {
+    public double areaCerchio(double raggio) {
+        return Math.PI * raggio * raggio; // Devo sempre scrivere "Math."
+    }
+}
+
+// Con import static
+import static java.lang.Math.PI;
+import static java.lang.Math.pow; // O anche import static java.lang.Math.*;
+
+public class TestMath {
+    public double areaCerchio(double raggio) {
+        return PI * pow(raggio, 2); // Non serve più "Math."
+    }
+}
+```
+*Da usare con parsimonia*
+
+**Il Package `java.lang`**
+È il package più importante di Java, importato **automaticamente** in ogni programma.
+Contiene le classi fondamentali del linguaggio:
+- `Object` (la radice di tutte le classi)
+- `String`, `StringBuilder`
+- Classi wrapper: `Integer`, `Double`, `Boolean`, etc.
+- `System` (per `System.out.println`)
+- `Math`
+- `Class` (per la reflection)
+- Eccezioni e errori di base (`Throwable`, `Exception`, `RuntimeException`)
+## I moduli
+Con applicazioni molto grandi (come l'intera piattaforma Java stessa), il solo meccanismo dei package si è rivelato insufficiente.
+Un modulo è un raggruppamento di package che aggiunge un ulteriore livello di incapsulamento. Si specifica quali package **esporta** (rende visibili all'esterno) e da quali altri moduli **dipende**.
+Le specifiche del modulo sono in un file speciale: `module-info.java`, posto nella directory radice dei package del modulo.
+```java
+module it.unibo.mylib {
+    // Esporta il package 'it.unibo.mylib.utils' a tutti
+    exports it.unibo.mylib.utils;
+
+    // Esporta il package 'it.unibo.mylib.api' solo al modulo 'it.unibo.myapp'
+    exports it.unibo.mylib.api to it.unibo.myapp;
+
+    // Dichiara che questo modulo dipende dal modulo 'java.sql'
+    requires java.sql;
+
+    // Dichiara che questo modulo usa un servizio (per ServiceLoader)
+    uses it.unibo.mylib.spi.MyService;
+
+    // Dichiara che questo modulo fornisce un'implementazione di un servizio
+    provides it.unibo.mylib.spi.MyService with it.unibo.mylib.internal.MyServiceImpl;
+}
+```
+- I package non esportati sono accessibili solo all'interno del modulo. Non è più necessario usare `public` per farli vedere a package "amici".
+- **Immagine di Runtime Ridotta:** Strumenti come `jlink` possono creare un'immagine di runtime di Java contenente solo i moduli strettamente necessari all'applicazione, riducendo le dimensioni.
+- **Retrocompatibilità**  Le classi tradizionali (senza modulo) finiscono in un "modulo senza nome" (unnamed module) e possono accedere a tutti i moduli della piattaforma.
