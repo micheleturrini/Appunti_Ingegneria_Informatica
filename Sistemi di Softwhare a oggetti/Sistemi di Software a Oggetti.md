@@ -1180,3 +1180,81 @@ module it.unibo.mylib {
 - I package non esportati sono accessibili solo all'interno del modulo. Non è più necessario usare `public` per farli vedere a package "amici".
 - **Immagine di Runtime Ridotta:** Strumenti come `jlink` possono creare un'immagine di runtime di Java contenente solo i moduli strettamente necessari all'applicazione, riducendo le dimensioni.
 - **Retrocompatibilità**  Le classi tradizionali (senza modulo) finiscono in un "modulo senza nome" (unnamed module) e possono accedere a tutti i moduli della piattaforma.
+## Enumerativi
+Un `enum` in Java è una classe a tutti gli effetti, con alcune caratteristiche speciali:
+- Ha un **costruttore privato**, quindi l'utente non può creare istanze arbitrariamente.
+- In quanto classe, può avere **stato (campi)** e **comportamento (metodi)**.
+- I valori elencati (es. `NORTH`, `SOUTH`) sono le **uniche istanze pubbliche e statiche** della classe, create dal compilatore.
+```java
+public enum Direction {
+    NORTH, SOUTH, EAST, WEST;
+}
+
+Direction dir = Direction.NORTH;
+```
+
+**Utilizzo negli `switch`**
+```java
+Direction dir = Direction.NORTH;
+
+// switch tradizionale (statement)
+switch (dir) {
+    case NORTH: System.out.println("North"); break;
+    case SOUTH: System.out.println("South"); break;
+    case EAST:  System.out.println("East");  break;
+    case WEST:  System.out.println("West");  break;
+}
+```
+oppure
+```java
+var name = switch (dir) {
+    case NORTH -> "North";
+    case SOUTH -> "South";
+    case EAST  -> "East";
+    case WEST  -> "West";
+}; // <-- Punto e virgola obbligatorio perché è un'assegnazione
+```
+- **È un'espressione**, quindi restituisce un valore che può essere assegnato a una variabile.
+- I rami sono mutuamente esclusivi, quindi **non serve il `break`**
+- Deve essere esaustiva: coprire tutti i casi possibili o includere un ramo `default`
+
+**L'Enum come Classe: Metodi Automatici**
+- **`ordinal()`:** Restituisce l'indice (0-based) della costante nell'ordine in cui è stata dichiarata. Da usare con cautela, perché l'ordine è parte della definizione dell'enum e non dovrebbe essere usato per logiche di business.
+- **`values()`:** Metodo statico che restituisce un array contenente tutte le costanti dell'enum nell'ordine di dichiarazione. Utile per iterare.
+- **`valueOf(String name)`:** Metodo statico che restituisce la costante dell'enum il cui nome corrisponde esattamente alla stringa passata.
+```java
+for (Direction d : Direction.values()) {
+    System.out.println(d.ordinal()); // Stampa 0, 1, 2, 3
+}
+
+Direction d = Direction.valueOf("EAST"); // d sarà Direction.EAST
+System.out.println(d); // Stampa "EAST"
+```
+
+**Estendere l'Enum: Aggiungere Comportamento**
+Essendo una classe, possiamo arricchire un enum con metodi personalizzati.
+```java
+public enum Direction {
+    NORTH, SOUTH, EAST, WEST;
+
+    public int getDegrees() {
+        return switch (this) {
+            case NORTH -> 0;
+            case SOUTH -> 180;
+            case EAST  -> 90;
+            case WEST  -> 270;
+        };
+    }
+
+    @Override
+    public String toString() {
+        return switch (this) {
+            case NORTH -> "Nord";
+            case SOUTH -> "Sud";
+            case EAST  -> "Est";
+            case WEST  -> "Ovest";
+        } + " a " + getDegrees() + "°";
+    }
+}
+```
+
