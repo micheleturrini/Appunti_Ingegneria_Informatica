@@ -1258,3 +1258,270 @@ public enum Direction {
 }
 ```
 
+**Soluzione all switch**
+si **associano i dati direttamente a ogni costante**, spostando la conoscenza dalle funzioni (metodi) ai dati stessi.
+si definisce un **costruttore privato che accetta i dati e li salva in campi dell'istanza.**
+```java
+public enum Direction {
+    // Le costanti ora invocano il costruttore con i loro dati specifici
+    NORTH("Nord", 0),
+    SOUTH("Sud", 180),
+    EAST("Est", 90),
+    WEST("Ovest", 270);
+
+    // Campi per lo stato
+    private String italianName;
+    private int degrees;
+
+    // Costruttore privato
+    private Direction(String italianName, int degrees) {
+        this.italianName = italianName;
+        this.degrees = degrees;
+    }
+
+    // I metodi ora restituiscono semplicemente lo stato dell'istanza
+    public int getDegrees() {
+        return degrees;
+    }
+
+    @Override
+    public String toString() {
+        return italianName + " a " + degrees + "°";
+    }
+
+    // Il metodo getOpposite, purtroppo, non può essere implementato con dati,
+    // perché l'opposto è una forward reference.
+    public Direction getOpposite() {
+        return switch (this) {
+            case NORTH -> SOUTH;
+            case SOUTH -> NORTH;
+            case EAST  -> WEST;
+            case WEST  -> EAST;
+        };
+    }
+}
+```
+
+**Limitazioni e Workaround per Riferimenti Circolari**
+Non è possibile, durante la dichiarazione di una costante, riferirsi a un'altra costante che non è stata ancora definita (_forward reference_). Questo impedisce, ad esempio, di passare l'oggetto `SOUTH` al costruttore di `NORTH` per il metodo `getOpposite`.
+```java
+// NON COMPILA! 'SOUTH' è ancora sconosciuto quando si definisce NORTH.
+NORTH("Nord", 0, SOUTH),
+```
+**Workaround:** Si può passare il **nome** della costante opposta come stringa e usare il metodo `valueOf()` per ottenere l'istanza corretta al momento dell'esecuzione. (Metodo comunque fragile)
+
+Es. Banconote e Portafogli
+```java
+public enum Taglio {
+    CINQUECENTO(500), DUECENTO(200), /* ... */ UNO(1);
+
+    private final int valore;
+
+    private Taglio(int valore) {
+        this.valore = valore;
+    }
+
+    public int getValore() {
+        return valore;
+    }
+}
+```
+il **Portafoglio** stesso è un'entità del mondo reale e merita una sua classe. Questo incapsula i dati (l'array di tagli) e le operazioni (metodi `valore()` e `toString()`).
+```java
+import java.util.Arrays;
+import java.util.StringJoiner;
+
+public class Portafoglio {
+    private Taglio[] contenuto;
+    private int logicalSize; // Tiene traccia degli elementi effettivamente inseriti
+
+    // Costruttore per un portafoglio vuoto con una capacità iniziale
+    public Portafoglio(int capacita) {
+        contenuto = new Taglio[capacita];
+        logicalSize = 0;
+    }
+
+    // Costruttore da un array esistente
+    public Portafoglio(Taglio[] tagliIniziali) {
+        this.contenuto = Arrays.copyOf(tagliIniziali, tagliIniziali.length);
+        this.logicalSize = tagliIniziali.length;
+    }
+
+    public void add(Taglio t) {
+        if (logicalSize < contenuto.length) {
+            contenuto[logicalSize++] = t;
+        } else {
+            // Gestire l'overflow (es. ridimensionare l'array)
+            System.out.println("Portafoglio pieno!");
+        }
+    }
+
+    public int valore() {
+        int sum = 0;
+        for (int i = 0; i < logicalSize; i++) {
+            sum += contenuto[i].getValore(); // Chiede il valore al taglio!
+        }
+        return sum;
+    }
+
+    @Override
+    public String toString() {
+        StringJoiner sj = new StringJoiner(", ");
+        for (int i = 0; i < logicalSize; i++) {
+            sj.add(contenuto[i].toString());
+        }
+        return sj.toString();
+    }
+}
+```
+il main è pulito
+```java
+Portafoglio pf = new Portafoglio(10);
+pf.add(Taglio.CINQUANTA);
+pf.add(Taglio.VENTI);
+// ...
+
+System.out.println("Contenuto: " + pf); // Stampa: CINQUANTA, VENTI, ...
+System.out.println("Valore: " + pf.valore()); // Stampa: 70
+```
+- **Enum Evoluto (con stato):** Incapsula la conoscenza, eliminando gli switch per le proprietà intrinseche. Il codice diventa più robusto e auto-documentante.
+- **Nascita del Portafoglio (classe contenitore):** Incapsula la collezione e le operazioni correlate, dando una "casa" a metodi che altrimenti sarebbero rimasti in librerie statiche senza una chiara appartenenza. Il modello finale rispecchia la realtà, è robusto, estendibile e manutenibile.
+### Il Pattern Factory
+
+In molte situazioni pratiche, permettere all'utente di costruire direttamente oggetti complessi (tramite la parola chiave `new`) è inopportuno. Questo perché gli oggetti complessi spesso hanno costruttori con molti argomenti o richiedono competenze specifiche che l'utente potrebbe non avere, con il rischio di non rispettare i vincoli.
+Il **Design Pattern Factory** ("fabbrica") interviene per risolvere questo problema:
+- **Incapsulamento:** Nasconde i dettagli costruttivi all'utente, incapsulando la conoscenza necessaria per creare l'oggetto.
+- **Decisioni Strategiche:** Una fabbrica può decidere come costruire un oggetto in base ai parametri, alla disponibilità di risorse o restituire oggetti compatibili senza che il cliente lo sappia.
+- **Struttura in Java:** I costruttori della classe non sono pubblici. La costruzione avviene tramite funzioni statiche (chiamate _factory methods_) incluse nella classe stessa.
+- **Nomenclatura:** I metodi factory tipicamente si chiamano `of`, `valueOf` o, più in passato, `get***`.
+### Cultura Locale 
+
+Le convenzioni per formattare numeri, percentuali, valute, date e orari cambiano in base al paese e alla cultura (es. separatori delle migliaia, posizione del simbolo della valuta). A partire da Java 9, Java adotta il database internazionale **Unicode CLDR** (Common Locale Data Repository) per raccogliere queste convenzioni (fino a Java 8 usava un database interno JRE).
+
+In Java, la cultura locale è rappresentata dalla classe `java.util.Locale`.
+
+- Una cultura locale è composta da una **lingua** (sigla minuscola, es. `it`) e un **paese** (sigla MAIUSCOLA, es. `IT`). Questo perché la stessa lingua in paesi diversi adotta convenzioni diverse (es. l'italiano in Italia è `it_IT`, in Svizzera è `it_CH`).
+    
+
+### Ottenere un oggetto Locale in Java
+
+Ci sono diversi modi per ottenere o costruire una cultura locale:
+
+1. **Costanti predefinite:** Per i casi più comuni.
+    
+2. **Factory Methods (da Java 19):** I costruttori classici tramite `new` sono stati deprecati in Java 19 a favore dei factory methods.
+    
+
+Java
+
+```
+// 1. Uso di costanti (Factory implicita)
+Locale italy = Locale.ITALY; // [cite: 167]
+
+// 2. Factory methods (Da Java 19 in poi)
+Locale swissItalian = Locale.forLanguageTag("it-CH"); // [cite: 176]
+Locale customLocale = Locale.of("en", "GB"); // [cite: 146]
+
+// 3. Ottenere il locale di default del sistema
+Locale defaultLocale = Locale.getDefault(); // [cite: 154]
+```
+
+---
+
+## 3. Formattatori Numerici (`NumberFormat`)
+
+La classe `java.text.NumberFormat` è una factory che genera formattatori per numeri, percentuali e valute in base alla cultura locale. Si utilizzano i metodi `get***Instance()` e poi si applica il metodo `format(valore)` per ottenere la stringa formattata.
+
+### A. Formattazione di Numeri Base
+
+Java
+
+```
+double x = 43.12345678; // [cite: 248]
+// Crea il formattatore numerico per il Canada
+NumberFormat fN = NumberFormat.getNumberInstance(Locale.CANADA); // [cite: 248, 249]
+fN.setMaximumFractionDigits(2); // [cite: 250]
+
+System.out.println(fN.format(x)); // Output: 43.12 [cite: 251, 257]
+```
+
+_Nota:_ Il separatore delle migliaia e dei decimali cambia in base alla cultura. In Italia si usa il punto `.` per le migliaia e la virgola `,` per i decimali, mentre in Nord America è l'opposto. Nel Canada francofono si usa lo spazio (hard space) per le migliaia.
+
+### B. Formattazione di Percentuali
+
+Java
+
+```
+double q = 0.7; // [cite: 293]
+NumberFormat fP = NumberFormat.getPercentInstance(Locale.ITALY); // [cite: 293]
+System.out.println(fP.format(q)); // Output: 70% [cite: 299, 308]
+```
+
+### C. Formattazione di Valute e il problema dell'Euro
+
+Non serve specificare il numero di cifre decimali per le valute, in quanto fanno già parte della convenzione del database CLDR, con i relativi arrotondamenti.
+
+**Attenzione al cambio da Java 8 a Java 9+:** Con l'adozione del database CLDR in Java 9, la convenzione italiana per l'Euro è cambiata. Fino a Java 8 il simbolo precedeva l'importo (es. `€ 1.243,57`), mentre da Java 9+ il simbolo si posiziona dopo l'importo (es. `1.243,57 €`).
+
+Java
+
+```
+double price = 1243.5678; // [cite: 385]
+NumberFormat fV = NumberFormat.getCurrencyInstance(Locale.ITALY); // [cite: 386]
+System.out.println(fV.format(price)); // Output in Java 9+: 1.243,57 € [cite: 386, 389]
+```
+
+---
+
+## 4. Parsing: Dalle Stringhe ai Numeri
+
+I formattatori permettono anche l'operazione inversa (parsing), ovvero convertire una stringa formattata in un numero (oggetto della classe `Number`) tramite il metodo `parse`.
+
+Java
+
+```
+NumberFormat fV = NumberFormat.getCurrencyInstance(Locale.US); // [cite: 420]
+// Il metodo parse restituisce un oggetto Number
+Number n = fV.parse("$123.56"); // [cite: 423, 424]
+// Estrazione in tipi primitivi
+double d = n.doubleValue(); // [cite: 426]
+```
+
+**Pericoli del Parsing:** Il parsing è molto sensibile e richiede la gestione delle eccezioni, poiché un formato scorretto fa "arrabbiare" il formattatore. Inoltre, se si analizza una stringa con una cultura locale errata (es. leggere `72.35%` con `Locale.ITALY`), Java potrebbe interpretare la stringa solo parzialmente o dare risultati assurdi senza lanciare errore. In culture come il Canada francese, il parsing richiede spazi speciali non interrompibili (non-breakable space).
+
+---
+
+## 5. Formattatori Personalizzati (`DecimalFormat`)
+
+Se i formattatori standard non soddisfano le esigenze (ad esempio, si rivuole il simbolo dell'Euro davanti all'importo in Java 9+), si può creare un formattatore su misura utilizzando la classe `java.text.DecimalFormat`. In questo caso non si usa una factory, ma il costruttore `new`, passando una "stringa di formato" (pattern).
+
+Simbologia del Pattern:
+
+- `¤` (carattere jolly per il simbolo di valuta)
+    
+- `#` (cifra generica che può mancare)
+    
+- `0` (cifra generica obbligatoria, aggiunge zero iniziale/finale se necessario)
+    
+- `,` (separatore delle migliaia) - _Verrà sostituito col simbolo della cultura corrente_
+    
+- `.` (separatore decimale) - _Verrà sostituito col simbolo della cultura corrente_
+    
+
+### Esempio: Ripristinare l'Euro davanti e formattare i negativi
+
+Per gestire elegantemente i numeri negativi, è possibile fornire una doppia specifica separata da `;` (la prima per i positivi, la seconda per i negativi).
+
+Java
+
+```
+// Il pattern definisce un formato per positivi e uno per negativi
+DecimalFormat customFmt = new DecimalFormat("¤ #,##0.## ; ¤ -#,##0.##"); // [cite: 548]
+
+System.out.println(customFmt.format(1234.567));  // Output: € 1.234,57 [cite: 550, 554]
+System.out.println(customFmt.format(-1234.567)); // Output: € -1.234,57 [cite: 551, 555]
+```
+
+---
+
+Spero che questi appunti chiariscano i concetti! Vuoi che approfondiamo l'utilizzo dei blocchi `try-catch` necessari per gestire correttamente gli errori del metodo `parse()` di cui si accenna nel documento?
