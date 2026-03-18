@@ -1386,142 +1386,504 @@ System.out.println("Valore: " + pf.valore()); // Stampa: 70
 ```
 - **Enum Evoluto (con stato):** Incapsula la conoscenza, eliminando gli switch per le proprietà intrinseche. Il codice diventa più robusto e auto-documentante.
 - **Nascita del Portafoglio (classe contenitore):** Incapsula la collezione e le operazioni correlate, dando una "casa" a metodi che altrimenti sarebbero rimasti in librerie statiche senza una chiara appartenenza. Il modello finale rispecchia la realtà, è robusto, estendibile e manutenibile.
-### Il Pattern Factory
+## Il pattern Factory
+Il pattern **Factory** è un design pattern creazionale che incapsula la logica di costruzione degli oggetti, nascondendone i dettagli all'utente. Viene utilizzato quando:
+- La **costruzione di un oggetto è complessa** e richiede molti parametri.
+- Si vogliono **applicare regole o politiche specifiche durante la creazione**.
+- Si desidera **restituire oggetti di tipi diversi ma compatibili in base al contesto**.
+**Caratteristiche principali**
+- La fabbrica espone uno o più **metodi factory statici** (tipicamente chiamati `of()`, `valueOf()`, o in passato `getXYZ()`).
+- I costruttori della classe dell'oggetto vengono resi non pubblici, così che solo la fabbrica possa istanziare l'oggetto.
+- La fabbrica può essere incorporata nella stessa classe dell'oggetto (parte statica) o essere una classe separata.
 
-In molte situazioni pratiche, permettere all'utente di costruire direttamente oggetti complessi (tramite la parola chiave `new`) è inopportuno. Questo perché gli oggetti complessi spesso hanno costruttori con molti argomenti o richiedono competenze specifiche che l'utente potrebbe non avere, con il rischio di non rispettare i vincoli.
-Il **Design Pattern Factory** ("fabbrica") interviene per risolvere questo problema:
-- **Incapsulamento:** Nasconde i dettagli costruttivi all'utente, incapsulando la conoscenza necessaria per creare l'oggetto.
-- **Decisioni Strategiche:** Una fabbrica può decidere come costruire un oggetto in base ai parametri, alla disponibilità di risorse o restituire oggetti compatibili senza che il cliente lo sappia.
-- **Struttura in Java:** I costruttori della classe non sono pubblici. La costruzione avviene tramite funzioni statiche (chiamate _factory methods_) incluse nella classe stessa.
-- **Nomenclatura:** I metodi factory tipicamente si chiamano `of`, `valueOf` o, più in passato, `get***`.
-### Cultura Locale 
+es.
+```java
+public class Prodotto {
+    private String nome;
+    private double prezzo;
 
-Le convenzioni per formattare numeri, percentuali, valute, date e orari cambiano in base al paese e alla cultura (es. separatori delle migliaia, posizione del simbolo della valuta). A partire da Java 9, Java adotta il database internazionale **Unicode CLDR** (Common Locale Data Repository) per raccogliere queste convenzioni (fino a Java 8 usava un database interno JRE).
+    // Costruttore privato
+    private Prodotto(String nome, double prezzo) {
+        this.nome = nome;
+        this.prezzo = prezzo;
+    }
 
-In Java, la cultura locale è rappresentata dalla classe `java.util.Locale`.
+    // Metodo factory statico
+    public static Prodotto of(String nome, double prezzo) {
+        // eventuali controlli o logiche aggiuntive
+        if (prezzo < 0) {
+            throw new IllegalArgumentException("Il prezzo non può essere negativo");
+        }
+        return new Prodotto(nome, prezzo);
+    }
+}
 
-- Una cultura locale è composta da una **lingua** (sigla minuscola, es. `it`) e un **paese** (sigla MAIUSCOLA, es. `IT`). Questo perché la stessa lingua in paesi diversi adotta convenzioni diverse (es. l'italiano in Italia è `it_IT`, in Svizzera è `it_CH`).
-    
-
-### Ottenere un oggetto Locale in Java
-
-Ci sono diversi modi per ottenere o costruire una cultura locale:
-
-1. **Costanti predefinite:** Per i casi più comuni.
-    
-2. **Factory Methods (da Java 19):** I costruttori classici tramite `new` sono stati deprecati in Java 19 a favore dei factory methods.
-    
-
-Java
-
+// Utilizzo
+Prodotto p = Prodotto.of("Laptop", 999.99);
 ```
-// 1. Uso di costanti (Factory implicita)
-Locale italy = Locale.ITALY; // [cite: 167]
 
-// 2. Factory methods (Da Java 19 in poi)
-Locale swissItalian = Locale.forLanguageTag("it-CH"); // [cite: 176]
-Locale customLocale = Locale.of("en", "GB"); // [cite: 146]
+## Cultura locale `Locale`
+La classe `java.util.Locale` rappresenta una specifica cultura locale (lingua + paese) e definisce le regole per la formattazione e il parsing di dati come **numeri, valute, date, orari.**
 
-// 3. Ottenere il locale di default del sistema
-Locale defaultLocale = Locale.getDefault(); // [cite: 154]
+**Componenti di un Locale**
+- **Lingua**: codice ISO a due lettere minuscole (es. `it`, `en`, `fr`).
+- **Paese**: codice ISO a due lettere maiuscole (es. `IT`, `US`, `CH`).
+Esempi: `it_IT` (italiano Italia), `it_CH` (italiano Svizzera), `en_US` (inglese USA), `en_GB` (inglese Regno Unito).
+
+**Ottenere un oggetto Locale**
+- **Costanti predefinite** (solo per i casi più comuni):
+  ```java
+  Locale.ITALY, Locale.US, Locale.CANADA_FRENCH, Locale.UK, ...
+  ```
+- **Costruttori** (fino a Java 18):
+  ```java
+  Locale l = new Locale("it", "CH"); // italiano Svizzera
+  ```
+- **Metodi factory** (da Java 19):
+  ```java
+  Locale l1 = Locale.of("it", "CH");
+  Locale l2 = Locale.forLanguageTag("it-CH");
+  ```
+  
+**Locale predefinito e disponibili**
+- **Locale predefinito** del sistema:
+  ```java
+  Locale defaultLocale = Locale.getDefault();
+  ```
+- **Tutti i Locale disponibili** nella JVM:
+  ```java
+  Locale[] available = Locale.getAvailableLocales();
+  ```
+
+es.
+```java
+Locale italia = Locale.ITALY;                 // it_IT
+Locale svizzeraItaliana = Locale.of("it", "CH"); // it_CH
+Locale usa = Locale.US;                        // en_US
+
+System.out.println(italia.getDisplayName());   // Italian (Italy)
+System.out.println(usa.getDisplayName());      // English (United States)
+```
+### Formattatori numerici: `NumberFormat`
+La classe `java.text.NumberFormat` fornisce metodi per formattare e analizzare numeri, percentuali e valute in base a una specifica cultura locale. Essa stessa funge da factory per i propri oggetti.
+
+I metodi factory principali sono:
+- `NumberFormat.getNumberInstance(Locale locale)` – per numeri generici.
+- `NumberFormat.getPercentInstance(Locale locale)` – per percentuali.
+- `NumberFormat.getCurrencyInstance(Locale locale)` – per valute.
+*Se non si specifica un Locale, viene usato quello predefinito.*
+
+es.
+```java
+double x = 43.12345678;
+double y = 0.7;
+double z = 13456.78;
+
+NumberFormat fN = NumberFormat.getNumberInstance(Locale.ITALY);
+NumberFormat fP = NumberFormat.getPercentInstance(Locale.ITALY);
+NumberFormat fV = NumberFormat.getCurrencyInstance(Locale.ITALY);
+
+System.out.println(fN.format(x)); // 43,123 (a seconda delle cifre decimali predefinite)
+System.out.println(fP.format(y)); // 70%
+System.out.println(fV.format(z)); // 13.456,78 € (nota: il simbolo € è in fondo)
+```
+
+È possibile controllare il numero minimo e massimo di cifre frazionarie:
+```java
+NumberFormat fN = NumberFormat.getNumberInstance(Locale.CANADA);
+fN.setMaximumFractionDigits(2);
+System.out.println(fN.format(43.12345678)); // 43.12
+```
+
+**Differenze tra culture**
+Lo stesso numero viene formattato in modo diverso a seconda del Locale:
+```java
+double valore = 12345.678;
+
+NumberFormat it = NumberFormat.getNumberInstance(Locale.ITALY);
+NumberFormat us = NumberFormat.getNumberInstance(Locale.US);
+NumberFormat frCA = NumberFormat.getNumberInstance(Locale.CANADA_FRENCH);
+
+System.out.println(it.format(valore)); // 12.345,678
+System.out.println(us.format(valore)); // 12,345.678
+System.out.println(frCA.format(valore)); // 12 345,678  (nota: spazio come separatore migliaia)
+```
+**Attenzione**: il separatore delle migliaia per `Locale.CANADA_FRENCH` è uno spazio **hard** (non divisibile), non un semplice spazio ASCII.
+
+**Parsing di stringhe numeriche**
+I formattatori supportano anche l'operazione inversa: convertire una stringa (formattata secondo le regole di una certa cultura) in un oggetto `Number` tramite il metodo `parse(String source)`.
+
+**Metodo `parse`**
+```java
+NumberFormat fV = NumberFormat.getCurrencyInstance(Locale.US);
+try {
+    Number n = fV.parse("$123.56");
+    double d = n.doubleValue();
+    System.out.println(d); // 123.56
+} catch (ParseException e) {
+    e.printStackTrace();
+}
+```
+Il metodo restituisce un `Number` (che può essere convertito in `double`, `float`, `int`, ecc.) e può lanciare un'eccezione `ParseException` se la stringa non è conforme.
+
+Esempi con jshell (senza gestione eccezioni)
+```java
+jshell> NumberFormat fV = NumberFormat.getCurrencyInstance(Locale.US)
+jshell> fV.parse("$123.456789987654321")
+$3 ==> 123.45678998765432
+
+jshell> double d = n.doubleValue()
+d ==> 123.45678998765432
+```
+**il parsing è rigoroso**
+Con culture diverse il comportamento cambia e può essere inaspettato se la stringa non rispetta esattamente il formato previsto.
+
+**Esempio problematico con Locale.ITALY e percentuali:**
+```java
+NumberFormat fP = NumberFormat.getPercentInstance(Locale.ITALY);
+// La stringa "70%" viene interpretata erroneamente (ignora il % e restituisce 70, non 0.7)
+Number n = fP.parse("70%"); // ATTENZIONE: risultato 70, non 0.7!
+```
+
+**Esempio con Locale.CANADA_FRENCH**:
+```java
+NumberFormat fP = NumberFormat.getPercentInstance(Locale.CANADA_FRENCH);
+fP.setMinimumFractionDigits(2);
+String formatted = fP.format(0.7235); // "72,35 %" (con spazio hard prima di %)
+// Per fare il parsing corretto, la stringa deve contenere lo spazio hard e la virgola
+Number n = fP.parse("72,35 %"); // spazio non divisibile
+```
+Se si omette lo spazio o si usa uno spazio normale, il parsing fallisce.
+
+il parsing è delicato; in questa fase è meglio limitarsi alla formattazione (output) e rimandare lo studio approfondito del parsing a quando si affronterà la gestione delle eccezioni.
+### Formattatori personalizzati con `DecimalFormat`
+è possibile creare un formattatore personalizzato usando la classe `java.text.DecimalFormat`.
+
+Il pattern utilizza simboli speciali:
+- `¤` (U+00A4) – simbolo di valuta generico (verrà sostituito con il simbolo locale).
+- `#` – cifra opzionale (non viene mostrata se zero iniziale).
+- `0` – cifra obbligatoria (viene mostrata anche se zero).
+- `,` – separatore di gruppo (migliaia).
+- `.` – separatore decimale.
+**Nota**: nel pattern si usano i simboli anglosassoni (`.` per il decimale, `,` per le migliaia), ma il formattatore li sostituirà automaticamente con i separatori della cultura locale al momento della formattazione.
+
+Es
+```java
+DecimalFormat f = new DecimalFormat("¤ #,##0.##");
+f.setCurrency(Currency.getInstance("EUR"));
+
+System.out.println(f.format(1234.567));   // € 1.234,57
+System.out.println(f.format(-1234.567));  // € -1.234,57
+System.out.println(f.format(0.567));      // € 0,57
+System.out.println(f.format(12345678.91234)); // € 12.345.678,91
+```
+È possibile specificare due pattern separati da un punto e virgola: il primo per i valori positivi, il secondo per i negativi.
+```java
+DecimalFormat f = new DecimalFormat("¤ #,##0.##; ¤ -#,##0.##");
+f.setCurrency(Currency.getInstance("EUR"));
+
+System.out.println(f.format(1234.567));   // € 1.234,57
+System.out.println(f.format(-1234.567));  // € -1.234,57
+```
+
+A partire da **Java 9**, il JDK ha adottato il database Unicode **CLDR** (Common Locale Data Repository) come database predefinito per le informazioni sulle culture locali. Questo cambiamento ha introdotto una modifica significativa per la valuta in **Locale.ITALY**:
+- **Fino a Java 8**: il simbolo dell'euro veniva posizionato **prima** dell'importo (es. `€ 1.234,56`).
+- **Da Java 9 in poi**: il simbolo dell'euro viene posizionato **dopo** l'importo (es. `1.234,56 €`), seguendo le convenzioni CLDR.
+## Java.time
+La gestione del tempo nelle applicazioni software è complessa per vari motivi:
+- **Concetti relativi vs. assoluti**: "ci vediamo alle 10" (relativo al luogo) vs. "l'aereo parte alle 11:30 GMT+1" (assoluto).
+- **Convenzioni culturali diverse**: formati di data, nomi dei mesi, calendari differenti (gregoriano, giuliano, ebraico, islamico...).
+- **Unità di misura variabili**: un mese può durare 28, 29, 30 o 31 giorni; un anno può essere bisestile.
+Java mette a disposizione il package `java.time` per gestire questi aspetti in modo chiaro.
+
+## Pattern Factory in java.time
+
+Tutte le classi principali di `java.time` seguono due assunti fondamentali:
+1. **Oggetti immutabili**: una volta creati, non possono più essere modificati. Qualsiasi operazione che sembra modificarli restituisce in realtà una **nuova istanza**.
+2. **Costruzione indiretta tramite factory**: i costruttori non sono pubblici. Si utilizzano metodi factory statici (principalmente `of()`, ma anche `now()`, `from()`, `parse()`, ecc.) per creare oggetti.
+
+Questo approccio garantisce:
+- Controllo sulla creazione (evita duplicati, applica validazioni).
+- Chiarezza e leggibilità del codice.
+
+**Esempi di factory methods:**
+```java
+// Invece di "new LocalDate(2020, 12, 25)" (NON FUNZIONA)
+LocalDate xmas = LocalDate.of(2020, 12, 25);
+
+Month m = Month.of(10);               // OCTOBER
+DayOfWeek d = DayOfWeek.of(1);         // MONDAY
+
+LocalTime noon = LocalTime.of(12, 0);
+LocalTime now = LocalTime.now();
+
+LocalDateTime nowDateTime = LocalDateTime.now();
 ```
 
 ---
 
-## 3. Formattatori Numerici (`NumberFormat`)
+## Concetti relativi (locali)
 
-La classe `java.text.NumberFormat` è una factory che genera formattatori per numeri, percentuali e valute in base alla cultura locale. Si utilizzano i metodi `get***Instance()` e poi si applica il metodo `format(valore)` per ottenere la stringa formattata.
+I concetti relativi rappresentano data e/o orario **senza riferimento a un fuso orario**. Sono utili per esprimere eventi che hanno significato in un contesto locale (compleanni, orari di apertura, scadenze contrattuali, ecc.).
 
-### A. Formattazione di Numeri Base
+### LocalDate, LocalTime, LocalDateTime
 
-Java
+| Classe          | Descrizione                              | Esempio di formato        |
+|-----------------|------------------------------------------|----------------------------|
+| `LocalDate`     | Data (anno, mese, giorno)                | `2020-12-25`               |
+| `LocalTime`     | Orario (ora, minuto, secondo, nanosecondo)| `12:00:00`                 |
+| `LocalDateTime` | Data e orario combinati                   | `2020-12-25T12:00:00`      |
 
-```
-double x = 43.12345678; // [cite: 248]
-// Crea il formattatore numerico per il Canada
-NumberFormat fN = NumberFormat.getNumberInstance(Locale.CANADA); // [cite: 248, 249]
-fN.setMaximumFractionDigits(2); // [cite: 250]
-
-System.out.println(fN.format(x)); // Output: 43.12 [cite: 251, 257]
-```
-
-_Nota:_ Il separatore delle migliaia e dei decimali cambia in base alla cultura. In Italia si usa il punto `.` per le migliaia e la virgola `,` per i decimali, mentre in Nord America è l'opposto. Nel Canada francofono si usa lo spazio (hard space) per le migliaia.
-
-### B. Formattazione di Percentuali
-
-Java
-
-```
-double q = 0.7; // [cite: 293]
-NumberFormat fP = NumberFormat.getPercentInstance(Locale.ITALY); // [cite: 293]
-System.out.println(fP.format(q)); // Output: 70% [cite: 299, 308]
+**Creazione:**
+```java
+LocalDate dataNascita = LocalDate.of(1990, 5, 15);
+LocalTime oraLezione = LocalTime.of(9, 30);
+LocalDateTime dataOra = LocalDateTime.of(2026, 3, 17, 14, 0);
 ```
 
-### C. Formattazione di Valute e il problema dell'Euro
-
-Non serve specificare il numero di cifre decimali per le valute, in quanto fanno già parte della convenzione del database CLDR, con i relativi arrotondamenti.
-
-**Attenzione al cambio da Java 8 a Java 9+:** Con l'adozione del database CLDR in Java 9, la convenzione italiana per l'Euro è cambiata. Fino a Java 8 il simbolo precedeva l'importo (es. `€ 1.243,57`), mentre da Java 9+ il simbolo si posiziona dopo l'importo (es. `1.243,57 €`).
-
-Java
-
+**Metodi accessor:**
+```java
+LocalDate oggi = LocalDate.now();
+int giorno = oggi.getDayOfMonth();
+Month mese = oggi.getMonth();           // restituisce un enum Month
+int anno = oggi.getYear();
+int giornoAnno = oggi.getDayOfYear();   // 1..366
+DayOfWeek giornoSettimana = oggi.getDayOfWeek(); // enum DayOfWeek
+boolean bisestile = oggi.isLeapYear();
 ```
-double price = 1243.5678; // [cite: 385]
-NumberFormat fV = NumberFormat.getCurrencyInstance(Locale.ITALY); // [cite: 386]
-System.out.println(fV.format(price)); // Output in Java 9+: 1.243,57 € [cite: 386, 389]
+
+### Enumerativi: Month e DayOfWeek
+
+`Month` e `DayOfWeek` sono enumerazioni che facilitano la gestione di mesi e giorni.
+
+```java
+Month m = Month.APRIL;
+System.out.println(m.getValue());          // 4
+System.out.println(m.getDisplayName(...)); // "aprile" (se si usa un formattatore)
+
+DayOfWeek d = DayOfWeek.MONDAY;
+System.out.println(d.getValue());          // 1 (lunedì = 1, domenica = 7)
+```
+
+### Period: durata relativa
+
+`Period` rappresenta un lasso di tempo in **anni, mesi, giorni**. È "volutamente impreciso" perché anni e mesi non hanno durata fissa.
+
+**Creazione:**
+```java
+Period dueMesiTreGiorni = Period.ofMonths(2).plusDays(3);  // P2M3D
+Period unAnno = Period.ofYears(1);                         // P1Y
+```
+
+**Differenza tra due date:**
+```java
+LocalDate inizio = LocalDate.of(2025, 9, 15);
+LocalDate fine = LocalDate.of(2026, 6, 10);
+Period periodo = Period.between(inizio, fine);
+System.out.println(periodo.getYears() + " anni, " + periodo.getMonths() + " mesi, " + periodo.getDays() + " giorni");
+```
+
+**Sommare/sottrarre un Period a una data:**
+```java
+LocalDate nuovaData = (LocalDate) periodo.addTo(inizio);   // richiede cast (vedi spiegazione sotto)
+```
+
+**Perché il cast?** I metodi `addTo` e `subtractFrom` lavorano su oggetti `Temporal` (interfaccia generica). Il tipo effettivo dipende dall'input: se passo una `LocalDate`, ottengo una `LocalDate`; se passo una `LocalDateTime`, ottengo una `LocalDateTime`. Il cast è necessario per riottenere il tipo specifico.
+
+---
+
+## Concetti assoluti
+
+I concetti assoluti rappresentano un **istante preciso sulla linea del tempo**, indipendente dal luogo in cui ci si trova. Richiedono l'indicazione del fuso orario o dell'offset da UTC.
+
+### Instant: punto sulla linea del tempo
+
+`Instant` è il concetto più "fisico": è il numero di nanosecondi trascorsi dalla mezzanotte del 1° gennaio 1970 UTC (epoca Unix). Non ha nulla a che fare con calendari, mesi o giorni umani.
+
+```java
+Instant adesso = Instant.now();   // 2026-03-17T14:30:00.123456789Z (formato ISO)
+```
+
+### Duration: durata in nanosecondi
+
+`Duration` rappresenta un lasso di tempo **preciso** in nanosecondi. Tipicamente si usa per differenze tra `Instant`.
+
+**Creazione:**
+```java
+Duration unGiorno = Duration.ofDays(1);
+Duration dueOre = Duration.ofHours(2);
+Duration complessa = Duration.ofDays(1)
+                              .plusHours(3)
+                              .minusMinutes(4)
+                              .minusSeconds(10); // fluent interface
+```
+
+**Differenza tra due Instant:**
+```java
+Instant inizio = Instant.now();
+// ... esecuzione di un'operazione
+Instant fine = Instant.now();
+Duration durata = Duration.between(inizio, fine);
+System.out.println("Durata: " + durata.toMillis() + " ms");
+```
+
+**Metodi per estrarre il totale in varie unità:**
+```java
+long totaleOre = durata.toHours();
+long totaleMinuti = durata.toMinutes();
+long totaleSecondi = durata.toSeconds();
+long totaleMillis = durata.toMillis();
+```
+
+### OffsetDateTime e ZonedDateTime
+
+Queste classi aggiungono a una data/ora locale l'informazione necessaria per renderla assoluta.
+
+| Classe           | Descrizione                                                                 | Esempio                              |
+|------------------|-----------------------------------------------------------------------------|--------------------------------------|
+| `OffsetDateTime` | Data/ora + offset fisso rispetto a UTC (es. +01:00)                         | `2026-03-17T15:30:00+01:00`          |
+| `ZonedDateTime`  | Data/ora + fuso orario (es. Europe/Rome), che include regole per ora legale| `2026-03-17T15:30:00+01:00 Europe/Rome` |
+
+**Creazione:**
+```java
+LocalDateTime inizioLezioni = LocalDateTime.of(2026, 2, 17, 9, 0);
+
+// OffsetDateTime con offset +1 (ora solare Italia)
+OffsetDateTime offsetInizio = OffsetDateTime.of(inizioLezioni, ZoneOffset.ofHours(1));
+
+// ZonedDateTime con fuso CET (Central European Time)
+ZonedDateTime zonedInizio = ZonedDateTime.of(inizioLezioni, ZoneId.of("Europe/Rome"));
+```
+
+**Ottenere fusi orari:**
+- Usare **nomi estesi** come `"Europe/Rome"`, `"America/New_York"`. Le sigle a tre lettere (`CET`, `EST`) sono deprecate perché ambigue.
+- `ZoneId.getAvailableZoneIds()` per elencare tutti i fusi supportati.
+
+**Conversione tra classi:**
+```java
+ZonedDateTime zdt = ZonedDateTime.now();
+OffsetDateTime odt = zdt.toOffsetDateTime();
+Instant instant = zdt.toInstant();            // da ZonedDateTime a Instant
+LocalDate data = zdt.toLocalDate();
+LocalTime ora = zdt.toLocalTime();
+
+// Da LocalDateTime a Instant (serve l'offset)
+LocalDateTime ldt = LocalDateTime.now();
+Instant ist = ldt.toInstant(ZoneOffset.ofHours(1));
 ```
 
 ---
 
-## 4. Parsing: Dalle Stringhe ai Numeri
+## Operazioni comuni su date e orari
 
-I formattatori permettono anche l'operazione inversa (parsing), ovvero convertire una stringa formattata in un numero (oggetto della classe `Number`) tramite il metodo `parse`.
+Tutte le classi di `java.time` offrono metodi per manipolare le date in modo **immutabile**: restituiscono sempre una nuova istanza.
 
-Java
+### Aggiungere/sottrarre tempo: `plusXxx()` / `minusXxx()`
+```java
+LocalDate oggi = LocalDate.now();
+LocalDate domani = oggi.plusDays(1);
+LocalDate meseProssimo = oggi.plusMonths(1);
+LocalDate annoScorso = oggi.minusYears(1);
 
+LocalTime ora = LocalTime.now();
+LocalTime fraUnOra = ora.plusHours(1);
+LocalTime dieciMinutiFa = ora.minusMinutes(10);
 ```
-NumberFormat fV = NumberFormat.getCurrencyInstance(Locale.US); // [cite: 420]
-// Il metodo parse restituisce un oggetto Number
-Number n = fV.parse("$123.56"); // [cite: 423, 424]
-// Estrazione in tipi primitivi
-double d = n.doubleValue(); // [cite: 426]
+
+### Modificare componenti specifici: `withXxx()`
+```java
+LocalDate data = LocalDate.of(2026, 3, 17);
+LocalDate stessoGiornoMeseDiverso = data.withMonth(12).withDayOfMonth(25); // 2026-12-25
+
+LocalTime ora = LocalTime.of(10, 30);
+LocalTime stessaOraSecondiZero = ora.withSecond(0);
 ```
 
-**Pericoli del Parsing:** Il parsing è molto sensibile e richiede la gestione delle eccezioni, poiché un formato scorretto fa "arrabbiare" il formattatore. Inoltre, se si analizza una stringa con una cultura locale errata (es. leggere `72.35%` con `Locale.ITALY`), Java potrebbe interpretare la stringa solo parzialmente o dare risultati assurdi senza lanciare errore. In culture come il Canada francese, il parsing richiede spazi speciali non interrompibili (non-breakable space).
+### Confronti: `isBefore()`, `isAfter()`, `isEqual()`
+```java
+LocalDate d1 = LocalDate.of(2026, 1, 1);
+LocalDate d2 = LocalDate.of(2026, 12, 31);
 
----
+if (d1.isBefore(d2)) {
+    System.out.println("d1 viene prima di d2");
+}
 
-## 5. Formattatori Personalizzati (`DecimalFormat`)
-
-Se i formattatori standard non soddisfano le esigenze (ad esempio, si rivuole il simbolo dell'Euro davanti all'importo in Java 9+), si può creare un formattatore su misura utilizzando la classe `java.text.DecimalFormat`. In questo caso non si usa una factory, ma il costruttore `new`, passando una "stringa di formato" (pattern).
-
-Simbologia del Pattern:
-
-- `¤` (carattere jolly per il simbolo di valuta)
-    
-- `#` (cifra generica che può mancare)
-    
-- `0` (cifra generica obbligatoria, aggiunge zero iniziale/finale se necessario)
-    
-- `,` (separatore delle migliaia) - _Verrà sostituito col simbolo della cultura corrente_
-    
-- `.` (separatore decimale) - _Verrà sostituito col simbolo della cultura corrente_
-    
-
-### Esempio: Ripristinare l'Euro davanti e formattare i negativi
-
-Per gestire elegantemente i numeri negativi, è possibile fornire una doppia specifica separata da `;` (la prima per i positivi, la seconda per i negativi).
-
-Java
-
-```
-// Il pattern definisce un formato per positivi e uno per negativi
-DecimalFormat customFmt = new DecimalFormat("¤ #,##0.## ; ¤ -#,##0.##"); // [cite: 548]
-
-System.out.println(customFmt.format(1234.567));  // Output: € 1.234,57 [cite: 550, 554]
-System.out.println(customFmt.format(-1234.567)); // Output: € -1.234,57 [cite: 551, 555]
+ZonedDateTime z1 = ZonedDateTime.now();
+ZonedDateTime z2 = z1.plusHours(2);
+if (z2.isAfter(z1)) {
+    System.out.println("z2 è successivo a z1");
+}
 ```
 
 ---
 
-Spero che questi appunti chiariscano i concetti! Vuoi che approfondiamo l'utilizzo dei blocchi `try-catch` necessari per gestire correttamente gli errori del metodo `parse()` di cui si accenna nel documento?
+## Esempi pratici e casi d'uso
+
+### 1. Quanto manca al prossimo compleanno?
+```java
+public static Period toNextBirthDay(LocalDate dateOfBirth) {
+    LocalDate today = LocalDate.now();
+    int currentYear = today.getYear();
+    LocalDate nextBirthDay = dateOfBirth.withYear(currentYear);
+    if (nextBirthDay.isBefore(today)) {
+        nextBirthDay = dateOfBirth.withYear(currentYear + 1);
+    }
+    return Period.between(today, nextBirthDay);
+}
+
+// Utilizzo
+LocalDate mioCompleanno = LocalDate.of(1990, 5, 15);
+Period attesa = toNextBirthDay(mioCompleanno);
+System.out.println("Giorni: " + attesa.getDays() + ", Mesi: " + attesa.getMonths());
+```
+
+### 2. Effetto dell'ora legale
+```java
+ZonedDateTime inizio = ZonedDateTime.of(2026, 3, 25, 10, 0, 0, 0, ZoneId.of("Europe/Rome"));
+ZonedDateTime fine = inizio.plusDays(10);
+
+Duration differenza = Duration.between(inizio, fine);
+System.out.println(differenza.toHours()); // 239 ore (non 240!) perché a fine marzo scatta l'ora legale
+```
+
+### 3. Durata tra due date espresse come LocalDateTime (ma attenzione!)
+```java
+LocalDate d1 = LocalDate.of(2024, 3, 12);
+LocalDateTime dt1 = LocalDateTime.of(d1, LocalTime.now());
+
+// Calcolo durata tra date con offset fisso
+OffsetDateTime od1 = OffsetDateTime.of(dt1, ZoneOffset.ofHours(1));
+
+long giorni1 = Duration.between(od1.plusMonths(3), od1.plusMonths(5)).toDays(); // 61
+long giorni2 = Duration.between(od1.plusMonths(4), od1.plusMonths(6)).toDays(); // 62
+```
+La differenza è dovuta ai diversi numeri di giorni nei mesi (giugno-agosto vs. luglio-settembre).
+
+---
+
+## Formattazione e internazionalizzazione (cenni)
+
+Le convenzioni per date e orari variano in base alla cultura locale. Java fornisce formattatori nel package `java.time.format` (classe `DateTimeFormatter`) che, combinati con la classe `Locale`, permettono di adattare output e parsing alle regole locali.
+
+**Attenzione**: da Java 9, il database predefinito per le informazioni culturali è **CLDR** (Common Locale Data Repository), che può differire dal vecchio database "JRE" di Java 8. Questo può influenzare, ad esempio, il formato predefinito di alcune date in certi paesi.
+
+Un semplice esempio (approfondito in un'altra lezione):
+```java
+LocalDate oggi = LocalDate.now();
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.ITALY);
+String dataFormattata = oggi.format(formatter); // "17 marzo 2026"
+```
+
+---
+
+## Riepilogo delle convenzioni nei nomi dei metodi
+
+- **`of` / `ofXxx`** → factory methods per creare oggetti.
+- **`now`** → ottiene l'oggetto corrispondente all'istante corrente (o data/ora corrente).
+- **`getXxx`** → restituisce una componente (es. `getYear`, `getHour`).
+- **`withXxx`** → modifica una componente (es. `withYear`, `withMinute`).
+- **`plusXxx` / `minusXxx`** → aggiunge/sottrae una quantità di tempo.
+- **`isBefore` / `isAfter` / `isEqual`** → confronti.
+- **`toXxx`** → converte in un altro tipo (es. `toLocalDate`, `toInstant`).
+
+**Importante**: tutti i metodi che sembrano modificare l'oggetto restituiscono **una nuova istanza**; l'originale rimane invariato.
