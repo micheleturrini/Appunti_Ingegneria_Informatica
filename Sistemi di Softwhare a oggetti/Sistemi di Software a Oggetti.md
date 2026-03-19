@@ -1887,3 +1887,90 @@ String dataFormattata = oggi.format(formatter); // "17 marzo 2026"
 - **`toXxx`** → converte in un altro tipo (es. `toLocalDate`, `toInstant`).
 
 **Importante**: tutti i metodi che sembrano modificare l'oggetto restituiscono **una nuova istanza**; l'originale rimane invariato.
+
+## Sistemi di softwhare
+Un sistema a oggetti è **costituito da classi e oggetti che interagiscono tra loro**. La progettazione di un sistema che risolve un problema richiede diverse fasi:
+1. **Analisi del problema** – partendo dai requisiti si costruisce un modello del problema (architettura logica).
+2. **Pianificazione del collaudo** e del lavoro.
+3. **Progettazione della soluzione** – si definisce l’architettura del sistema (modello della soluzione).
+4. **Implementazione** – scrittura del codice.
+5. **Collaudo** – verifica dell’implementazione.
+
+**Modelli e viste**
+I modelli sono rappresentazioni (spesso grafiche) del sistema. Si distinguono:
+- **Architettura logica** – descrive il problema, indipendentemente dalla soluzione. Si articola in viste:
+    - **Struttura**: macro-blocchi derivanti dai requisiti (diagramma delle classi generale).
+    - **Interazione**: relazioni dinamiche tra blocchi (diagrammi di sequenza).
+    - **Comportamento** osservabile dei singoli blocchi (diagrammi degli stati).
+- **Architettura del sistema** – descrive la soluzione specifica. Viste analoghe ma di dettaglio.
+    - Struttura: classi di progetto (anche 10-100 volte più classi).
+    - Interazione: dettaglio di come avviene.
+    - Comportamento di dettaglio.
+### **UML** (Unified Modeling Language) 
+è il linguaggio grafico standard per esprimere questi modelli. Supporta tutte le fasi e permette forward/reverse engineering.
+#### Classi
+![[113 Sistemi di Software a Oggetti.pdf#page=9&rect=73,165,641,355|113 Sistemi di Software a Oggetti, p.9|400]]
+#### Dipendenza
+Una classe **dipende** da un’altra se la usa (ad esempio come parametro, tipo di ritorno, o creazione locale). In UML si rappresenta con una **freccia tratteggiata** etichettata `<<use>>`.
+![[113 Sistemi di Software a Oggetti.pdf#page=10&rect=104,213,586,320|113 Sistemi di Software a Oggetti, p.10|400]]
+#### Associazioni
+Relazione strutturale tra classi. Può essere unidirezionale o bidirezionale, con molteplicità (es. 1, 0.._, 1.._).
+fondamentale distinguere i diversi significati del verbo “avere” nelle descrizioni. Esempi:
+- _“Una flotta ha un ammiraglio”_ → **relazione generica** (non è parte della flotta).
+- _“Una flotta ha delle navi”_ → **aggregazione** (le navi esistono indipendentemente).
+- _“Un esagono ha sei vertici”_ → **composizione** (i vertici esistono solo con l’esagono).
+- _“Un libro ha delle pagine”_ → **composizione** (le pagine non hanno senso fuori dal libro).
+### Nel codice
+**Associazione generica**
+Ogni classe contiene un riferimento all’altra. Se la molteplicità è maggiore di 1, si usa una collezione (array, List, ecc.).
+**Esempio**: Ammiraglio e Flotta (un ammiraglio può essere associato a più flotte).
+```java
+public class Ammiraglio {
+    private List<Flotta> flotte; // o array
+    // ...
+}
+
+public class Flotta {
+    private Ammiraglio ammiraglio;
+    // ...
+}
+```
+
+**Aggregazione**
+La classe contenitore ha un riferimento a oggetti che esistono indipendentemente. Non è necessario fare copie difensive nei costruttori perché gli oggetti possono essere condivisi.
+**Esempio**: Flotta e Nave (una nave può appartenere a più flotte).
+```java
+public class Flotta {
+    private Nave[] navi; // o List<Nave>
+    
+    public Flotta(Nave[] navi) {
+        // NON si fa copia difensiva perché le navi sono indipendenti
+        this.navi = navi;
+    }
+}
+```
+
+**Composizione**
+Le parti hanno ciclo di vita legato al contenitore. Per garantire l’esclusività, nei costruttori si usa la **copia difensiva** (se gli oggetti sono mutabili) e si impedisce la condivisione.
+**Esempio**: Triangolo e Vertici (un triangolo è composto esattamente da tre vertici, che non possono essere condivisi).
+```java
+public class Triangolo {
+    private Vertice[] vertici;
+    
+    public Triangolo(Vertice[] vertici) {
+        // copia difensiva per evitare modifiche esterne
+        this.vertici = Arrays.copyOf(vertici, vertici.length);
+    }
+    
+    public Vertice[] getVertici() {
+        // restituisce una copia per mantenere l'incapsulamento
+        return Arrays.copyOf(vertici, vertici.length);
+    }
+}
+```
+se gli oggetti parte sono a loro volta immutabili, la copia difensiva potrebbe non essere necessaria, ma è buona norma per evitare sorprese.
+
+
+
+
+Es. orologio
