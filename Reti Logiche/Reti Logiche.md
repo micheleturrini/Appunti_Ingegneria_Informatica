@@ -339,7 +339,7 @@ Esempi 5 e 6 variabili
     - Se vale 0 → forma negata.
     - Se varia → non compare.
 - **RR di dimensione massima** (non contenuto in un RR più grande) individua un **implicante primo**.
-![[3_reti_costo_minimo.pdf#page=21&rect=250,0,660,175|3_reti_costo_minimo, p.21|]]|
+![[3_reti_costo_minimo.pdf#page=21&rect=250,0,660,175|3_reti_costo_minimo, p.21|]]
 
  **RR e implicati (PS)**
 - Un RR formato da celle con valore **0** (e don't care) individua un **implicato**.
