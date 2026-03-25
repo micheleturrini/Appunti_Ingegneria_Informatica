@@ -1833,7 +1833,166 @@ La differenza è dovuta ai diversi numeri di giorni nei mesi (giugno-agosto vs. 
 - **`toXxx`** → converte in un altro tipo (es. `toLocalDate`, `toInstant`).
 **Importante**: tutti i metodi che sembrano modificare l'oggetto restituiscono **una nuova istanza**; l'originale rimane invariato.
 
+## Formattatori per date e orari
+La classe principale per la formattazione di date e orari in Java è `DateTimeFormatter`, presente nel package `java.time.format`. A differenza dei formattatori numerici (`NumberFormat`), qui:
+- La costruzione avviene tramite **metodi factory** (non `new`).
+- È disponibile una **duplice sintassi**:
+```java
+String s = formatter.format(value);   // stile classico
+String s = value.format(formatter);   // stile fluente (preferibile)
+```
 
+**Creazione di formattatori localizzati**
+Per formattare secondo le convenzioni di una cultura locale, si usano i metodi factory:
+
+|Metodo|Destinazione|
+|---|---|
+|`ofLocalizedDate(FormatStyle)`|solo data (`LocalDate`)|
+|`ofLocalizedTime(FormatStyle)`|solo orario (`LocalTime`)|
+|`ofLocalizedDateTime(FormatStyle)`|data+orario (`LocalDateTime`) – stesso stile per entrambi|
+|`ofLocalizedDateTime(dateStyle, timeStyle)`|stili distinti per data e orario|
+**FormatStyle** è un enum con quattro valori: `SHORT`, `MEDIUM`, `LONG`, `FULL`.
+- Per le **date** sono tutti ammessi.
+- Per gli **orari** sono ammessi solo `SHORT` e `MEDIUM` (l'uso di `LONG`/`FULL` su `LocalTime` genera eccezione).
+**Nota**: il formattatore appena creato usa il **Locale di default** della JVM. Per cambiare cultura si usa il metodo `withLocale(Locale)`:
+```java
+DateTimeFormatter f = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+                                       .withLocale(Locale.ITALY);
+```
+
+Es.
+```java
+// dichiarazioni
+System.out.println(d.format(shortF));   // 04/03/26
+System.out.println(d.format(mediumF));  // 4 mar 2026
+System.out.println(d.format(longF));    // 4 marzo 2026
+System.out.println(d.format(fullF));    // mercoledì 4 marzo 2026
+```
+Cambiando il Locale:
+```java
+Locale fr = Locale.FRANCE;
+System.out.println(d.format(shortF.withLocale(fr)));   // 04/03/2026
+System.out.println(d.format(mediumF.withLocale(fr)));  // 4 mars 2026
+System.out.println(d.format(longF.withLocale(fr)));    // 4 mars 2026
+System.out.println(d.format(fullF.withLocale(fr)));    // mercredi 4 mars 2026
+```
+
+**Formattazione di `LocalTime`**
+Solo `SHORT` e `MEDIUM` sono validi:
+```java
+//dichiarazini
+System.out.println(t.format(shortTime));   // 18:37
+System.out.println(t.format(mediumTime));  // 18:37:41
+```
+
+**Formattazione di `LocalDateTime`**
+Con stile unico per data e ora:
+```java
+LocalDateTime dt = LocalDateTime.of(2026, 3, 4, 18, 37, 41);
+DateTimeFormatter f = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+System.out.println(dt.format(f));  // 04/03/26, 18:37
+```
+
+Con stili distinti:
+```java
+DateTimeFormatter f = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.MEDIUM);
+System.out.println(dt.format(f));  // 04/03/26, 18:37:41
+```
+Sono possibili tutte le 8 combinazioni (4 stili data × 2 stili ora).
+
+**Formattazione di date e orari assoluti (`ZonedDateTime`, `OffsetDateTime`)**
+Le classi `ZonedDateTime` e `OffsetDateTime` si formattano con gli stessi metodi, ma con una differenza importante: per `ZonedDateTime` gli stili `LONG` e `FULL` dell'ora mostrano anche il **fuso orario** (e l'ora legale se attiva). Per `OffsetDateTime` invece lo stile `LONG`/`FULL` non aggiunge informazioni aggiuntive perché l'offset è già noto.
+```java
+ZonedDateTime zdt = ZonedDateTime.now();   // es. 2026-03-04T18:37:41+01:00[Europe/Rome]
+DateTimeFormatter longTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG);
+System.out.println(zdt.format(longTime));  // 18:37:41 CET  (oppure CEST se ora legale)
+```
+
+**Attenzione**: la rappresentazione del fuso dipende da come è stato creato lo `ZonedDateTime`. Usare `ZoneId.of("Europe/Rome")` è più preciso di `"CET"` o `"GMT+1"`. La forma `GMT±n` produce un output più povero (es. `18:37:41 GMT+01:00`).
+
+**Formattatori personalizzati con pattern (`ofPattern`)**
+Se gli stili localizzati non soddisfano, si può definire un pattern con `DateTimeFormatter.ofPattern(String pattern, Locale)`.
+
+**Esempio**: data in formato `dd/MM/yyyy`:
+```java
+DateTimeFormatter f = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+System.out.println(LocalDate.now().format(f)); // 04/03/2026
+```
+
+|Simbolo|Significato|Esempi|
+|---|---|---|
+|`y`|anno|`yy` → 26, `yyyy` → 2026|
+|`M`|mese (numero/testo)|`M` → 3, `MM` → 03, `MMM` → mar, `MMMM` → marzo|
+|`d`|giorno del mese|`d` → 4, `dd` → 04|
+|`E`|giorno della settimana (testo)|`E` → mer, `EEEE` → mercoledì|
+|`h`|ora in formato 12 ore (1-12)|`h` → 6|
+|`H`|ora in formato 24 ore (0-23)|`H` → 18|
+|`m`|minuti|`m` → 37|
+|`s`|secondi|`s` → 41|
+|`a`|AM/PM|`a` → PM|
+|`z`|nome del fuso orario|`z` → CET, `zzzz` → Central European Time|
+|`Z`|offset di zona (stile ISO)|`Z` → +0100|
+|`'`|testo letterale|`'alle'` → "alle"|
+**Parsing di date e orari**
+Il parsing può essere effettuato in due modi:
+- Tramite il formattatore (restituisce un `TemporalAccessor`)
+```java
+DateTimeFormatter fmt = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+                                         .withLocale(Locale.ITALY);
+TemporalAccessor ta = fmt.parse("12/02/26");
+LocalDate d = LocalDate.from(ta);       // 2026-02-12
+```
+Il `TemporalAccessor` è un contenitore generico; lo si converte con i metodi `from()` delle classi specifiche (`LocalDate.from()`, `LocalTime.from()`, `LocalDateTime.from()`).
+- Tramite i metodi `parse` delle classi `LocalDate`, `LocalTime`, ecc.
+```java
+DateTimeFormatter fmt = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.SHORT)
+                                         .withLocale(Locale.ITALY);
+LocalDateTime dt = LocalDateTime.parse("12/02/26, 12:30", fmt);
+LocalDate d = LocalDate.parse("12/02/26, 12:30", fmt);    // solo data
+LocalTime t = LocalTime.parse("12/02/26, 12:30", fmt);    // solo ora
+```
+**Vantaggio**: il tipo di ritorno è direttamente quello desiderato.
+**Attenzione**: il parsing può sollevare eccezioni se la stringa non è conforme al formato e alla cultura. In jshell le eccezioni vengono gestite automaticamente, ma in un programma reale vanno gestite con `try-catch`.
+
+Es. parsing del nome del mese
+Obiettivo: ottenere il numero del mese a partire dal nome del mese in una data lingua.
+```java
+public static int getMonth(String monthName, Locale locale) {
+    DateTimeFormatter f = DateTimeFormatter.ofPattern("MMMM", locale);
+    TemporalAccessor ta = f.parse(monthName);
+    return ta.get(ChronoField.MONTH_OF_YEAR);
+}
+// Utilizzo
+System.out.println(getMonth("Maggio", Locale.ITALY));   // 5
+System.out.println(getMonth("May", Locale.ENGLISH));   // 5
+System.out.println(getMonth("mai", Locale.of("nl", "NL"))); // 5 (olandese)
+```
+**Nota**: il pattern `"MMMM"` richiede il nome completo del mese, in maiuscolo/minuscolo come previsto dalla lingua (es. in italiano "Maggio", in inglese "May", in olandese "mei"). Se necessario, si può normalizzare la stringa prima del parsing.
+
+**Formattatori ISO predefiniti**
+`DateTimeFormatter` fornisce costanti per formati ISO comuni, adatti allo scambio machine-to-machine:
+
+|Costante|Esempio|
+|---|---|
+|`ISO_LOCAL_DATE`|`2026-03-04`|
+|`ISO_LOCAL_TIME`|`18:37:41`|
+|`ISO_LOCAL_DATE_TIME`|`2026-03-04T18:37:41`|
+|`ISO_OFFSET_DATE_TIME`|`2026-03-04T18:37:41+01:00`|
+|`ISO_ZONED_DATE_TIME`|`2026-03-04T18:37:41+01:00[Europe/Rome]`|
+|`BASIC_ISO_DATE`|`20260304`|
+|`RFC_1123_DATE_TIME`|`Thu, 4 Mar 2026 18:37:41 GMT`|
+```java
+ZonedDateTime zdt = ZonedDateTime.now();
+System.out.println(zdt.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+```
+### Cheatsheet
+- **Costruzione**: `DateTimeFormatter.ofLocalizedDate/Style/DateTime` (con `FormatStyle`) oppure `ofPattern`.
+- **Localizzazione**: usare `withLocale(Locale)`.
+- **Formattazione**: `formatter.format(value)` o `value.format(formatter)`.
+- **Parsing**: `LocalDate.parse(string, formatter)` o `formatter.parse(string)` con conversione tramite `TemporalAccessor`.
+- **Pattern personalizzati**: simboli come `yyyy`, `MM`, `dd`, `HH`, `mm`, `ss`, `MMMM`, `EEEE`, `z`, `Z`.
+- **Stili per orari**: solo `SHORT` e `MEDIUM` per `LocalTime`; per `ZonedDateTime` sono ammessi anche `LONG` e `FULL` (mostrano il fuso).
+- **ISO predefiniti**: utili per scambio dati.
 ## Sistemi di softwhare
 Un sistema a oggetti è **costituito da classi e oggetti che interagiscono tra loro**. La progettazione di un sistema che risolve un problema richiede diverse fasi:
 1. **Analisi del problema** – partendo dai requisiti si costruisce un modello del problema (architettura logica).
