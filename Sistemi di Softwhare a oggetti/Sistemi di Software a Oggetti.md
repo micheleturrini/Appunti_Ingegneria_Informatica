@@ -2079,3 +2079,6 @@ se gli oggetti parte sono a loro volta immutabili, la copia difensiva potrebbe n
 
 
 Es. orologio
+
+
+## Ereditarietà
