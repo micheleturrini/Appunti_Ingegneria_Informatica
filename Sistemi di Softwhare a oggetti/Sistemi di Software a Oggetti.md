@@ -1594,14 +1594,11 @@ La gestione del tempo nelle applicazioni software è complessa per vari motivi:
 - **Concetti relativi vs. assoluti**: "ci vediamo alle 10" (relativo al luogo) vs. "l'aereo parte alle 11:30 GMT+1" (assoluto).
 - **Convenzioni culturali diverse**: formati di data, nomi dei mesi, calendari differenti (gregoriano, giuliano, ebraico, islamico...).
 - **Unità di misura variabili**: un mese può durare 28, 29, 30 o 31 giorni; un anno può essere bisestile.
-Java mette a disposizione il package `java.time` per gestire questi aspetti in modo chiaro.
 
-## Pattern Factory in java.time
-
+**Pattern Factory in java.time**
 Tutte le classi principali di `java.time` seguono due assunti fondamentali:
 1. **Oggetti immutabili**: una volta creati, non possono più essere modificati. Qualsiasi operazione che sembra modificarli restituisce in realtà una **nuova istanza**.
 2. **Costruzione indiretta tramite factory**: i costruttori non sono pubblici. Si utilizzano metodi factory statici (principalmente `of()`, ma anche `now()`, `from()`, `parse()`, ecc.) per creare oggetti.
-
 Questo approccio garantisce:
 - Controllo sulla creazione (evita duplicati, applica validazioni).
 - Chiarezza e leggibilità del codice.
@@ -1619,20 +1616,14 @@ LocalTime now = LocalTime.now();
 
 LocalDateTime nowDateTime = LocalDateTime.now();
 ```
+### Concetti relativi (locali)
+I concetti relativi rappresentano data e/o orario **senza riferimento a un fuso orario**. Sono utili per esprimere eventi che hanno significato in un contesto locale.
 
----
-
-## Concetti relativi (locali)
-
-I concetti relativi rappresentano data e/o orario **senza riferimento a un fuso orario**. Sono utili per esprimere eventi che hanno significato in un contesto locale (compleanni, orari di apertura, scadenze contrattuali, ecc.).
-
-### LocalDate, LocalTime, LocalDateTime
-
-| Classe          | Descrizione                              | Esempio di formato        |
-|-----------------|------------------------------------------|----------------------------|
-| `LocalDate`     | Data (anno, mese, giorno)                | `2020-12-25`               |
-| `LocalTime`     | Orario (ora, minuto, secondo, nanosecondo)| `12:00:00`                 |
-| `LocalDateTime` | Data e orario combinati                   | `2020-12-25T12:00:00`      |
+| Classe          | Descrizione                                | Esempio di formato    |
+| --------------- | ------------------------------------------ | --------------------- |
+| `LocalDate`     | Data (anno, mese, giorno)                  | `2020-12-25`          |
+| `LocalTime`     | Orario (ora, minuto, secondo, nanosecondo) | `12:00:00`            |
+| `LocalDateTime` | Data e orario combinati                    | `2020-12-25T12:00:00` |
 
 **Creazione:**
 ```java
@@ -1652,10 +1643,8 @@ DayOfWeek giornoSettimana = oggi.getDayOfWeek(); // enum DayOfWeek
 boolean bisestile = oggi.isLeapYear();
 ```
 
-### Enumerativi: Month e DayOfWeek
-
+**Enumerativi: Month e DayOfWeek**
 `Month` e `DayOfWeek` sono enumerazioni che facilitano la gestione di mesi e giorni.
-
 ```java
 Month m = Month.APRIL;
 System.out.println(m.getValue());          // 4
@@ -1664,9 +1653,7 @@ System.out.println(m.getDisplayName(...)); // "aprile" (se si usa un formattator
 DayOfWeek d = DayOfWeek.MONDAY;
 System.out.println(d.getValue());          // 1 (lunedì = 1, domenica = 7)
 ```
-
-### Period: durata relativa
-
+#### Period: durata relativa
 `Period` rappresenta un lasso di tempo in **anni, mesi, giorni**. È "volutamente impreciso" perché anni e mesi non hanno durata fissa.
 
 **Creazione:**
@@ -1687,32 +1674,24 @@ System.out.println(periodo.getYears() + " anni, " + periodo.getMonths() + " mesi
 ```java
 LocalDate nuovaData = (LocalDate) periodo.addTo(inizio);   // richiede cast (vedi spiegazione sotto)
 ```
-
 **Perché il cast?** I metodi `addTo` e `subtractFrom` lavorano su oggetti `Temporal` (interfaccia generica). Il tipo effettivo dipende dall'input: se passo una `LocalDate`, ottengo una `LocalDate`; se passo una `LocalDateTime`, ottengo una `LocalDateTime`. Il cast è necessario per riottenere il tipo specifico.
-
----
-
-## Concetti assoluti
-
+### Concetti assoluti
 I concetti assoluti rappresentano un **istante preciso sulla linea del tempo**, indipendente dal luogo in cui ci si trova. Richiedono l'indicazione del fuso orario o dell'offset da UTC.
 
-### Instant: punto sulla linea del tempo
-
+**Instant**: punto sulla linea del tempo
 `Instant` è il concetto più "fisico": è il numero di nanosecondi trascorsi dalla mezzanotte del 1° gennaio 1970 UTC (epoca Unix). Non ha nulla a che fare con calendari, mesi o giorni umani.
-
 ```java
 Instant adesso = Instant.now();   // 2026-03-17T14:30:00.123456789Z (formato ISO)
 ```
 
-### Duration: durata in nanosecondi
-
+#### Duration: durata in nanosecondi
 `Duration` rappresenta un lasso di tempo **preciso** in nanosecondi. Tipicamente si usa per differenze tra `Instant`.
 
 **Creazione:**
 ```java
 Duration unGiorno = Duration.ofDays(1);
 Duration dueOre = Duration.ofHours(2);
-Duration complessa = Duration.ofDays(1)
+Duration complessa =  Duration.ofDays(1)
                               .plusHours(3)
                               .minusMinutes(4)
                               .minusSeconds(10); // fluent interface
@@ -1734,16 +1713,13 @@ long totaleMinuti = durata.toMinutes();
 long totaleSecondi = durata.toSeconds();
 long totaleMillis = durata.toMillis();
 ```
-
-### OffsetDateTime e ZonedDateTime
-
+#### OffsetDateTime e ZonedDateTime
 Queste classi aggiungono a una data/ora locale l'informazione necessaria per renderla assoluta.
 
 | Classe           | Descrizione                                                                 | Esempio                              |
 |------------------|-----------------------------------------------------------------------------|--------------------------------------|
 | `OffsetDateTime` | Data/ora + offset fisso rispetto a UTC (es. +01:00)                         | `2026-03-17T15:30:00+01:00`          |
 | `ZonedDateTime`  | Data/ora + fuso orario (es. Europe/Rome), che include regole per ora legale| `2026-03-17T15:30:00+01:00 Europe/Rome` |
-
 **Creazione:**
 ```java
 LocalDateTime inizioLezioni = LocalDateTime.of(2026, 2, 17, 9, 0);
@@ -1754,7 +1730,6 @@ OffsetDateTime offsetInizio = OffsetDateTime.of(inizioLezioni, ZoneOffset.ofHour
 // ZonedDateTime con fuso CET (Central European Time)
 ZonedDateTime zonedInizio = ZonedDateTime.of(inizioLezioni, ZoneId.of("Europe/Rome"));
 ```
-
 **Ottenere fusi orari:**
 - Usare **nomi estesi** come `"Europe/Rome"`, `"America/New_York"`. Le sigle a tre lettere (`CET`, `EST`) sono deprecate perché ambigue.
 - `ZoneId.getAvailableZoneIds()` per elencare tutti i fusi supportati.
@@ -1771,14 +1746,10 @@ LocalTime ora = zdt.toLocalTime();
 LocalDateTime ldt = LocalDateTime.now();
 Instant ist = ldt.toInstant(ZoneOffset.ofHours(1));
 ```
-
----
-
-## Operazioni comuni su date e orari
-
+### Operazioni comuni su date e orari
 Tutte le classi di `java.time` offrono metodi per manipolare le date in modo **immutabile**: restituiscono sempre una nuova istanza.
 
-### Aggiungere/sottrarre tempo: `plusXxx()` / `minusXxx()`
+**Aggiungere/sottrarre tempo: `plusXxx()` / `minusXxx()`**
 ```java
 LocalDate oggi = LocalDate.now();
 LocalDate domani = oggi.plusDays(1);
@@ -1790,7 +1761,7 @@ LocalTime fraUnOra = ora.plusHours(1);
 LocalTime dieciMinutiFa = ora.minusMinutes(10);
 ```
 
-### Modificare componenti specifici: `withXxx()`
+**Modificare componenti specifici: `withXxx()`**
 ```java
 LocalDate data = LocalDate.of(2026, 3, 17);
 LocalDate stessoGiornoMeseDiverso = data.withMonth(12).withDayOfMonth(25); // 2026-12-25
@@ -1799,7 +1770,7 @@ LocalTime ora = LocalTime.of(10, 30);
 LocalTime stessaOraSecondiZero = ora.withSecond(0);
 ```
 
-### Confronti: `isBefore()`, `isAfter()`, `isEqual()`
+**Confronti: `isBefore()`, `isAfter()`, `isEqual()`**
 ```java
 LocalDate d1 = LocalDate.of(2026, 1, 1);
 LocalDate d2 = LocalDate.of(2026, 12, 31);
@@ -1814,12 +1785,8 @@ if (z2.isAfter(z1)) {
     System.out.println("z2 è successivo a z1");
 }
 ```
-
----
-
-## Esempi pratici e casi d'uso
-
-### 1. Quanto manca al prossimo compleanno?
+es.
+Quanto manca al prossimo compleanno?
 ```java
 public static Period toNextBirthDay(LocalDate dateOfBirth) {
     LocalDate today = LocalDate.now();
@@ -1836,8 +1803,7 @@ LocalDate mioCompleanno = LocalDate.of(1990, 5, 15);
 Period attesa = toNextBirthDay(mioCompleanno);
 System.out.println("Giorni: " + attesa.getDays() + ", Mesi: " + attesa.getMonths());
 ```
-
-### 2. Effetto dell'ora legale
+Effetto dell'ora legale
 ```java
 ZonedDateTime inizio = ZonedDateTime.of(2026, 3, 25, 10, 0, 0, 0, ZoneId.of("Europe/Rome"));
 ZonedDateTime fine = inizio.plusDays(10);
@@ -1845,8 +1811,7 @@ ZonedDateTime fine = inizio.plusDays(10);
 Duration differenza = Duration.between(inizio, fine);
 System.out.println(differenza.toHours()); // 239 ore (non 240!) perché a fine marzo scatta l'ora legale
 ```
-
-### 3. Durata tra due date espresse come LocalDateTime (ma attenzione!)
+Durata tra due date espresse come LocalDateTime (ma attenzione!)
 ```java
 LocalDate d1 = LocalDate.of(2024, 3, 12);
 LocalDateTime dt1 = LocalDateTime.of(d1, LocalTime.now());
@@ -1858,26 +1823,7 @@ long giorni1 = Duration.between(od1.plusMonths(3), od1.plusMonths(5)).toDays(); 
 long giorni2 = Duration.between(od1.plusMonths(4), od1.plusMonths(6)).toDays(); // 62
 ```
 La differenza è dovuta ai diversi numeri di giorni nei mesi (giugno-agosto vs. luglio-settembre).
-
----
-
-## Formattazione e internazionalizzazione (cenni)
-
-Le convenzioni per date e orari variano in base alla cultura locale. Java fornisce formattatori nel package `java.time.format` (classe `DateTimeFormatter`) che, combinati con la classe `Locale`, permettono di adattare output e parsing alle regole locali.
-
-**Attenzione**: da Java 9, il database predefinito per le informazioni culturali è **CLDR** (Common Locale Data Repository), che può differire dal vecchio database "JRE" di Java 8. Questo può influenzare, ad esempio, il formato predefinito di alcune date in certi paesi.
-
-Un semplice esempio (approfondito in un'altra lezione):
-```java
-LocalDate oggi = LocalDate.now();
-DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.ITALY);
-String dataFormattata = oggi.format(formatter); // "17 marzo 2026"
-```
-
----
-
-## Riepilogo delle convenzioni nei nomi dei metodi
-
+### Cheatsheet
 - **`of` / `ofXxx`** → factory methods per creare oggetti.
 - **`now`** → ottiene l'oggetto corrispondente all'istante corrente (o data/ora corrente).
 - **`getXxx`** → restituisce una componente (es. `getYear`, `getHour`).
@@ -1885,8 +1831,8 @@ String dataFormattata = oggi.format(formatter); // "17 marzo 2026"
 - **`plusXxx` / `minusXxx`** → aggiunge/sottrae una quantità di tempo.
 - **`isBefore` / `isAfter` / `isEqual`** → confronti.
 - **`toXxx`** → converte in un altro tipo (es. `toLocalDate`, `toInstant`).
-
 **Importante**: tutti i metodi che sembrano modificare l'oggetto restituiscono **una nuova istanza**; l'originale rimane invariato.
+
 
 ## Sistemi di softwhare
 Un sistema a oggetti è **costituito da classi e oggetti che interagiscono tra loro**. La progettazione di un sistema che risolve un problema richiede diverse fasi:
