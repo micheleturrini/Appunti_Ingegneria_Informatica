@@ -2071,6 +2071,7 @@ public class Flotta {
 
 **Composizione**
 ![[113 Sistemi di Software a Oggetti.pdf#page=22&rect=248,183,508,247|113 Sistemi di Software a Oggetti, p.22|200]]
+**La composizione implica una dipendenza**, ma non viceversa.
 Le parti hanno ciclo di vita legato al contenitore. Per garantire l’esclusività, nei costruttori si usa la **copia difensiva** (se gli oggetti sono mutabili) e si impedisce la condivisione.
 **Esempio**: Triangolo e Vertici (un triangolo è composto esattamente da tre vertici, che non possono essere condivisi).
 ```java
@@ -2090,9 +2091,10 @@ public class Triangolo {
 ```
 se gli oggetti parte sono a loro volta immutabili, la copia difensiva potrebbe non essere necessaria, ma è buona norma per evitare sorprese.
 
-Es. orologio
-
-
+Es. orologio slide pag 35
+Es. traghetti slide pag 63
+Es. Punti e Poligoni slide pag 75
+Finestra pag 91
 ## Ereditarietà
 Spesso, nello sviluppo software, ci si trova a dover creare un nuovo componente che è molto simile a uno già esistente, ma con qualche funzionalità aggiuntiva o modificata.
 
