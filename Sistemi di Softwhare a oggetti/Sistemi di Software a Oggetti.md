@@ -2082,3 +2082,290 @@ Es. orologio
 
 
 ## Ereditarietà
+Spesso, nello sviluppo software, ci si trova a dover creare un nuovo componente che è molto simile a uno già esistente, ma con qualche funzionalità aggiuntiva o modificata.
+
+**Approcci iniziali (prima di ereditarietà):**
+1.  **Copia e Incolla**: Copiare il codice della classe esistente e modificarlo. È una pessima pratica perché duplica codice, rendendo difficile la manutenzione e l'evoluzione.
+2.  **Composizione con Adapter**: Creare una nuova classe che contiene (compone) un'istanza della classe esistente.
+    *   **Vantaggio**: Riusa la classe esistente senza modificarne il codice sorgente.
+    *   **Come funziona**:
+        1.  La nuova classe incapsula un oggetto della classe esistente.
+        2.  I metodi già presenti vengono delegati all'oggetto incapsulato.
+        3.  I nuovi metodi vengono implementati sfruttando l'oggetto incapsulato.
+    *   **Pattern Adapter**: Questo approccio è una forma del pattern Adapter, che adatta un'interfaccia esistente a una nuova.
+
+**Esempio: Counter (solo avanti) a CounterDec (avanti/indietro) con Adapter**
+```java
+// Classe esistente: Counter (solo incremento)
+public class Counter {
+    private int val;
+    public Counter() { val = 1; }
+    public Counter(int v) { val = v; }
+    public void reset() { val = 0; }
+    public void inc() { val++; }
+    public int getValue() { return val; }
+    public String toString() { return "Counter di valore " + getValue(); }
+}
+
+// Nuova classe CounterDec che usa Adapter
+public class CounterDec {
+    private final Counter c; // Incapsula un Counter
+
+    public CounterDec() { this.c = new Counter(); }
+    public CounterDec(int value) { this.c = new Counter(value); }
+
+    // Delega dei metodi esistenti
+    public void reset() { c.reset(); }
+    public void inc() { c.inc(); }
+    public int getValue() { return c.getValue(); }
+    public String toString() { return c.toString(); }
+
+    // Nuovo metodo: decremento
+    public void dec() {
+        // Strategia 1: reset e reincremento (inefficiente)
+        int v = c.getValue();
+        c.reset();
+        for (int i = 1; i <= v - 1; i++) {
+            c.inc();
+        }
+
+        // Strategia 2: creazione di un nuovo Counter (più efficiente)
+        // Nota: richiederebbe che c fosse modificabile (non final)
+        // c = new Counter(c.getValue() - 1);
+    }
+}
+```
+
+**Limiti dell'Adapter:**
+*   I campi privati della classe incapsulata non sono accessibili.
+*   Bisogna scrivere codice di "delega" anche per i metodi che rimangono identici (es. `reset`, `inc`, `getValue`).
+*   Non è sempre possibile implementare la nuova funzionalità sfruttando solo i metodi pubblici dell'oggetto incapsulato.
+### Inheritance
+permette di definire una nuova classe (**sottoclasse, classe derivata**) a partire da una classe esistente (superclasse, classe base), specificando solo le *differenze*.
+**Sintassi:** `public class NuovaClasse extends ClasseEsistente { ... }`
+![[114-Ereditarieta.pdf#page=5&rect=386,46,709,292|114-Ereditarieta, p.5|300]]
+
+**Cosa può fare la classe derivata:**
+*   Aggiungere nuovi campi dati.
+*   Aggiungere nuovi metodi.
+*   Ridefinire (override) i metodi ereditati, modificarne il comportamento.
+**Cosa non può fare:**
+*   Eliminare o nascondere campi o metodi ereditati.
+
+Esempio: Counter2 (con decremento) che estende Counter
+![[114-Ereditarieta.pdf#page=6&rect=143,217,536,359|114-Ereditarieta, p.6|400]]
+```java
+// Classe base Counter (da modificare per l'ereditarietà)
+public class Counter {
+    // Il campo val non può essere private, altrimenti Counter2 non lo vedrà
+    protected int val; // <--- Livello di protezione protetto
+
+    public Counter() { val = 1; }
+    public Counter(int v) { val = v; }
+    public void reset() { val = 0; }
+    public void inc() { val++; }
+    public int getValue() { return val; }
+}
+
+// Classe derivata Counter2
+public class Counter2 extends Counter {
+    // Aggiunge un nuovo metodo
+    public void dec() {
+        val--; // Ora val è accessibile perché è protected
+    }
+    // Non ha bisogno di ridefinire inc, reset, getValue
+}
+```
+
+ **Il Modificatore `protected`**
+Il problema emerso nell'esempio precedente è l'accesso al campo `val` di `Counter` da parte di `Counter2`. Se `val` è `private`, la classe derivata non può accedervi. Se è `public`, si viola l'incapsulamento.
+
+**Soluzione:** `protected` (# in UML)
+*   Un membro `protected` è accessibile:
+    *   All'interno della stessa classe.
+    *   A tutte le classi nello stesso package.
+    *   A **tutte le sottoclassi** (anche in package diversi).
+**Attenzione:** L'uso di `protected` va fatto con giudizio. Rende i dati accessibili a *tutte* le sottoclassi presenti e future. Un'alternativa più sicura è mantenere i campi `private` e fornire metodi accessor `protected` per le sottoclassi.
+```java
+public class Counter {
+    private int val; // campo privato
+
+    protected int getVal() { return val; } // metodo protetto per leggere
+    protected void setVal(int v) { val = v; } // metodo protetto per scrivere
+
+    // ... costruttori e metodi ...
+}
+
+public class Counter2 extends Counter {
+    public void dec() {
+        // setVal(getVal() - 1); // uso dei metodi protetti
+        int current = getVal();
+        setVal(current - 1);
+    }
+}
+```
+
+**Ereditarietà e Costruttori**
+I costruttori **non vengono ereditati**.
+Ogni classe è responsabile di inizializzare i propri campi. La classe derivata può avere campi aggiuntivi, e i costruttori della classe base non sanno come inizializzarli.
+
+Meccanismo di costruzione:
+1.  Quando si crea un oggetto di una classe derivata, viene chiamato il suo costruttore.
+2.  La prima operazione di ogni costruttore della classe derivata è chiamare un costruttore della classe base.
+3.  Se non si specifica esplicitamente, il compilatore tenta di chiamare il costruttore di default (senza argomenti) della classe base.
+4.  Se la classe base non ha un costruttore di default, si verifica un errore di compilazione. Bisogna quindi chiamare esplicitamente un costruttore della classe base usando `super(...)`.
+
+**La parola chiave `super` (in Java):**
+*   `super(...);`: Chiama il costruttore della classe base (deve essere la prima istruzione nel costruttore).
+*   `super.metodo()`: Invoca un metodo della classe base (utile se è stato ridefinito).
+*   `super.campo`: Accede a un campo della classe base.
+
+**Esempio: Counter2 con costruttori espliciti**
+
+```java
+public class Counter2 extends Counter {
+    public Counter2() {
+        super(); // Chiama Counter() (opzionale, sarebbe implicito)
+    }
+
+    public Counter2(int v) {
+        super(v); // Chiama Counter(int v) -> OBBLIGATORIO perché non esiste un costruttore di default
+    }
+
+    public void dec() {
+        val--;
+    }
+}
+```
+
+**Esempio: ColoredCounter (aggiunge un campo colore)**
+
+```java
+import java.awt.Color;
+
+public class ColoredCounter extends Counter {
+    private Color color; // nuovo campo
+
+    public ColoredCounter(int v) {
+        super(v); // Inizializza la parte ereditata (val)
+        this.color = Color.BLACK; // Inizializza il nuovo campo
+    }
+
+    public ColoredCounter(int v, Color color) {
+        super(v);
+        this.color = color;
+    }
+
+    public Color getColor() { return color; }
+
+    // Ridefinizione di toString
+    @Override
+    public String toString() {
+        // super.toString() chiama il toString di Counter
+        return super.toString() + " e colore " + color;
+    }
+
+    // Ridefinizione di equals
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof ColoredCounter)) return false;
+        ColoredCounter that = (ColoredCounter) obj;
+        // super.equals(that) confronta la parte ereditata
+        return super.equals(that) && this.color.equals(that.color);
+    }
+}
+```
+
+**Principio:** "Ognuno costruisce ciò che gli compete". Il costruttore di `Counter` inizializza `val`, il costruttore di `ColoredCounter` inizializza `color` e delega a `super` il resto.
+
+---
+
+### 5. Ridefinizione dei Metodi (Override) e Comportamento
+
+Una classe derivata può ridefinire un metodo ereditato per modificarne il comportamento.
+
+**Regole per un override corretto (estensioni conservative):**
+*   Il metodo ridefinito dovrebbe mantenere la semantica e il contratto del metodo originale.
+*   Può estendere il comportamento (es. fare qualcosa in più), ma non sovvertirlo.
+*   **Non è corretto** ridefinire `inc()` in modo che divida il valore per 10 o che faccia un'altra operazione non correlata all'"incremento".
+
+**Esempio di estensione conservativa: `Finestra3`**
+*   La classe base `Finestra` ha un metodo `print(String txt)`.
+*   La classe `Finestra3` estende `Finestra2` e ridefinisce `print` per stampare in maiuscolo, ma *chiama comunque il metodo della superclasse* per svolgere il compito principale.
+
+```java
+public class Finestra3 extends Finestra2 {
+    public Finestra3() { super(); }
+    public Finestra3(String titolo) { super(titolo); }
+
+    @Override
+    public void print(String txt) {
+        super.print(txt.toUpperCase()); // Estensione conservativa
+    }
+}
+```
+
+---
+
+### 6. Classi e Metodi `final`
+
+Per impedire che un metodo venga ridefinito o che una classe venga estesa, si usa la parola chiave `final`.
+
+*   `public final void mioMetodo() { ... }`: Questo metodo non può essere sovrascritto in alcuna sottoclasse.
+*   `public final class MiaClasse { ... }`: Questa classe non può essere estesa.
+
+**Utilità:** Garantisce che una certa implementazione o un certo comportamento rimanga invariato, prevenendo usi impropri o "follie" da parte di chi estende la classe.
+
+---
+
+### 7. Esempio Conclusivo: Persona e Studente
+
+Modelliamo il concetto di "Studente" come specializzazione di "Persona".
+
+```java
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
+public class Persona {
+    private final String nome;
+    private final LocalDate dataNascita;
+
+    public Persona(String nome, LocalDate dataNascita) {
+        this.nome = nome;
+        this.dataNascita = dataNascita;
+    }
+
+    public String getNome() { return nome; }
+    public LocalDate getDataNascita() { return dataNascita; }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+        return "Mi chiamo " + nome + " e sono nato/a il " + formatter.format(dataNascita);
+    }
+}
+
+public class Studente extends Persona {
+    private final int matricola;
+
+    public Studente(String nome, LocalDate dataNascita, int matricola) {
+        super(nome, dataNascita); // Inizializza la parte di Persona
+        this.matricola = matricola;
+    }
+
+    public int getMatricola() { return matricola; }
+
+    @Override
+    public String toString() {
+        // Estensione conservativa: usa super.toString() e aggiunge la matricola
+        return super.toString() + ", matricola " + matricola;
+    }
+}
+```
+
+**Punti chiave:**
+*   `Studente` eredita da `Persona` i campi `nome` e `dataNascita` e il metodo `getNome()`.
+*   Il costruttore di `Studente` chiama `super(nome, dataNascita)` per inizializzare la parte ereditata.
+*   `toString()` è ridefinito per aggiungere la matricola, ma si basa su `super.toString()` per non duplicare la logica di stampa della persona.
