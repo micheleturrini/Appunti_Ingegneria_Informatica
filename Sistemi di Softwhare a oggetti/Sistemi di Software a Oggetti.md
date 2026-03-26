@@ -1993,7 +1993,7 @@ System.out.println(zdt.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
 - **Pattern personalizzati**: simboli come `yyyy`, `MM`, `dd`, `HH`, `mm`, `ss`, `MMMM`, `EEEE`, `z`, `Z`.
 - **Stili per orari**: solo `SHORT` e `MEDIUM` per `LocalTime`; per `ZonedDateTime` sono ammessi anche `LONG` e `FULL` (mostrano il fuso).
 - **ISO predefiniti**: utili per scambio dati.
-## Sistemi di softwhare
+## Sistemi di software
 Un sistema a oggetti è **costituito da classi e oggetti che interagiscono tra loro**. La progettazione di un sistema che risolve un problema richiede diverse fasi:
 1. **Analisi del problema** – partendo dai requisiti si costruisce un modello del problema (architettura logica).
 2. **Pianificazione del collaudo** e del lavoro.
@@ -2017,6 +2017,18 @@ I modelli sono rappresentazioni (spesso grafiche) del sistema. Si distinguono:
 ![[113 Sistemi di Software a Oggetti.pdf#page=9&rect=73,165,641,355|113 Sistemi di Software a Oggetti, p.9|400]]
 #### Dipendenza
 Una classe **dipende** da un’altra se la usa (ad esempio come parametro, tipo di ritorno, o creazione locale). In UML si rappresenta con una **freccia tratteggiata** etichettata `<<use>>`.
+- CASO 1: un’operazione della classe A richiede come argomento una istanza della classe B
+```java
+void fun1(B b) { … usa b … }
+```
+- CASO 2: un’operazione della classe A restituisce un oggetto di tipo B
+```java
+B fun2(…) { B b; … return b;}
+```
+- CASO 3: un’operazione della classe A utilizza una specifica istanza della classe B, senza che però esista un’associazione tra A e B
+```java
+void fun3(…) { B b = new B(…); … usa b … }
+```
 ![[113 Sistemi di Software a Oggetti.pdf#page=10&rect=104,213,586,320|113 Sistemi di Software a Oggetti, p.10|400]]
 #### Associazioni
 Relazione strutturale tra classi. Può essere unidirezionale o bidirezionale, con molteplicità (es. 1, 0.._, 1.._).
@@ -2025,8 +2037,9 @@ fondamentale distinguere i diversi significati del verbo “avere” nelle descr
 - _“Una flotta ha delle navi”_ → **aggregazione** (le navi esistono indipendentemente).
 - _“Un esagono ha sei vertici”_ → **composizione** (i vertici esistono solo con l’esagono).
 - _“Un libro ha delle pagine”_ → **composizione** (le pagine non hanno senso fuori dal libro).
-### Nel codice
+
 **Associazione generica**
+![[113 Sistemi di Software a Oggetti.pdf#page=16&rect=211,258,506,327|113 Sistemi di Software a Oggetti, p.16|200]]
 Ogni classe contiene un riferimento all’altra. Se la molteplicità è maggiore di 1, si usa una collezione (array, List, ecc.).
 **Esempio**: Ammiraglio e Flotta (un ammiraglio può essere associato a più flotte).
 ```java
@@ -2042,6 +2055,7 @@ public class Flotta {
 ```
 
 **Aggregazione**
+![[113 Sistemi di Software a Oggetti.pdf#page=19&rect=236,206,505,267|113 Sistemi di Software a Oggetti, p.19|200]]
 La classe contenitore ha un riferimento a oggetti che esistono indipendentemente. Non è necessario fare copie difensive nei costruttori perché gli oggetti possono essere condivisi.
 **Esempio**: Flotta e Nave (una nave può appartenere a più flotte).
 ```java
@@ -2056,6 +2070,7 @@ public class Flotta {
 ```
 
 **Composizione**
+![[113 Sistemi di Software a Oggetti.pdf#page=22&rect=248,183,508,247|113 Sistemi di Software a Oggetti, p.22|200]]
 Le parti hanno ciclo di vita legato al contenitore. Per garantire l’esclusività, nei costruttori si usa la **copia difensiva** (se gli oggetti sono mutabili) e si impedisce la condivisione.
 **Esempio**: Triangolo e Vertici (un triangolo è composto esattamente da tre vertici, che non possono essere condivisi).
 ```java
@@ -2074,9 +2089,6 @@ public class Triangolo {
 }
 ```
 se gli oggetti parte sono a loro volta immutabili, la copia difensiva potrebbe non essere necessaria, ma è buona norma per evitare sorprese.
-
-
-
 
 Es. orologio
 
