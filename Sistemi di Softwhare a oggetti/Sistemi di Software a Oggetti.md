@@ -2239,7 +2239,6 @@ public class Counter2 extends Counter {
 ```
 
 **Esempio: ColoredCounter (aggiunge un campo colore)**
-
 ```java
 import java.awt.Color;
 
