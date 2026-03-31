@@ -2289,21 +2289,17 @@ public class ColoredCounter extends Counter {
     }
 }
 ```
-
 **Principio:** "Ognuno costruisce ciò che gli compete". Il costruttore di `Counter` inizializza `val`, il costruttore di `ColoredCounter` inizializza `color` e delega a `super` il resto.
 
----
+**Ridefinizione dei Metodi (Override) e Comportamento**
+Una classe derivata può **ridefinire un metodo ereditato per modificarne il comportamento.**
 
-### 5. Ridefinizione dei Metodi (Override) e Comportamento
-
-Una classe derivata può ridefinire un metodo ereditato per modificarne il comportamento.
-
-**Regole per un override corretto (estensioni conservative):**
+Regole per un override corretto (estensioni conservative):
 *   Il metodo ridefinito dovrebbe mantenere la semantica e il contratto del metodo originale.
 *   Può estendere il comportamento (es. fare qualcosa in più), ma non sovvertirlo.
-*   **Non è corretto** ridefinire `inc()` in modo che divida il valore per 10 o che faccia un'altra operazione non correlata all'"incremento".
+es. Non è corretto ridefinire `inc()` in modo che divida il valore per 10 o che faccia un'altra operazione non correlata all'"incremento".
 
-**Esempio di estensione conservativa: `Finestra3`**
+Esempio di estensione conservativa: `Finestra3`
 *   La classe base `Finestra` ha un metodo `print(String txt)`.
 *   La classe `Finestra3` estende `Finestra2` e ridefinisce `print` per stampare in maiuscolo, ma *chiama comunque il metodo della superclasse* per svolgere il compito principale.
 
@@ -2319,19 +2315,10 @@ public class Finestra3 extends Finestra2 {
 }
 ```
 
----
-
-### 6. Classi e Metodi `final`
-
+**Classi e Metodi `final`**
 Per impedire che un metodo venga ridefinito o che una classe venga estesa, si usa la parola chiave `final`.
-
 *   `public final void mioMetodo() { ... }`: Questo metodo non può essere sovrascritto in alcuna sottoclasse.
 *   `public final class MiaClasse { ... }`: Questa classe non può essere estesa.
-
-**Utilità:** Garantisce che una certa implementazione o un certo comportamento rimanga invariato, prevenendo usi impropri o "follie" da parte di chi estende la classe.
-
----
-
 ### 7. Esempio Conclusivo: Persona e Studente
 
 Modelliamo il concetto di "Studente" come specializzazione di "Persona".
