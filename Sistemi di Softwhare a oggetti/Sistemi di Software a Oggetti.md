@@ -2319,7 +2319,7 @@ public class Finestra3 extends Finestra2 {
 Per impedire che un metodo venga ridefinito o che una classe venga estesa, si usa la parola chiave `final`.
 *   `public final void mioMetodo() { ... }`: Questo metodo non può essere sovrascritto in alcuna sottoclasse.
 *   `public final class MiaClasse { ... }`: Questa classe non può essere estesa.
-### 7. Esempio Conclusivo: Persona e Studente
+
 
 Modelliamo il concetto di "Studente" come specializzazione di "Persona".
 
