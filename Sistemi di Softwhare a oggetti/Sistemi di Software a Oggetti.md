@@ -2095,6 +2095,7 @@ Es. orologio slide pag 35
 Es. traghetti slide pag 63
 Es. Punti e Poligoni slide pag 75
 Finestra pag 91
+Esercizi Elezioni e 7 segmenti
 ## Ereditarietà
 Spesso, nello sviluppo software, ci si trova a dover creare un nuovo componente che è molto simile a uno già esistente, ma con qualche funzionalità aggiuntiva o modificata.
 
@@ -2322,7 +2323,6 @@ Per impedire che un metodo venga ridefinito o che una classe venga estesa, si us
 
 
 Modelliamo il concetto di "Studente" come specializzazione di "Persona".
-
 ```java
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -2369,3 +2369,532 @@ public class Studente extends Persona {
 *   `Studente` eredita da `Persona` i campi `nome` e `dataNascita` e il metodo `getNome()`.
 *   Il costruttore di `Studente` chiama `super(nome, dataNascita)` per inizializzare la parte ereditata.
 *   `toString()` è ridefinito per aggiungere la matricola, ma si basa su `super.toString()` per non duplicare la logica di stampa della persona.
+
+Ecco degli appunti dettagliati in italiano basati esclusivamente sui concetti relativi a Java e ai principi generali di programmazione orientata agli oggetti presenti nel PDF, ignorando deliberatamente i riferimenti a Scala, Kotlin e C#.
+
+**Il Principio di Sostituibilità (e la Relazione IS-A)**
+- **Concetto Base:** L'ereditarietà definisce una relazione **IS-A** (È-UN).
+- **Definizione:** Una classe derivata (es. `Counter2`) estende la classe base (`Counter`) **aggiungendo** funzionalità, **mai togliendone**.
+- **Conseguenza:** Dove il codice si aspetta un oggetto della classe base, posso sempre fornire un oggetto della classe derivata.
+    - *Analogia:* Non ci si può lamentare se, allo stesso prezzo, si riceve un oggetto "più ricco" di funzionalità.
+- **Direzionalità:** La sostituibilità vale solo in una direzione.
+    - Posso dare un `Counter2` a chi vuole un `Counter`.
+    - **Non posso** dare un semplice `Counter` a chi si aspetta un `Counter2` (perché il `Counter` non ha i metodi aggiuntivi del `Counter2`).
+
+**Subclassing = Subtyping**
+Il tipo di una sottoclasse è un **sottotipo** del tipo della sua superclasse. Questa compatibilità di tipo si manifesta in tre modi principali:
+1.  **Assegnamenti:** Un riferimento di un tipo base può puntare a un oggetto di un tipo derivato.
+    ```java
+    Counter c = new Counter2(); // OK
+    ```
+2.  **Passaggio di Parametri:** Come visto sopra, un metodo che accetta un tipo base può ricevere un'istanza di un tipo derivato.
+3.  **Valori di Ritorno:** Un metodo che dichiara di restituire un tipo base può restituire un'istanza di un tipo derivato.
+    ```java
+    public static Counter creaCounter(int v) {
+        // Restituisce un Counter2, che è comunque un Counter
+        return new Counter2(v);
+    }
+    ```
+
+È invece **sbagliato fare il contrario**: assegnare un oggetto base a un riferimento derivato non è permesso senza un cast esplicito (che potrebbe fallire a runtime).
+```java
+Counter c = new Counter();
+Counter2 c2 = c; // ERRORE DI COMPILAZIONE
+```
+
+Non tutte le relazioni IS-A che sembrano valide nel mondo reale lo sono nel mondo della programmazione a oggetti, specialmente se gli oggetti sono **mutabili**.
+
+**Es quadrato e rettangolo.**
+Implementazione (Problematica):
+```java
+public class Rettangolo {
+    private double base, altezza;
+
+    public Rettangolo(double base, double altezza) {
+        setBase(base);
+        setAltezza(altezza);
+    }
+
+    public void setBase(double base) { this.base = base; }
+    public void setAltezza(double altezza) { this.altezza = altezza; }
+    // ... altri metodi
+}
+
+public class Quadrato extends Rettangolo {
+    public Quadrato(double lato) {
+        super(lato, lato);
+    }
+
+    // Tentativo di "riparare" la mutabilità:
+    // Se cambio la base, cambio anche l'altezza per mantenere l'invariante del quadrato.
+    @Override
+    public void setBase(double base) {
+        super.setBase(base);
+        super.setAltezza(base); // Effetto collaterale imprevisto!
+    }
+
+    @Override
+    public void setAltezza(double altezza) {
+        super.setBase(altezza); // Effetto collaterale imprevisto!
+        super.setAltezza(altezza);
+    }
+}
+```
+Un client che usa un `Quadrato` come se fosse un `Rettangolo` avrà un comportamento inaspettato:
+```java
+public void modificaRettangolo(Rettangolo r) {
+    r.setBase(5);
+    r.setAltezza(10);
+    // Il programmatore si aspetta che l'area ora sia 50.
+}
+
+Quadrato q = new Quadrato(4);
+modificaRettangolo(q);
+// Cosa è successo?
+// 1. r.setBase(5) -> in Quadrato ha impostato base=5 E altezza=5
+// 2. r.setAltezza(10) -> in Quadrato ha impostato base=10 E altezza=10
+// Il quadrato ora ha lato 10 e area 100, non 50 come si aspetterebbe il client.
+// Il client ha violato senza saperlo l'invariante del quadrato.
+```
+- **Se gli oggetti sono mutabili**, `Quadrato` **NON** è un sottotipo valido di `Rettangolo` perché aggiunge un vincolo comportamentale ("lati sempre uguali") che la superclasse non ha e che viene violato dai suoi stessi metodi pubblici.
+- **Soluzione alternativa:** Rendere `Quadrato` e `Rettangolo` classi separate (fratelli) che derivano entrambe da una superclasse astratta comune, ad esempio `FormaGeometrica`. In questo modo si evita la relazione di sottotipizzazione forzata e incorretta.
+
+**Es Persona Studente**
+Al contrario di Quadrato/Rettangolo, la relazione `Persona` e `Studente` è un perfetto esempio di ereditarietà ben applicata.
+- Uno `Studente` è sempre una `Persona`.
+- Lo `Studente` non aggiunge vincoli che invalidano i comportamenti ereditati da `Persona`. Una `Persona` può cambiare nome, uno `Studente` anche, senza che si rompa alcun contratto.
+### Polimorfismo e Late Binding
+La situazione più interessante si verifica quando si usa un riferimento di tipo base per puntare a un oggetto di tipo derivato:
+```java
+Persona p = new Studente("Mario", 12345);
+```
+Ora `p` è formalmente un riferimento a `Persona`, ma **concretamente** punta a un oggetto `Studente`. 
+Quando invochiamo `p.toString()` viene chiamato il metodo della classe **effettiva** dell'oggetto a runtime (`Studente.toString()`). Questo meccanismo si chiama **Polimorfismo**.
+
+**Il Meccanismo: Late Binding (o Dynamic Binding)**
+La decisione su *quale* metodo chiamare non viene presa dal compilatore (binding statico/early), ma viene **rimandata a runtime** (binding dinamico/late).
+- In Java, il late binding è **l'impostazione predefinita** per tutti i metodi di istanza non `private` e non `static`. Si può usare l'annotazione `@Override` per rendere esplicita l'intenzione di ridefinire un metodo della superclasse.
+
+**Esempio di Esecuzione:**
+```java
+Persona p = new Persona("John");
+Studente s = new Studente("Tom", 98765);
+
+System.out.println(p.toString()); // Output: Mi chiamo John
+System.out.println(s.toString()); // Output: Mi chiamo Tom, matricola 98765
+
+p = s; // p ora punta all'oggetto Studente di nome Tom
+System.out.println(p.toString()); // Output: Mi chiamo Tom, matricola 98765
+// Anche se p è di tipo Persona, viene eseguito il metodo di Studente!
+```
+
+Late Binding: Funzionamento Interno (VMT)
+Come fa la JVM a sapere a runtime quale metodo chiamare? Usa la **Virtual Method Table (VMT)** .
+Ogni classe ha una sua VMT, che è una tabella che associa ogni metodo (della classe e ereditato) all'indirizzo di memoria del codice da eseguire.
+Quando una classe (`Studente`) estende un'altra classe (`Persona`), la VMT di `Studente` è costruita a partire da quella di `Persona`.
+    - I metodi ereditati ma **non** ridefiniti mantengono lo stesso indice e puntano al codice della superclasse.
+    - I metodi **ridefiniti** (con `@Override`) mantengono lo **stesso indice** nella tabella, ma l'indirizzo associato viene cambiato per puntare al nuovo codice della sottoclasse.
+    - I nuovi metodi della sottoclasse vengono aggiunti in fondo alla tabella.
+A runtime, quando si esegue `p.toString()`, la JVM:
+    - Guarda l'oggetto puntato da `p` (che è di tipo `Studente`).
+    - Accede alla VMT della classe `Studente`.
+    - Prende l'indirizzo del codice associato al metodo `toString()` (che è sempre lo stesso indice della tabella).
+    - Esegue quel codice.
+
+Il polimorfismo ha un limite fondamentale: funziona solo per i metodi che **esistono nella classe base**.
+- **Metodi Ridefiniti:** Disponibili e polimorfici (es. `toString()`).
+- **Metodi Aggiunti:** **NON** sono accessibili tramite un riferimento della classe base, perché il compilatore non può garantire che l'oggetto a runtime li possieda.
+```java
+class Counter2 extends Counter {
+    public void dec() { /* decrementa */ }
+}
+
+Counter c = new Counter2();
+
+c.dec(); // ERRORE DI COMPILAZIONE!
+// 'c' è di tipo Counter e la classe Counter non ha un metodo 'dec()'.
+
+// Per chiamarlo, è necessario un cast esplicito:
+((Counter2) c).dec(); // OK, ma rischioso se c non fosse veramente un Counter2
+```
+
+### La Classe `Object`
+In Java, tutte le classi formano una gerarchia la cui radice è la classe **`java.lang.Object`**.
+- Se si scrive `class MiaClasse { ... }`, il compilatore la interpreta come `class MiaClasse extends Object { ... }`.
+- Questo implica che **ogni** oggetto in Java eredita un insieme di metodi fondamentali da `Object`.
+
+**Metodi "Predefiniti" Principali di `Object` (e quindi disponibili per tutti gli oggetti):**
+
+| Metodo | Descrizione | Comportamento Predefinito in `Object` |
+| :--- | :--- | :--- |
+| `String toString()` | Restituisce una rappresentazione in stringa dell'oggetto. | Restituisce una stringa come `NomeClasse@hashcode` (es. `Counter@712c1a3c`). |
+| `boolean equals(Object obj)` | Confronta l'oggetto corrente con un altro per verificarne l'uguaglianza "logica". | Confronta i riferimenti in memoria, come l'operatore `==`. |
+| `int hashCode()` | Restituisce un valore numerico (hash) che rappresenta l'oggetto. Deve essere coerente con `equals` (oggetti uguali devono avere lo stesso hash). | Tipicamente converte l'indirizzo di memoria in un intero. |
+| `protected Object clone()` | Crea e restituisce una copia dell'oggetto. | Crea una copia "superficiale" (shallow copy). |
+**Esempio di Utilizzo di `toString()` e `println()`:**
+Il metodo `System.out.println()` è progettato per sfruttare il polimorfismo di `toString()`. La sua implementazione (semplificata) è:
+
+```java
+public void println(Object obj) {
+    // Chiama toString() sull'oggetto, che sarà la versione appropriata
+    // in base al tipo effettivo dell'oggetto a runtime.
+    String s = obj.toString();
+    // ... stampa la stringa s
+}
+```
+Ecco perché fare `System.out.println(unaPersona)` o `System.out.println(unoStudente)` funziona sempre e produce un output sensato, se il metodo `toString()` è stato ridefinito correttamente.
+
+Es Numeri Reali e Numeri Complessi
+**Analisi Errata (Relazione Invertita):**
+- Pensiero: "Un numero complesso ha una parte reale, come i reali, ma anche una parte immaginaria. Quindi `Complex extends Real`."
+- **Problema:** Un numero reale è un sottoinsieme (caso particolare) dei numeri complessi (R ⊂ C). Matematicamente, l'insieme dei reali è più "piccolo". La relazione di ereditarietà "estende" indica un sottoinsieme, non un ampliamento.
+
+**Analisi Corretta:**
+- **Relazione:** R ⊂ C  ->  `Real` è un sottotipo di `Complex`.
+- **Progetto:** La classe base è `Complex`. La classe `Real` estende `Complex`.
+
+```java
+// Classe base: Numero Complesso
+public class Complex {
+    protected float re, im;
+
+    public Complex(float r, float i) {
+        this.re = r;
+        this.im = i;
+    }
+
+    public Complex sum(Complex that) {
+        return new Complex(this.re + that.re, this.im + that.im);
+    }
+
+    public Complex sub(Complex that) {
+        return new Complex(this.re - that.re, this.im - that.im);
+    }
+
+    // Moltiplicazione: (a+ib)(c+id) = (ac-bd) + i(bc+ad)
+    public Complex mul(Complex that) {
+        return new Complex(
+            this.re * that.re - this.im * that.im,
+            this.im * that.re + this.re * that.im
+        );
+    }
+
+    // ... altri metodi come div, coniugato, modulo quadrato ...
+
+    @Override
+    public String toString() {
+        return re + " + i" + im;
+    }
+}
+
+// Classe derivata: Numero Reale (caso particolare di Complesso con parte immaginaria = 0)
+public class Real extends Complex {
+
+    public Real(float r) {
+        super(r, 0.0f); // La parte immaginaria è sempre 0
+    }
+
+    // Metodi specializzati per operazioni fra reali (restituiscono un Real)
+    // per efficienza e per mantenere il tipo più specifico
+    public Real sum(Real that) {
+        // Si potrebbe usare this.re + that.re, ma re è protected in Complex
+        return new Real(this.re + that.re);
+    }
+
+    // Nota: i metodi ereditati come sum(Complex) funzionano ancora,
+    // ma restituiscono un Complex. Questo è corretto (polimorfismo).
+
+    @Override
+    public String toString() {
+        // Nascondo la parte immaginaria per una rappresentazione più pulita
+        return Float.toString(re);
+    }
+}
+```
+1.  **Correttezza Matematica:** Rispetta la relazione insiemistica R ⊂ C.
+2.  **Sostituibilità Corretta:** Posso passare un `Real` ovunque sia richiesto un `Complex` (es. sommare un reale a un complesso), il che è matematicamente corretto. Il viceversa non è permesso (non posso passare un `Complex` qualsiasi dove è richiesto un `Real`), che è ancora una volta corretto.
+3.  **Polimorfismo Naturale:** Un `Real` è trattato come un `Complex` con `im=0`, e i metodi di `Complex` funzionano perfettamente. Possono poi essere specializzati in `Real` per ottimizzazione.
+## Equals e hash code
+### `equals`
+Nelle nostre prime implementazioni di classi come `Counter` e `Frazione`, avevamo definito un metodo `equals` con un argomento del tipo specifico della classe:
+```java
+// Classe Counter
+public boolean equals(Counter that) {
+    return this.val == that.val;
+}
+
+// Classe Frazione
+public boolean equals(Frazione that) {
+    return this.num * that.den == this.den * that.num;
+}
+```
+La classe `Object` (superclasse di tutte le classi in Java) dichiara:
+```java
+public boolean equals(Object obj) {
+    return this == obj;
+}
+```
+- `equals(Counter)` in `Counter`
+- `equals(Frazione)` in `Frazione`
+- `equals(Object)` ereditata da `Object`
+
+Queste sono **tre funzioni diverse** (overloading, non overriding).  
+Di conseguenza, ogni classe contiene **due metodi `equals`**:
+- quella specifica (con argomento del proprio tipo)
+- quella ereditata (con argomento `Object`)
+
+Caso 1: riferimenti di tipo `Counter`
+```java
+Counter c1 = new Counter(13);
+Counter c2 = new Counter(13);
+System.out.println(c1.equals(c2)); // true (usa equals(Counter))
+```
+Caso 2: cambia il tipo nominale del riferimento
+```java
+Object obj = c1;
+System.out.println(obj.equals(c2)); // false (usa equals(Object) di Object)
+System.out.println(c2.equals(obj)); // false (overloading: sceglie equals(Object))
+```
+- `obj.equals(c2)` – il target è `Object`, quindi si cerca in `Object` (l’unica `equals` disponibile è quella con `Object`). Il polimorfismo non trova una versione più specifica in `Counter` perché la signature `equals(Counter)` non è una ridefinizione di `equals(Object)`.
+- `c2.equals(obj)` – il target è `Counter`, che ha due `equals`. La risoluzione dell’overloading guarda il tipo nominale dell’argomento (`Object`) e sceglie `equals(Object)` (quella ereditata), non la nostra.
+**avere due `equals` è pericoloso – quella “sbagliata” può emergere in contesti polimorfi.**
+
+## 3. La soluzione: overriding della `equals` di `Object`
+
+Per un comportamento polimorfo corretto, dobbiamo **sostituire** (override) il metodo `equals` ereditato, non aggiungerne uno nuovo. La signature deve essere identica:
+
+```java
+@Override
+public boolean equals(Object obj) { ... }
+```
+
+### Problema: come accedere ai campi specifici?
+All’interno del metodo, l’argomento `obj` è un `Object` generico, quindi non possiamo accedere direttamente a campi come `val` (di `Counter`) o `num`, `den` (di `Frazione`).  
+Serve un **cast** (downcast) esplicito.
+
+#### Prima versione (fragile)
+```java
+@Override
+public boolean equals(Object obj) {
+    return this.val == ((Counter) obj).val; // può lanciare ClassCastException
+}
+```
+
+## 4. Aggiungere un controllo di tipo con `instanceof`
+
+Per evitare eccezioni, prima di eseguire il cast controlliamo se l’oggetto è del tipo atteso:
+
+```java
+@Override
+public boolean equals(Object obj) {
+    if (obj instanceof Counter) {
+        Counter that = (Counter) obj;
+        return this.val == that.val;
+    }
+    return false;
+}
+```
+
+Ora il metodo è sicuro: se `obj` non è un `Counter`, restituisce `false`.
+
+## 5. `instanceof` esteso (Java 16+)
+
+A partire da Java 16, possiamo usare una forma più concisa che dichiara e casta automaticamente la variabile:
+
+```java
+@Override
+public boolean equals(Object obj) {
+    if (obj instanceof Counter that) {
+        return this.val == that.val;
+    }
+    return false;
+}
+```
+
+All’interno del ramo `true`, `that` è già di tipo `Counter`.
+
+## 6. Alternativa moderna: `switch` con pattern matching
+
+In Java possiamo usare l’istruzione o l’espressione `switch` con pattern matching sul tipo.
+
+### Istruzione `switch`
+```java
+@Override
+public boolean equals(Object obj) {
+    switch (obj) {
+        case Counter c -> { return this.val == c.val; }
+        default -> { return false; }
+    }
+}
+```
+
+### Espressione `switch`
+```java
+@Override
+public boolean equals(Object obj) {
+    return switch (obj) {
+        case Counter c -> this.val == c.val;
+        default -> false;
+    };
+}
+```
+
+## 7. Verifica della soluzione corretta
+
+Con la `equals` ridefinita correttamente (con argomento `Object` e controllo `instanceof`), l’esperimento precedente dà ora i risultati attesi:
+
+```java
+Counter c1 = new Counter(13);
+Counter c2 = new Counter(13);
+Object obj = c1;
+
+System.out.println(c1.equals(c2)); // true
+System.out.println(c2.equals(c1)); // true
+System.out.println(obj.equals(c2)); // true (ora usa equals(Counter) grazie al polimorfismo)
+System.out.println(c2.equals(obj)); // true (la equals(Object) ridefinita gestisce il caso)
+```
+
+## 8. Il metodo `hashCode`
+
+### Perché è importante?
+- `Object` dichiara anche `public int hashCode()`.
+- **Regola aurea:** se due oggetti sono uguali secondo `equals`, devono avere lo stesso `hashCode`.
+- `hashCode` è usato internamente da strutture dati come `HashMap`, `HashSet` per ricerche efficienti.
+
+### Esempio di violazione
+Se non ridefiniamo `hashCode` in `Counter`:
+
+```java
+Counter c1 = new Counter(13);
+Counter c2 = new Counter(13);
+System.out.println(c1.hashCode()); // 1523554304 (valore casuale)
+System.out.println(c2.hashCode()); // 1175962212 (diverso!)
+```
+
+Nonostante `c1.equals(c2)` sia `true`, gli hash code sono diversi → violazione della regola.
+
+### Come ridefinire `hashCode`?
+
+#### Ricetta base con numero primo
+Per una classe con un campo intero `val`:
+
+```java
+@Override
+public int hashCode() {
+    return 41 + val;   // 41 è un numero primo
+}
+```
+
+Per due campi interi `x` e `y` (es. `Point`):
+
+```java
+@Override
+public int hashCode() {
+    return (31 + x) * 31 + y;
+}
+```
+
+#### Usare `Objects.hash()` (da Java 7)
+Metodo più semplice e meno soggetto a errori:
+
+```java
+import java.util.Objects;
+
+@Override
+public int hashCode() {
+    return Objects.hash(val);          // per un solo campo
+    // return Objects.hash(x, y);      // per più campi
+}
+```
+
+`Objects.hash` accetta un numero variabile di argomenti e combina i loro hash code in modo robusto.
+
+#### Attenzione per criteri di uguaglianza non banali (es. `Frazione`)
+Due frazioni equivalenti (es. `3/2` e `6/4`) devono avere lo stesso `hashCode`.  
+Soluzione: ridurre la frazione ai minimi termini prima di calcolare l’hash.
+
+## 9. Linee guida per una classe ben fatta in Java
+
+1. **Ridefinire `equals`** con la signature corretta:
+   ```java
+   @Override
+   public boolean equals(Object obj) { ... }
+   ```
+   - Usare `instanceof` (meglio la forma estesa se Java ≥16) o `switch` con pattern matching.
+   - Restituire `false` se l’oggetto non è del tipo corretto o è `null`.
+
+2. **Ridefinire `hashCode`** coerentemente:
+   - Usare `Objects.hash(campi...)` per semplicità.
+   - Rispettare la regola: `equals` `true` → `hashCode` uguale.
+
+3. **Strumenti automatici**:
+   - Eclipse (e altri IDE) possono generare automaticamente entrambi i metodi a partire dai campi della classe.
+   - Opzione consigliata in Eclipse: usa `Objects.hash` per un codice più compatto.
+
+## 10. Esempio completo
+
+```java
+public class Counter {
+    private int val;
+
+    public Counter(int val) {
+        this.val = val;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof Counter that) && this.val == that.val;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(val);
+    }
+}
+```
+
+```java
+public class Frazione {
+    private final int num, den;
+
+    public Frazione(int num, int den) {
+        this.num = num;
+        this.den = den;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Frazione that)) return false;
+        // uguaglianza per equivalenza: a/b == c/d  <=>  a*d == b*c
+        return this.num * that.den == this.den * that.num;
+    }
+
+    @Override
+    public int hashCode() {
+        // riduzione ai minimi termini per coerenza con equals
+        int mcd = gcd(num, den);
+        int n = num / mcd;
+        int d = den / mcd;
+        return Objects.hash(n, d);
+    }
+
+    private int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+}
+```
+
+## 11. Riepilogo dei concetti chiave
+
+| Concetto | Descrizione |
+|----------|-------------|
+| **Overloading vs overriding** | L’overloading crea metodi con stessa nome e signature diversa; l’override sostituisce un metodo ereditato (stessa signature). |
+| **Firma corretta di `equals`** | `public boolean equals(Object obj)` – solo così si fa override. |
+| **`instanceof`** | Operatore per controllare il tipo dinamico di un oggetto. |
+| **`instanceof` esteso (Java 16+)** | `if (obj instanceof Tipo var)` – dichiara e casta automaticamente. |
+| **Pattern matching con `switch`** | `case Tipo var -> ...` – alternativa elegante a `instanceof`. |
+| **Regola `equals`-`hashCode`** | Oggetti uguali devono avere stesso `hashCode`. |
+| **`Objects.hash(...)`** | Metodo di utilità per implementare `hashCode` correttamente. |
+| **Generazione automatica** | IDE come Eclipse producono codice affidabile per `equals` e `hashCode`. |
+
+Questi appunti coprono tutti gli aspetti essenziali del PDF, limitandosi a Java e tralasciando Scala, Kotlin e C#.
