@@ -2517,7 +2517,6 @@ c.dec(); // ERRORE DI COMPILAZIONE!
 // Per chiamarlo, è necessario un cast esplicito:
 ((Counter2) c).dec(); // OK, ma rischioso se c non fosse veramente un Counter2
 ```
-
 ### La Classe `Object`
 In Java, tutte le classi formano una gerarchia la cui radice è la classe **`java.lang.Object`**.
 - Se si scrive `class MiaClasse { ... }`, il compilatore la interpreta come `class MiaClasse extends Object { ... }`.
@@ -2659,20 +2658,16 @@ System.out.println(c2.equals(obj)); // false (overloading: sceglie equals(Object
 - `c2.equals(obj)` – il target è `Counter`, che ha due `equals`. La risoluzione dell’overloading guarda il tipo nominale dell’argomento (`Object`) e sceglie `equals(Object)` (quella ereditata), non la nostra.
 **avere due `equals` è pericoloso – quella “sbagliata” può emergere in contesti polimorfi.**
 
-## 3. La soluzione: overriding della `equals` di `Object`
-
-Per un comportamento polimorfo corretto, dobbiamo **sostituire** (override) il metodo `equals` ereditato, non aggiungerne uno nuovo. La signature deve essere identica:
-
+**overriding della `equals` di `Object`**
+Per un comportamento polimorfo corretto, dobbiamo **sostituire** (override) il metodo `equals` ereditato, **non aggiungerne uno nuovo**. La signature deve essere identica:
 ```java
 @Override
 public boolean equals(Object obj) { ... }
 ```
-
-### Problema: come accedere ai campi specifici?
-All’interno del metodo, l’argomento `obj` è un `Object` generico, quindi non possiamo accedere direttamente a campi come `val` (di `Counter`) o `num`, `den` (di `Frazione`).  
+`Object` generico, quindi non possiamo accedere direttamente a campi come `val` (di `Counter`) o `num`, `den` (di `Frazione`).  
 Serve un **cast** (downcast) esplicito.
 
-#### Prima versione (fragile)
+Prima versione (fragile)
 ```java
 @Override
 public boolean equals(Object obj) {
@@ -2680,8 +2675,7 @@ public boolean equals(Object obj) {
 }
 ```
 
-## 4. Aggiungere un controllo di tipo con `instanceof`
-
+Aggiungere un controllo di tipo con `instanceof`
 Per evitare eccezioni, prima di eseguire il cast controlliamo se l’oggetto è del tipo atteso:
 
 ```java
@@ -2694,13 +2688,10 @@ public boolean equals(Object obj) {
     return false;
 }
 ```
-
 Ora il metodo è sicuro: se `obj` non è un `Counter`, restituisce `false`.
 
-## 5. `instanceof` esteso (Java 16+)
-
+`instanceof` esteso (Java 16+)
 A partire da Java 16, possiamo usare una forma più concisa che dichiara e casta automaticamente la variabile:
-
 ```java
 @Override
 public boolean equals(Object obj) {
@@ -2710,25 +2701,9 @@ public boolean equals(Object obj) {
     return false;
 }
 ```
-
 All’interno del ramo `true`, `that` è già di tipo `Counter`.
 
-## 6. Alternativa moderna: `switch` con pattern matching
-
-In Java possiamo usare l’istruzione o l’espressione `switch` con pattern matching sul tipo.
-
-### Istruzione `switch`
-```java
-@Override
-public boolean equals(Object obj) {
-    switch (obj) {
-        case Counter c -> { return this.val == c.val; }
-        default -> { return false; }
-    }
-}
-```
-
-### Espressione `switch`
+**Alternativa moderna: `switch` con pattern matching**
 ```java
 @Override
 public boolean equals(Object obj) {
@@ -2738,30 +2713,10 @@ public boolean equals(Object obj) {
     };
 }
 ```
-
-## 7. Verifica della soluzione corretta
-
-Con la `equals` ridefinita correttamente (con argomento `Object` e controllo `instanceof`), l’esperimento precedente dà ora i risultati attesi:
-
-```java
-Counter c1 = new Counter(13);
-Counter c2 = new Counter(13);
-Object obj = c1;
-
-System.out.println(c1.equals(c2)); // true
-System.out.println(c2.equals(c1)); // true
-System.out.println(obj.equals(c2)); // true (ora usa equals(Counter) grazie al polimorfismo)
-System.out.println(c2.equals(obj)); // true (la equals(Object) ridefinita gestisce il caso)
-```
-
-## 8. Il metodo `hashCode`
-
-### Perché è importante?
+### `hashCode`
 - `Object` dichiara anche `public int hashCode()`.
-- **Regola aurea:** se due oggetti sono uguali secondo `equals`, devono avere lo stesso `hashCode`.
+- **Regola aurea:** **se due oggetti sono uguali secondo `equals`, devono avere lo stesso `hashCode`**
 - `hashCode` è usato internamente da strutture dati come `HashMap`, `HashSet` per ricerche efficienti.
-
-### Esempio di violazione
 Se non ridefiniamo `hashCode` in `Counter`:
 
 ```java
@@ -2770,69 +2725,13 @@ Counter c2 = new Counter(13);
 System.out.println(c1.hashCode()); // 1523554304 (valore casuale)
 System.out.println(c2.hashCode()); // 1175962212 (diverso!)
 ```
-
 Nonostante `c1.equals(c2)` sia `true`, gli hash code sono diversi → violazione della regola.
+> [!important]
+> **Eclipse può generare equals e hashCode automaticamente che funzionano SEMPRE**
+> da rigenerare se modifichi i campi
+>Opzione consigliata in Eclipse: usa `Objects.hash` per un codice più compatto.
 
-### Come ridefinire `hashCode`?
-
-#### Ricetta base con numero primo
-Per una classe con un campo intero `val`:
-
-```java
-@Override
-public int hashCode() {
-    return 41 + val;   // 41 è un numero primo
-}
-```
-
-Per due campi interi `x` e `y` (es. `Point`):
-
-```java
-@Override
-public int hashCode() {
-    return (31 + x) * 31 + y;
-}
-```
-
-#### Usare `Objects.hash()` (da Java 7)
-Metodo più semplice e meno soggetto a errori:
-
-```java
-import java.util.Objects;
-
-@Override
-public int hashCode() {
-    return Objects.hash(val);          // per un solo campo
-    // return Objects.hash(x, y);      // per più campi
-}
-```
-
-`Objects.hash` accetta un numero variabile di argomenti e combina i loro hash code in modo robusto.
-
-#### Attenzione per criteri di uguaglianza non banali (es. `Frazione`)
-Due frazioni equivalenti (es. `3/2` e `6/4`) devono avere lo stesso `hashCode`.  
-Soluzione: ridurre la frazione ai minimi termini prima di calcolare l’hash.
-
-## 9. Linee guida per una classe ben fatta in Java
-
-1. **Ridefinire `equals`** con la signature corretta:
-   ```java
-   @Override
-   public boolean equals(Object obj) { ... }
-   ```
-   - Usare `instanceof` (meglio la forma estesa se Java ≥16) o `switch` con pattern matching.
-   - Restituire `false` se l’oggetto non è del tipo corretto o è `null`.
-
-2. **Ridefinire `hashCode`** coerentemente:
-   - Usare `Objects.hash(campi...)` per semplicità.
-   - Rispettare la regola: `equals` `true` → `hashCode` uguale.
-
-3. **Strumenti automatici**:
-   - Eclipse (e altri IDE) possono generare automaticamente entrambi i metodi a partire dai campi della classe.
-   - Opzione consigliata in Eclipse: usa `Objects.hash` per un codice più compatto.
-
-## 10. Esempio completo
-
+es.
 ```java
 public class Counter {
     private int val;
@@ -2852,49 +2751,3 @@ public class Counter {
     }
 }
 ```
-
-```java
-public class Frazione {
-    private final int num, den;
-
-    public Frazione(int num, int den) {
-        this.num = num;
-        this.den = den;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Frazione that)) return false;
-        // uguaglianza per equivalenza: a/b == c/d  <=>  a*d == b*c
-        return this.num * that.den == this.den * that.num;
-    }
-
-    @Override
-    public int hashCode() {
-        // riduzione ai minimi termini per coerenza con equals
-        int mcd = gcd(num, den);
-        int n = num / mcd;
-        int d = den / mcd;
-        return Objects.hash(n, d);
-    }
-
-    private int gcd(int a, int b) {
-        return b == 0 ? a : gcd(b, a % b);
-    }
-}
-```
-
-## 11. Riepilogo dei concetti chiave
-
-| Concetto | Descrizione |
-|----------|-------------|
-| **Overloading vs overriding** | L’overloading crea metodi con stessa nome e signature diversa; l’override sostituisce un metodo ereditato (stessa signature). |
-| **Firma corretta di `equals`** | `public boolean equals(Object obj)` – solo così si fa override. |
-| **`instanceof`** | Operatore per controllare il tipo dinamico di un oggetto. |
-| **`instanceof` esteso (Java 16+)** | `if (obj instanceof Tipo var)` – dichiara e casta automaticamente. |
-| **Pattern matching con `switch`** | `case Tipo var -> ...` – alternativa elegante a `instanceof`. |
-| **Regola `equals`-`hashCode`** | Oggetti uguali devono avere stesso `hashCode`. |
-| **`Objects.hash(...)`** | Metodo di utilità per implementare `hashCode` correttamente. |
-| **Generazione automatica** | IDE come Eclipse producono codice affidabile per `equals` e `hashCode`. |
-
-Questi appunti coprono tutti gli aspetti essenziali del PDF, limitandosi a Java e tralasciando Scala, Kotlin e C#.
