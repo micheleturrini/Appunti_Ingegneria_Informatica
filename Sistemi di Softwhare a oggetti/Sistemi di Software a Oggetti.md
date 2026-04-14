@@ -2613,8 +2613,8 @@ public class Real extends Complex {
 1.  **Correttezza Matematica:** Rispetta la relazione insiemistica R ⊂ C.
 2.  **Sostituibilità Corretta:** Posso passare un `Real` ovunque sia richiesto un `Complex` (es. sommare un reale a un complesso), il che è matematicamente corretto. Il viceversa non è permesso (non posso passare un `Complex` qualsiasi dove è richiesto un `Real`), che è ancora una volta corretto.
 3.  **Polimorfismo Naturale:** Un `Real` è trattato come un `Complex` con `im=0`, e i metodi di `Complex` funzionano perfettamente. Possono poi essere specializzati in `Real` per ottimizzazione.
-## Equals e hash code
-### `equals`
+### Equals e hash code
+#### `equals`
 Nelle nostre prime implementazioni di classi come `Counter` e `Frazione`, avevamo definito un metodo `equals` con un argomento del tipo specifico della classe:
 ```java
 // Classe Counter
@@ -2713,7 +2713,7 @@ public boolean equals(Object obj) {
     };
 }
 ```
-### `hashCode`
+#### `hashCode`
 - `Object` dichiara anche `public int hashCode()`.
 - **Regola aurea:** **se due oggetti sono uguali secondo `equals`, devono avere lo stesso `hashCode`**
 - `hashCode` è usato internamente da strutture dati come `HashMap`, `HashSet` per ricerche efficienti.
@@ -2751,3 +2751,746 @@ public class Counter {
     }
 }
 ```
+###  `instanceof`, switch esteso e overloading
+Talvolta è necessario **distinguere le istanze di una classe da quelle delle sue sottoclassi** per trattarle in modo diverso.  
+Se la funzione è un metodo (non statico), il polimorfismo risolve il problema automaticamente.  
+Se invece la funzione è **statica** (o comunque non legata al polimorfismo dinamico), occorre un approccio diverso.
+
+**Due strade possibili:**
+1. **Controllo dinamico del tipo** – usando `instanceof` o `switch` con pattern matching.
+2. **Overloading** – definendo più versioni della stessa funzione con parametri di tipo diverso.
+
+es. funzione `decrementa`
+Scrivere una **funzione statica** `decrementa(Counter c)` che:
+  - Se `c` è effettivamente un `Counter2`, deve chiamare `c.dec()`.
+  - Altrimenti (è un `Counter` semplice), deve simulare il decremento usando `reset()`, `getValue()` e un ciclo di `inc()`.
+
+> Attenzione: l’argomento è passato **per valore** (riferimento), quindi non possiamo sostituire l’oggetto, dobbiamo modificare quello esistente.
+
+**uso di `instanceof`**
+```java
+public static void decrementa(Counter c) {
+    if (c instanceof Counter2) {
+        Counter2 c2 = (Counter2) c;
+  //if (c instanceof Counter2 c2) {   // dichiara e casta automaticamente
+        c2.dec();
+    } else {
+        int valore = c.getValue();
+        c.reset();
+        while (--valore > 0) {
+            c.inc();
+        }
+    }
+}
+```
+
+**uso di `switch` esteso con pattern matching**
+Il costrutto `switch` (dalla forma estesa) permette di distinguere per tipo.
+```java
+public static void decrementa(Counter c) {
+    switch (c) {
+        case Counter2 c2 -> c2.dec();          // se è un Counter2
+        case Counter _   -> {                  // se è un Counter semplice
+            int valore = c.getValue();
+            c.reset();
+            while (--valore > 0) {
+                c.inc();
+            }
+        }
+    }
+}
+```
+- Il secondo caso usa `Counter _` (variabile anonima) perché non ci serve un riferimento castato.  
+- La sintassi con `->` evita il `break` esplicito.  
+
+**overloading**
+Invece di distinguere *dentro* la funzione, possiamo definire **due funzioni diverse** con lo stesso nome e parametri di tipo differente.
+```java
+// Versione per Counter2 (decremento diretto)
+public static void decrementa(Counter2 c2) {
+    c2.dec();
+}
+
+// Versione per Counter generico (decremento simulato)
+public static void decrementa(Counter c) {
+    int valore = c.getValue();
+    c.reset();
+    while (--valore > 0) {
+        c.inc();
+    }
+}
+```
+Il compilatore decide **staticamente** (a compile time) quale versione chiamare in base al **tipo dichiarato** dell’argomento, non al tipo effettivo a runtime.
+```java
+Counter c1 = new Counter(10);
+Counter2 c2 = new Counter2(20);
+
+decrementa(c1);   // chiama decrementa(Counter)
+decrementa(c2);   // chiama decrementa(Counter2) perché c2 è dichiarato Counter2
+```
+Se avessimo:
+```java
+Counter c = new Counter2(20);
+decrementa(c);    // chiama decrementa(Counter) !!! (perché il tipo dichiarato è Counter)
+```
+In questo caso la versione sbagliata verrebbe eseguita (quella con il ciclo, invece del `dec()`).  
+**L’overloading non è polimorfo** – è una scelta statica.
+
+**Perché l’overloading non funziona per `equals`**
+- L’**overloading** è una scelta **statica** (compile time) basata sul tipo dichiarato.  
+- Il metodo `equals` deve essere **polimorfo** (dynamic dispatch), quindi serve **override** (stessa identica firma) e un controllo dinamico del tipo con `instanceof` o pattern matching.
+## Wrapper per tipi primitivi in Java
+In Java, i **tipi primitivi** (`int`, `double`, `char`, `boolean`, ecc.) **non sono classi**.  
+Questo crea una disuniformità rispetto ai tipi riferimento:
+
+| Caratteristica          | Tipi primitivi                  | Tipi riferimento (classi)               |
+| ----------------------- | ------------------------------- | --------------------------------------- |
+| Hanno metodi            | No                              | Sì (es. `toString()`)                   |
+| Uguaglianza             | `==` (valore)                   | `equals()` (sovrascrivibile)            |
+| Passaggio parametri     | per valore (copia)              | per riferimento (copia del riferimento) |
+| Array separati          | `int[]`, `double[]`             | `Object[]`, `Counter[]`                 |
+| Supportano ereditarietà | No                              | Sì                                      |
+| Usabili in `Collection` | No (es. `List<int>` non valido) | Sì (`List<Integer>`)                    |
+
+**Conseguenze**
+Un valore primitivo **non può essere usato dove è richiesto un `Object`**:
+```java
+Object[] array = new Object[10];
+array[0] = "ciao";              // OK - String è Object
+array[1] = new Counter(2);      // OK - Counter è Object
+array[2] = 7;                   // errore di compilazione (prima del boxing automatico)
+```
+
+> [!success]
+> Java fornisce per ogni tipo primitivo una **classe wrapper** che **incapsula un valore primitivo all’interno di un oggetto.**
+
+![[117-Wrapper per tipi primitivi.pdf#page=7&rect=12,179,701,325|117-Wrapper per tipi primitivi, p.7]]
+Le classi wrapper (e altre come `Optional`, classi `java.time`) sono **value-based**:
+- Sono `final` e **immutabili**.
+- L’uguaglianza va testata con `equals()`, **non con `==`** (perché istanze diverse possono essere considerate intercambiabili).
+- Non espongono costruttori pubblici; si usano metodi factory (`valueOf`).
+- `equals()`, `hashCode()`, `toString()` dipendono solo dallo stato, non dall’identità.
+
+**Boxing e unboxing**
+```java
+Integer i = Integer.valueOf(22);
+Double d = Double.valueOf(3.14);
+```
+`valueOf()` può ottimizzare con **caching** (es. per interi tra -128 e 127 riutilizza le stesse istanze).
+
+```java
+int x = i.intValue();        // 22
+double z = d.doubleValue();  // 3.14
+```
+
+Esempi di conversione tra tipi
+```java
+Integer i = Integer.valueOf(22);
+System.out.println(i.intValue());    // 22
+System.out.println(i.doubleValue()); // 22.0
+
+Double d = Double.valueOf(3.14);
+System.out.println(d.intValue());    // 3 (troncato)
+
+Float f = Float.valueOf(1.73F);
+System.out.println(f.longValue());   // 1
+```
+
+**Boxing e unboxing automatici**
+Java converte automaticamente tra primitivi e wrapper quando necessario:
+```java
+// Boxing automatico
+Integer k = 42;   // equivale a Integer.valueOf(42)
+
+// Unboxing automatico
+int val = k;      // equivale a k.intValue()
+
+// Operazioni miste
+Integer a = 10;
+Integer b = 20;
+Integer c = a + b;   // unboxing, somma, boxing
+```
+
+**Uso con array di `Object`**
+```java
+Object[] array = new Object[10];
+array[0] = "ciao";
+array[1] = new Counter(2);
+array[2] = 7;           // boxing automatico: int → Integer
+array[3] = 7.2;         // boxing automatico: double → Double
+// Funziona!
+```
+
+**Uso con collection**
+```java
+List<Integer> list = new ArrayList<>();
+list.add(5);            // boxing automatico: int → Integer
+int primo = list.get(0); // unboxing automatico: Integer → int
+```
+**Nota:** non si può usare `List<int>` – i tipi primitivi non sono ammessi come parametri di tipo.
+
+**Parsing**
+Da String a numero primitivo – `parseXXX()`
+```java
+String s = "23";
+int i = Integer.parseInt(s);    // int
+long l = Long.parseLong(s);     // long
+double d = Double.parseDouble(s); // double
+```
+
+Da String a wrapper – `valueOf()`
+```java
+Integer k = Integer.valueOf(s);   // Integer
+Long L = Long.valueOf(s);         // Long
+```
+
+Se la stringa non è un numero valido, si ha `NumberFormatException` a runtime:
+```java
+Integer.parseInt("23a");   // NumberFormatException
+```
+
+**Da numero a String**
+```java
+int i = 12;
+String i = String.valueOf(i); // "12"
+
+Integer k = 24;
+String k = k.toString();        // "24"
+```
+
+**Conversioni in basi diverse (radix)**
+```java
+// String → int in base binaria (radix 2)
+int bin = Integer.parseInt("1010", 2);   // 10
+
+// int → String in base esadecimale
+String hex = Integer.toString(255, 16);  // "ff"
+
+// Metodi helper predefiniti
+String binStr = Integer.toBinaryString(10);   // "1010"
+String octStr = Integer.toOctalString(10);    // "12"
+String hexStr = Integer.toHexString(255);    // "ff"
+```
+
+`instanceof` e `switch` con pattern matching lavorano su **oggetti**, non su primitivi.  
+Per testare un valore primitivo avvolto in un wrapper:
+```java
+Object v = 17;   // boxing automatico
+
+if (v instanceof Integer && (Integer)v < 18) {
+    System.out.println("Voto insufficiente: " + v);
+}
+
+switch (v) {
+    case Integer i when i < 18 -> System.out.println("Bocciato: " + i);
+    case Integer i -> System.out.println("Promosso: " + i);
+}
+```
+Da Java 25 (in preview) è possibile usare pattern direttamente sui tipi primitivi:
+```java
+// Con instanceof
+if (v instanceof int && v < 18) {   // v deve essere int
+    System.out.println("Voto insufficiente: " + v);
+}
+
+// Con switch esteso
+switch (v) {
+    case int i when i < 18 -> System.out.println("Bocciato: " + i);
+    case int i -> System.out.println("Promosso: " + i);
+}
+```
+Per abilitare le preview feature:
+```bash
+javac --enable-preview --source 25 NomeFile.java
+java --enable-preview NomeFile
+```
+## Record e classi di dati
+Nel modellare un sistema, capita spesso di avere classi che sono semplici **aggregati di dati immutabili**:
+- campi dati (tipicamente `final`)
+- costruttore (che inizializza i campi)
+- accessor (getter)
+- metodi `equals`, `hashCode`, `toString` standard
+
+La struttura di queste classi è meccanica e ripetitiva.  
+Gli IDE (Eclipse, IntelliJ) possono generarli automaticamente, ma nei linguaggi moderni** (Java da versione 15+) esistono i **record**.
+
+Un **record** è una forma leggera di classe, pensata per essere un semplice contenitore di dati immutabili.
+```java
+public record Persona(String nome, int anni) {}
+```
+Con questa sola riga, il compilatore genera automaticamente:
+- campi `private final` per `nome` e `anni`;
+- un costruttore canonico (`public Persona(String nome, int anni)`);
+- metodi accessor **con lo stesso nome del campo** (`nome()` e `anni()`);
+- `equals` (confronto campo per campo);
+- `hashCode` (basato sui campi);
+- `toString` (restituisce una stringa con tutti i campi).
+
+```java
+public static void main(String[] args) {
+    var p1 = new Persona("John", 25);
+    var p2 = new Persona("Mary", 22);
+    var p3 = new Persona("John", 25);
+
+    System.out.println(p1);                 // Persona[nome=John, anni=25]
+    System.out.println(p1.equals(p3));      // true
+    System.out.println(p1 == p3);           // false (identità oggetti)
+
+    System.out.println(p1.nome());          // John
+    System.out.println(p1.anni());          // 25
+}
+```
+**Nota bene:** l’operatore `==` confronta l’identità degli oggetti, non il contenuto. Per il contenuto si usa `equals` (che nei record è già implementato correttamente).
+
+| Proprietà             | Descrizione                                                                                                                         |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Immutabilità          | Tutti i campi dichiarati nell’intestazione sono `final`                                                                             |
+| Non Estensibilità     | Il record è `final`: non può essere esteso da altre classi, né estendere altre classi (deriva implicitamente da `java.lang.Record`) |
+| Metodi aggiuntivi     | È possibile aggiungere metodi di istanza, metodi statici, campi statici                                                             |
+| Interfacce            | Un record può implementare una o più interfacce                                                                                     |
+| Costruttori ausiliari | Si possono definire costruttori aggiuntivi, ma devono richiamare un altro costruttore con `this(...)`                               |
+
+I record possono essere usati nel **pattern matching** all’interno di `instanceof` e `switch`.  
+Ciò permette la **destrutturazione** (estrazione dei componenti) in modo conciso.
+
+**Destrutturazione con `instanceof`**
+```java
+static void print(Object obj) {
+    if (obj instanceof Persona(String n, int a)) {
+        System.out.println("Persona: nome=" + n + ", anni=" + a);
+    } else {
+        System.out.println(obj);
+    }
+}
+```
+Con type inference (var):
+```java
+if (obj instanceof Persona(var n, var a)) { ... }
+```
+
+**Unnamed patterns**
+Quando un componente del record non serve, si può usare il carattere `_` per ignorarlo.
+```java
+if (obj instanceof Persona(_, int a)) {
+    System.out.println("Età: " + a);   // il nome viene ignorato
+}
+```
+
+**Pattern innestati**
+Se un record contiene un altro record, si possono destrutturare entrambi in un unico pattern.
+```java
+record Point(int x, int y) {}
+record Rectangle(Point a, Point b) {}
+
+static void print(Rectangle r) {
+    if (r instanceof Rectangle(Point(var x1, var y1), Point(var x2, var y2))) {
+        System.out.println("Vertici: (" + x1 + "," + y1 + "), (" + x2 + "," + y2 + ")");
+    }
+}
+```
+
+**Guardie semantiche (clausola `when`)**
+nei pattern di `switch` si può aggiungere una condizione booleana con `when`.
+```java
+public String show() {
+    return switch(this.anni) {
+        case int i when i < 18 -> nome + " è minorenne";
+        case int i when i > 70 -> nome + " è pensionato";
+        default -> nome + " è un lavoratore";
+    };
+}
+```
+
+| Aspetto | Classe tradizionale | Record |
+|---------|---------------------|--------|
+| Dichiarazione | Molto verbosa (campi, costruttore, getter, equals, hashCode, toString) | Una sola riga |
+| Mutabilità | I campi possono essere `final` o meno | Tutti i campi dell’intestazione sono `final` (immutabili) |
+| Ereditarietà | Può estendere altre classi | Non può essere esteso (è `final`) |
+| Metodi accessor | Di solito `getNome()` | `nome()` (stesso nome del campo) |
+| Pattern matching | Non supportato (o richiede `instanceof` con cast) | Supporto nativo alla destrutturazione |
+
+Quando usare un record
+- Quando la classe è un semplice **contenitore di dati** (DTO, value object).
+- Quando l’**immutabilità** è desiderata.
+- Quando non serve ereditarietà.
+- Quando si vuole sfruttare il **pattern matching** per destrutturare gli oggetti.
+In tutti gli altri casi (gerarchie, oggetti mutevoli, comportamenti complessi) si usano le normali classi.
+## Classi astratte
+Nel modellare il mondo reale, molte entità sono **categorie concettuali** e non esistono come oggetti concreti.
+
+**Esempi:**
+- Non esiste il “generico animale” – esistono cani, gatti, lepri, …
+- Non esiste la “generica roccia” – esistono granito, quarzo, basalto, …
+- Non esiste la “generica forma geometrica” – esistono triangoli, quadrati, cerchi, …
+
+Le **classi astratte** servono proprio a rappresentare queste categorie concettuali, di cui **non possono esistere istanze**. Le istanze effettive appartengono a sottoclassi concrete.
+
+In Java si usa la parola chiave `abstract`:
+- per dichiarare una classe astratta
+- per dichiarare uno o più **metodi astratti** (senza implementazione)
+```java
+public abstract class Animale {
+    // campo privato (esiste in tutte le sottoclassi)
+    private String mioNome;
+    
+    // campo protected (accessibile alle sottoclassi)
+    protected String verso;
+    
+    // costruttore
+    public Animale(String nome) {
+        this.mioNome = nome;
+    }
+    
+    // metodo astratto (senza corpo, solo dichiarazione)
+    public abstract String siMuove(); 
+    
+    public abstract String vive(); // verrà definito da una sottoclasse
+    
+    public abstract String nome();
+    
+    // metodo concreto (implementato qui)
+    public void mostra() {
+        System.out.println(mioNome + ", " + nome() + ", " + verso +
+                           ", si muove " + siMuove() + " e vive " + vive());
+    }
+}
+```
+
+**Regole fondamentali:**
+- Una classe che contiene almeno un metodo astratto **deve** essere dichiarata `abstract`.
+- Una classe astratta **non può essere istanziata** (non si può fare `new Animale(...)`).
+- Una classe astratta può contenere anche metodi concreti (con implementazione) e campi.
+
+### Sottoclassi astratte e concrete
+Una sottoclasse può implementare solo **una parte** dei metodi astratti ereditati. Se ne rimane almeno uno non implementato, anche la sottoclasse deve essere dichiarata `abstract`.
+![[119-Classi astratte.pdf#page=8&rect=590,181,688,415|119-Classi astratte, p.8|100]]
+
+**sottoclasse astratta**
+```java
+public abstract class AnimaleTerrestre extends Animale {
+    public AnimaleTerrestre(String s) {
+        super(s);
+    }
+    
+    // implementa vive() e nome(), ma non siMuove()
+    @Override
+    public String vive() {
+        return "sulla terraferma";
+    }
+    
+    @Override
+    public String nome() {
+        return "un animale terrestre";
+    }
+    
+    // siMuove() rimane astratto – quindi la classe è astratta
+}
+```
+
+**Sottoclasse concreta**
+Una classe è **concreta** quando **tutti** i metodi astratti ereditati sono stati implementati (direttamente o ereditati da una superclasse).
+```java
+public class Gatto extends AnimaleTerrestre {
+    public Gatto(String nome) {
+        super(nome);
+        this.verso = "miagola";
+    }
+    
+    @Override
+    public String siMuove() {
+        return "saltando";
+    }
+    
+    @Override
+    public String nome() {
+        return "un gatto";
+    }
+}
+```
+#### Esempio animali
+```java
+public abstract class Animale {
+    private String mioNome;
+    protected String verso;
+    
+    public Animale(String nome) {
+        this.mioNome = nome;
+    }
+    
+    public abstract String siMuove();
+    public abstract String vive();
+    public abstract String nome();
+    
+    public void mostra() {
+        System.out.println(mioNome + ", " + nome() + ", " + verso +
+                           ", si muove " + siMuove() + " e vive " + vive());
+    }
+}
+```
+
+`AnimaleTerrestre`
+```java
+public abstract class AnimaleTerrestre extends Animale {
+    public AnimaleTerrestre(String s) {
+        super(s);
+    }
+    
+    @Override
+    public String vive() {
+        return "sulla terraferma";
+    }
+    
+    @Override
+    public String nome() {
+        return "un animale terrestre";
+    }
+}
+```
+
+ `AnimaleAcquatico`
+```java
+public abstract class AnimaleAcquatico extends Animale {
+    public AnimaleAcquatico(String s) {
+        super(s);
+    }
+    
+    @Override
+    public String vive() {
+        return "nell'acqua";
+    }
+    
+    @Override
+    public String nome() {
+        return "un animale acquatico";
+    }
+}
+```
+
+`AnimaleMarino` (specializzazione di `AnimaleAcquatico`)
+```java
+public abstract class AnimaleMarino extends AnimaleAcquatico {
+    public AnimaleMarino(String s) {
+        super(s);
+    }
+    
+    @Override
+    public String vive() {
+        return "in mare";
+    }
+    
+    @Override
+    public String nome() {
+        return "un animale marino";
+    }
+}
+```
+
+Classi concrete
+```java
+public class PesceDiMare extends AnimaleMarino {
+    public PesceDiMare(String nome) {
+        super(nome);
+        this.verso = "non fa versi";
+    }
+    
+    @Override
+    public String nome() {
+        return "un pesce (di mare)";
+    }
+    
+    @Override
+    public String siMuove() {
+        return "nuotando";
+    }
+}
+
+public class Uccello extends AnimaleTerrestre {
+    public Uccello(String nome) {
+        super(nome);
+        this.verso = "cinguetta";
+    }
+    
+    @Override
+    public String vive() {
+        return "in un nido su un albero";
+    }
+    
+    @Override
+    public String nome() {
+        return "un uccello";
+    }
+    
+    @Override
+    public String siMuove() {
+        return "volando";
+    }
+}
+
+public class Tonno extends PesceDiMare {
+    public Tonno(String nome) {
+        super(nome);
+    }
+    
+    @Override
+    public String nome() {
+        return "un tonno";
+    }
+}
+```
+![[119-Classi astratte.pdf#page=20&rect=96,61,570,428|119-Classi astratte, p.20|500]]
+#### Esempio forme geometriche
+```java
+public abstract class Forma {
+    public abstract double area();
+    public abstract double perimetro();
+    public abstract String nome();
+    
+    @Override
+    public String toString() {
+        return nome() + " di area " + area() + " e perimetro " + perimetro();
+    }
+}
+```
+
+`Triangolo`
+```java
+public class Triangolo extends Forma {
+    private double lato1, lato2, lato3;
+    
+    public Triangolo(double l1, double l2, double l3) {
+        this.lato1 = l1;
+        this.lato2 = l2;
+        this.lato3 = l3;
+    }
+    
+    @Override
+    public double perimetro() {
+        return lato1 + lato2 + lato3;
+    }
+    
+    @Override
+    public double area() {
+        // Formula di Erone
+        double p = perimetro() / 2;
+        return Math.sqrt(p * (p - lato1) * (p - lato2) * (p - lato3));
+    }
+    
+    @Override
+    public String nome() {
+        return "Triangolo qualsiasi";
+    }
+}
+```
+
+`TriangoloIsoscele` (estende `Triangolo`)
+```java
+public class TriangoloIsoscele extends Triangolo {
+    public TriangoloIsoscele(double base, double lato) {
+        super(base, lato, lato);
+    }
+    
+    @Override
+    public String nome() {
+        return "Triangolo isoscele";
+    }
+}
+```
+
+`TriangoloEquilatero`
+```java
+public class TriangoloEquilatero extends Triangolo {
+    public TriangoloEquilatero(double lato) {
+        super(lato, lato, lato);
+    }
+    
+    @Override
+    public String nome() {
+        return "Triangolo equilatero";
+    }
+}
+```
+
+### Utilizzo polimorfico
+
+```java
+public class TanteForme {
+    public static void main(String[] args) {
+        Forma[] forme = {
+            new Triangolo(2, 3, 4),
+            new TriangoloIsoscele(2, 3),
+            new TriangoloEquilatero(3)
+        };
+        
+        for (Forma f : forme) {
+            System.out.println(f);
+        }
+    }
+}
+```
+
+---
+
+## 6. Problemi di modellazione con l’ereditarietà singola
+
+### Il caso del quadrato e del rettangolo
+
+Nella realtà un **quadrato** è un caso particolare di **rettangolo** (ha tutti gli angoli retti e i lati uguali).  
+Tuttavia, con l’ereditarietà singola si può scegliere solo un criterio di classificazione alla volta.
+
+Se definiamo:
+
+```java
+public class Rettangolo extends Forma { ... }
+public class Quadrato extends Rettangolo { ... }
+```
+
+funziona, ma se volessimo anche classificare il quadrato come “rombo” o “trapezio rettangolo” non possiamo, perché in Java una classe può estendere una sola altra classe.
+
+**Conseguenza pratica:**
+
+```java
+Rettangolo r = new Quadrato(5);   // vorremmo che fosse valido, ma se Quadrato non estende Rettangolo dà errore
+```
+
+In un modello mal progettato (ad esempio se `Quadrato` e `Rettangolo` sono fratelli sotto `Forma`), l’assegnazione non è permessa, violando l’intuizione geometrica.
+
+### Intersezioni di insiemi
+
+L’ereditarietà singola modella bene le relazioni di **inclusione insiemistica** (un sottoinsieme è un caso particolare). Ma la realtà spesso presenta **intersezioni**:
+
+- Un triangolo rettangolo è sia “triangolo” sia “rettangolo” (angolo retto).
+- Un quadrato è sia “rettangolo” sia “rombo”.
+
+Queste situazioni richiederebbero **ereditarietà multipla**, che Java non supporta tra classi per evitare problemi complessi (diamond problem, duplicazione di dati, conflitti di metodi).
+
+---
+
+## 7. Cenno alle interfacce (anticipazione)
+
+Per risolvere il problema delle intersezioni senza i problemi dell’ereditarietà multipla tra classi, Java introduce il concetto di **interfaccia**. Un’interfaccia permette di dichiarare comportamenti (metodi astratti) che una classe può implementare **molteplice** (implementa più interfacce). Le interfacce non contengono stato (campi di istanza) – solo costanti statiche e metodi astratti (o default/statici da Java 8).
+
+Le interfacce saranno trattate successivamente.
+
+---
+
+## 8. Riepilogo dei concetti chiave
+
+| Concetto | Descrizione |
+|----------|-------------|
+| **Classe astratta** | Classe dichiarata con `abstract`; non può essere istanziata. |
+| **Metodo astratto** | Metodo dichiarato con `abstract`, senza corpo (`;` al posto delle `{}`). |
+| **Classe concreta** | Sottoclasse che implementa tutti i metodi astratti ereditati. |
+| **Obiettivo** | Modellare categorie concettuali, lasciando i dettagli alle sottoclassi. |
+| **Limitazione** | L’ereditarietà singola non esprime intersezioni di insiemi (es. quadrato è sia rettangolo sia rombo). |
+
+---
+
+## 9. Note finali
+
+- Una classe astratta può avere costruttori (chiamati dalle sottoclassi con `super`).
+- Può avere campi `private`, `protected`, `public`.
+- Una sottoclasse concreta deve **override** di tutti i metodi astratti.
+- Se una sottoclasse non implementa tutti i metodi astratti, deve essere dichiarata `abstract`.
+- Le classi astratte sono un potente strumento di **riuso** e **organizzazione** gerarchica del codice.
+
+Questi appunti coprono tutti gli aspetti delle classi astratte presentati nel PDF, limitandosi a Java e tralasciando C#, Scala e Kotlin.
