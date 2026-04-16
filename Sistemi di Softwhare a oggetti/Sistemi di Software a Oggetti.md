@@ -3410,87 +3410,30 @@ public class TriangoloEquilatero extends Triangolo {
 }
 ```
 
-### Utilizzo polimorfico
-
-```java
-public class TanteForme {
-    public static void main(String[] args) {
-        Forma[] forme = {
-            new Triangolo(2, 3, 4),
-            new TriangoloIsoscele(2, 3),
-            new TriangoloEquilatero(3)
-        };
-        
-        for (Forma f : forme) {
-            System.out.println(f);
-        }
-    }
-}
-```
-
----
-
-## 6. Problemi di modellazione con l’ereditarietà singola
-
-### Il caso del quadrato e del rettangolo
-
+**Il caso del quadrato e del rettangolo**
+![[119-Classi astratte.pdf#page=37&rect=241,51,675,303|119-Classi astratte, p.37|300]]
 Nella realtà un **quadrato** è un caso particolare di **rettangolo** (ha tutti gli angoli retti e i lati uguali).  
 Tuttavia, con l’ereditarietà singola si può scegliere solo un criterio di classificazione alla volta.
+![[119-Classi astratte.pdf#page=46&rect=25,39,703,437|119-Classi astratte, p.46|500]]
 
 Se definiamo:
-
 ```java
 public class Rettangolo extends Forma { ... }
 public class Quadrato extends Rettangolo { ... }
 ```
-
 funziona, ma se volessimo anche classificare il quadrato come “rombo” o “trapezio rettangolo” non possiamo, perché in Java una classe può estendere una sola altra classe.
-
-**Conseguenza pratica:**
-
 ```java
 Rettangolo r = new Quadrato(5);   // vorremmo che fosse valido, ma se Quadrato non estende Rettangolo dà errore
 ```
 
 In un modello mal progettato (ad esempio se `Quadrato` e `Rettangolo` sono fratelli sotto `Forma`), l’assegnazione non è permessa, violando l’intuizione geometrica.
-
-### Intersezioni di insiemi
-
-L’ereditarietà singola modella bene le relazioni di **inclusione insiemistica** (un sottoinsieme è un caso particolare). Ma la realtà spesso presenta **intersezioni**:
-
+#### Intersezioni di insiemi
+> [!missing]
+> L’ereditarietà singola modella bene le relazioni di **inclusione insiemistica** (un sottoinsieme è un caso particolare). Ma la realtà spesso presenta **intersezioni**:
 - Un triangolo rettangolo è sia “triangolo” sia “rettangolo” (angolo retto).
 - Un quadrato è sia “rettangolo” sia “rombo”.
-
 Queste situazioni richiederebbero **ereditarietà multipla**, che Java non supporta tra classi per evitare problemi complessi (diamond problem, duplicazione di dati, conflitti di metodi).
 
----
-
-## 7. Cenno alle interfacce (anticipazione)
-
+**Ereditarietà Multipla e interfacce** 
 Per risolvere il problema delle intersezioni senza i problemi dell’ereditarietà multipla tra classi, Java introduce il concetto di **interfaccia**. Un’interfaccia permette di dichiarare comportamenti (metodi astratti) che una classe può implementare **molteplice** (implementa più interfacce). Le interfacce non contengono stato (campi di istanza) – solo costanti statiche e metodi astratti (o default/statici da Java 8).
-
-Le interfacce saranno trattate successivamente.
-
----
-
-## 8. Riepilogo dei concetti chiave
-
-| Concetto | Descrizione |
-|----------|-------------|
-| **Classe astratta** | Classe dichiarata con `abstract`; non può essere istanziata. |
-| **Metodo astratto** | Metodo dichiarato con `abstract`, senza corpo (`;` al posto delle `{}`). |
-| **Classe concreta** | Sottoclasse che implementa tutti i metodi astratti ereditati. |
-| **Obiettivo** | Modellare categorie concettuali, lasciando i dettagli alle sottoclassi. |
-| **Limitazione** | L’ereditarietà singola non esprime intersezioni di insiemi (es. quadrato è sia rettangolo sia rombo). |
-
----
-
-## 9. Note finali
-
-- Una classe astratta può avere costruttori (chiamati dalle sottoclassi con `super`).
-- Può avere campi `private`, `protected`, `public`.
-- Una sottoclasse concreta deve **override** di tutti i metodi astratti.
-- Se una sottoclasse non implementa tutti i metodi astratti, deve essere dichiarata `abstract`.
-- Le classi astratte sono un potente strumento di **riuso** e **organizzazione** gerarchica del codice.
-
-Questi appunti coprono tutti gli aspetti delle classi astratte presentati nel PDF, limitandosi a Java e tralasciando C#, Scala e Kotlin.
+##
