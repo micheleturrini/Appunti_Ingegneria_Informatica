@@ -3436,4 +3436,214 @@ Queste situazioni richiederebbero **ereditarietà multipla**, che Java non suppo
 
 **Ereditarietà Multipla e interfacce** 
 Per risolvere il problema delle intersezioni senza i problemi dell’ereditarietà multipla tra classi, Java introduce il concetto di **interfaccia**. Un’interfaccia permette di dichiarare comportamenti (metodi astratti) che una classe può implementare **molteplice** (implementa più interfacce). Le interfacce non contengono stato (campi di istanza) – solo costanti statiche e metodi astratti (o default/statici da Java 8).
-##
+## Interfaccia
+**Definizione di Classe:** Una classe definisce un Tipo di Dato Astratto (ADT) specificando contemporaneamente due aspetti:
+    1.  **Front-End (Pubblico):** Cosa fa l'oggetto (firme dei metodi pubblici).
+    2.  **Back-End (Privato):** Come lo fa (implementazione dei metodi e dati interni).
+Questa contemporaneità è un limite progettuale per tre motivi:
+- **Fasi Preliminari:** Non sempre si conoscono i dettagli implementativi all'inizio del progetto.
+- **Flessibilità:** Non si vogliono vincolare le scelte implementative a priori (es. per cambiare idea dopo o scegliere a runtime).
+-  **Ereditarietà Multipla Assente:** Java non supporta l'ereditarietà multipla tra classi, limitando la modellazione di concetti come `StudenteLavoratore`.
+**Classi Astratte: Una Soluzione Parziale**
+- Permettono di dichiarare metodi senza implementarli (`abstract`).
+- **Limite:** Vincolano l'implementazione dei metodi astratti a una **sottoclasse**, legando il tutto a una gerarchia singola e rigida. Non risolvono il problema dell'ereditarietà multipla né del disaccoppiamento totale.
+
+> [!success]
+> **Separare Interfaccia e Implementazione** Utilizzare due costrutti distinti invece di uno solo.
+ **Interfaccia (`interface`):** Definisce solo il **front-end** (cosa deve fare un oggetto). Contiene solo dichiarazioni di metodi (e costanti `static final`).
+ **Classe Concreta (`class`):** Fornisce il **back-end** (implementazione reale) di una o più interfacce.
+### L'Interfaccia in Java
+![[120-Interfacce.pdf#page=9&rect=11,37,694,438|120-Interfacce, p.9|600]]
+- **Natura:** Una classe astratta portata all'estremo. Non contiene stato (variabili di istanza), né costruttori, né implementazioni di metodi (fino a Java 8, poi sono stati introdotti i metodi `default` e `static`, ma il concetto core rimane la pura specifica).
+- **Scopo:** Introdurre un **Tipo** puro, usabile per riferimenti e argomenti di metodi.
+- **Relazione di Realizzazione (`implements`):** Una classe che si impegna a fornire il codice per tutti i metodi dichiarati in un'interfaccia "realizza" (o "implementa") quell'interfaccia.
+
+| Caratteristica        | Classe Astratta (`abstract class`)        | Interfaccia (`interface`)                           |
+| :-------------------- | :---------------------------------------- | :-------------------------------------------------- |
+| **Ereditarietà**      | Singola (`extends`)                       | Multipla (`implements`)                             |
+| **Stato (Campi)**     | Può definire variabili di istanza         | **No** (solo costanti `public static final`)        |
+| **Costruttori**       | Sì                                        | **No**                                              |
+| **Metodi**            | Astratti e concreti                       | Astratti (e `default`/`static` da Java 8+)          |
+| **Visibilità membri** | `public`, `protected`, `private`          | Solo `public` (implicito)                           |
+| **Relazione**         | Ereditarietà (**sempre una sottoclasse**) | Realizzazione (**qualunque classe che implementa**) |
+![[120-Interfacce.pdf#page=10&rect=31,88,688,376|120-Interfacce, p.10|550]]
+```java
+public interface Rettangolo {
+    // Metodi astratti impliciti: public abstract
+    double base();
+    double altezza();
+}
+
+class ImplRettangolo implements Rettangolo {
+	private double lato1, lato2;
+	public ImplRettangolo(double altezza, double base) { lato1 = base; lato2 = altezza;}
+	public double altezza() { return lato2; }
+	public double base() { return lato1; }
+	// eventuali metodi aggiuntivi
+}
+```
+![[120-Interfacce.pdf#page=16&rect=40,97,709,310|120-Interfacce, p.16|500]]
+### Ereditarietà Multipla con le Interfacce
+> [!success]
+> Poiché le interfacce non contengono implementazioni (nessun corpo metodo, nessun dato, 0 codice), **non c'è il rischio di collisione** tipico dell'ereditarietà multipla fra classi.
+*Se ci dovessero essere metodi omonimi comunque non ci sarebbero collisioni*
+
+**Ereditarietà tra Interfacce:** Un'interfaccia può estendere (`extends`) più altre interfacce. Questo serve a comporre tipi e stabilire relazioni concettuali tra astrazioni pure.
+```java
+    public interface TrapezioRettangolo extends Trapezio { ... }
+    public interface Parallelogrammo extends Quadrilatero { ... }
+
+    // Ereditarietà multipla tra interfacce
+    public interface Rettangolo extends TrapezioRettangolo, Parallelogrammo {
+        // Rettangolo eredita i metodi di entrambe le super-interfacce
+    }
+```
+
+**Progettare con le Interfacce ("Design for Change")**
+1.  **Prima le Interfacce:** Si modella la tassonomia dei concetti (astrazioni) usando solo interfacce. Si stabilisce **cosa** il sistema deve fare, in modo pulito e senza vincoli implementativi.
+2.  **Poi le Classi:** Si creano le classi concrete che implementano tali interfacce, ottimizzando per efficienza, riuso del codice, ecc. Queste classi diventano "dettagli implementativi" nascosti al resto del sistema.
+- **Vantaggi:** Disaccoppiamento architetturale. Il codice che usa un'interfaccia non dipende da una classe specifica, ma solo dal contratto. Questo rende il sistema più facile da mantenere, estendere e testare.
+
+**Compatibilità di Tipo e Riferimenti a Interfaccia**
+- Un'interfaccia definisce un tipo. Non si possono creare istanze dirette (`new Rettangolo()` è illegale).
+- Una classe che implementa un'interfaccia `I` è compatibile per assegnamento con il tipo `I`.
+- Un riferimento di tipo interfaccia può puntare a un'istanza di **qualsiasi** classe che la implementa.
+
+**Esempio: Vista "Orizzontale" vs. "Verticale"**
+```java
+public interface Rettangolare {
+    double larghezza();
+    double lunghezza();
+}
+
+public class Tavolo implements Rettangolare { ... }
+public class Libro implements Rettangolare { ... }
+public class Appezzamento implements Rettangolare { ... }
+
+public class MyMath {
+    // Questo metodo funziona con QUALSIASI cosa sia Rettangolare,
+    // indipendentemente dalla sua classe concreta.
+    public static double area(Rettangolare r) {
+        return r.larghezza() * r.lunghezza();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Rettangolare libro = new Libro(22, 16, 3);
+        Rettangolare tavolo = new Tavolo(120, 70, 74);
+
+        System.out.println(MyMath.area(libro)); // Funziona!
+        System.out.println(MyMath.area(tavolo)); // Funziona!
+    }
+}
+```
+- **Interpretazione:**
+    - I riferimenti a **classi** offrono una vista **verticale** (solo quel ramo della gerarchia).
+    - I riferimenti a **interfacce** offrono una vista **orizzontale** (tagliano trasversalmente la gerarchia, catturando una caratteristica comune a classi non correlate).
+
+#### 7. Interfacce e Pattern Factory
+
+- Le interfacce sono perfette per il pattern **Factory**.
+- **Funzionamento:**
+    1.  Il client richiede un oggetto che rispetti una certa interfaccia (es. `Rettangolo`).
+    2.  La **Factory**, in base a logiche interne (es. parametri passati, configurazione), decide quale classe concreta istanziare (es. `ImplRettangolo`, `Quadrato`, ecc.).
+    3.  La Factory restituisce l'istanza come tipo **interfaccia**, nascondendo completamente al client il tipo concreto dell'oggetto.
+
+- **Factory Internalizzata (da Java 8 in poi):** Si può inserire un metodo `static` di factory direttamente nell'interfaccia.
+    ```java
+    public interface Rettangolo {
+        double base();
+        double altezza();
+
+        // Factory internalizzata
+        public static Rettangolo of(double base, double altezza) {
+            // Qui la logica per decidere cosa creare.
+            // Se base == altezza, potremmo restituire un Quadrato
+            if (base == altezza) {
+                return new ImplQuadrato(base);
+            } else {
+                return new ImplRettangolo(base, altezza);
+            }
+        }
+    }
+
+    // Uso lato client
+    Rettangolo r = Rettangolo.of(10, 5); // Non so se è un ImplRettangolo o un Quadrato
+    ```
+
+#### 8. Caso di Studio 1: Forme Geometriche
+
+- **Problema:** Con le sole classi, l'ereditarietà singola impedisce di modellare in modo pulito criteri di classificazione ortogonali (es. "avere i lati paralleli" vs. "avere gli angoli retti"). Un `Quadrato` è sia un `Rettangolo` che un `Rombo`, ma non può ereditare da entrambi.
+- **Soluzione con Interfacce:**
+    1.  Si crea una tassonomia di **interfacce** con ereditarietà multipla.
+        ```java
+        public interface Forma { double area(); double perimetro(); }
+        public interface Quadrilatero extends Forma { ... }
+        public interface Parallelogrammo extends Quadrilatero { ... }
+        public interface Rettangolo extends Parallelogrammo, TrapezioRettangolo { ... }
+        public interface Rombo extends Parallelogrammo { ... }
+        // Ereditarietà multipla: Quadrato è sia Rettangolo che Rombo
+        public interface Quadrato extends Rettangolo, Rombo { }
+        ```
+    2.  Si creano **classi concrete** per l'implementazione. Poiché non c'è ereditarietà multipla fra classi, si dovrà scegliere una gerarchia di classi che massimizzi il riuso del codice. Ad esempio, `ImplQuadrato` può estendere `ImplRettangolo` per riutilizzare il codice, implementando poi l'interfaccia `Quadrato`.
+        ```java
+        class ImplRettangolo implements Rettangolo { ... }
+
+        class ImplQuadrato extends ImplRettangolo implements Quadrato {
+            public ImplQuadrato(double lato) {
+                super(lato, lato); // Chiama il costruttore di ImplRettangolo
+            }
+            // ...
+        }
+        ```
+- **Risultato:** L'utente vede solo la tassonomia pulita delle interfacce e usa le factory per ottenere le forme.
+
+#### 9. Caso di Studio 2: Numeri Complessi e Reali
+
+- **Problema:** Un numero reale è un numero complesso con parte immaginaria nulla. Modellare questa relazione con le classi è inefficiente (ogni reale deve comunque mantenere un campo `im = 0`).
+- **Soluzione con Interfacce:**
+    1.  **Interfaccia `Complex`:** Definisce le operazioni generali sui complessi (`getReal()`, `getIm()`, `sum(Complex)`, `mul(Complex)`, ecc.).
+    2.  **Interfaccia `Real extends Complex`:** Specializza `Complex` aggiungendo metodi che restituiscono `Real` (covarianza del tipo di ritorno).
+    3.  **Classi Separate:** Le classi `ComplexNum` e `RealNum` implementano le rispettive interfacce. `RealNum` non ha bisogno di memorizzare `im` perché il suo metodo `getIm()` restituisce sempre `0`.
+- **Architettura con Factory:**
+    ```java
+    // Interfaccia con factory internalizzata
+    public interface Complex {
+        // ... metodi ...
+        public static Complex of(double x, double y) {
+            return new ComplexNum(x, y);
+        }
+        public static Complex of(double x) {
+            return new RealNum(x); // Restituisce un Real!
+        }
+    }
+
+    public interface Real extends Complex {
+        // ... metodi ...
+        public static Real of(double x) {
+            return new RealNum(x);
+        }
+    }
+
+    // Lato client
+    Complex c = Complex.of(3, 2);   // Ottiene un ComplexNum
+    Real r = Real.of(3.14);        // Ottiene un RealNum
+    Complex c2 = Complex.of(5);     // Ottiene un RealNum, ma visto come Complex!
+    ```
+
+#### 10. Il Problema del Diamante (Diamond Inheritance) in Java
+
+- **Scenario:** `Studente` e `Lavoratore` estendono `Persona`. `StudenteLavoratore` è sia `Studente` che `Lavoratore`.
+- **Soluzione:**
+    1.  **Front-End (Interfacce):** `Persona`, `Studente`, `Lavoratore` e `StudenteLavoratore` sono **interfacce**. `StudenteLavoratore` può estendere (`extends`) entrambe `Studente` e `Lavoratore` senza problemi.
+    2.  **Back-End (Classi):** Si creano classi concrete come `LaPersona`, `LoStudente` e `IlLavoratore`. La classe `LoStudenteLavoratore` **può estendere solo una classe** (es. `LoStudente`), ma **può implementare l'interfaccia** `StudenteLavoratore`. Il codice non ereditato (es. la parte di `Lavoratore`) dovrà essere re-implementato.
+        ```java
+        class LoStudenteLavoratore extends LoStudente implements StudenteLavoratore {
+            private String impiego;
+            private double stipendio;
+
+            // ... costruttore, getter per impiego e stipendio ...
+        }
+        ```
+- **Morale:** La tassonomia di **interfacce** è concettualmente perfetta e supporta l'ereditarietà multipla. La tassonomia di **classi** è un dettaglio implementativo vincolato dall'ereditarietà singola di Java, che viene gestito internamente senza influenzare l'utente dell'API.
