@@ -3553,15 +3553,13 @@ public class Main {
 ```
 ![[120-Interfacce.pdf#page=35&rect=48,31,708,402|120-Interfacce, p.35|600]]
 ### Interfacce e Pattern Factory
+1.  Il client richiede un oggetto che rispetti una certa interfaccia (es. `Rettangolo`).
+2.  La **Factory**, in base a logiche interne (es. parametri passati, configurazione), decide quale classe concreta istanziare (es. `ImplRettangolo`, `Quadrato`, ecc.).
+3.  La Factory restituisce l'istanza come tipo **interfaccia**, nascondendo completamente al client il tipo concreto dell'oggetto.
+*Es. java.time è costruito cosi*
 
-- Le interfacce sono perfette per il pattern **Factory**.
-- **Funzionamento:**
-    1.  Il client richiede un oggetto che rispetti una certa interfaccia (es. `Rettangolo`).
-    2.  La **Factory**, in base a logiche interne (es. parametri passati, configurazione), decide quale classe concreta istanziare (es. `ImplRettangolo`, `Quadrato`, ecc.).
-    3.  La Factory restituisce l'istanza come tipo **interfaccia**, nascondendo completamente al client il tipo concreto dell'oggetto.
-
-- **Factory Internalizzata:** Si può inserire un metodo `static` di factory direttamente nell'interfaccia.
-    ```java
+la **Factory Internalizzata:** Si può inserire un metodo `static` di factory direttamente nell'interfaccia.
+```java
     public interface Rettangolo {
         double base();
         double altezza();
@@ -3580,21 +3578,20 @@ public class Main {
 
     // Uso lato client
     Rettangolo r = Rettangolo.of(10, 5); // Non so se è un ImplRettangolo o un Quadrato
-    ```
-#### 8. Caso di Studio 1: Forme Geometriche
-
-- **Problema:** Con le sole classi, l'ereditarietà singola impedisce di modellare in modo pulito criteri di classificazione ortogonali (es. "avere i lati paralleli" vs. "avere gli angoli retti"). Un `Quadrato` è sia un `Rettangolo` che un `Rombo`, ma non può ereditare da entrambi.
+```
+### Forme Geometriche
+Con le sole classi, l'ereditarietà singola impedisce di modellare in modo pulito criteri di classificazione ortogonali (es. "avere i lati paralleli" vs. "avere gli angoli retti"). Un `Quadrato` è sia un `Rettangolo` che un `Rombo`, ma non può ereditare da entrambi.
 - **Soluzione con Interfacce:**
-    1.  Si crea una tassonomia di **interfacce** con ereditarietà multipla.
-        ```java
-        public interface Forma { double area(); double perimetro(); }
+    1.  Si crea una tassonomia di **interfacce** con ereditarietà multipla.![[120-Interfacce.pdf#page=54&rect=9,54,702,436|120-Interfacce, p.54|400]]
+    ```java
+	public interface Forma { double area(); double perimetro(); }
         public interface Quadrilatero extends Forma { ... }
         public interface Parallelogrammo extends Quadrilatero { ... }
         public interface Rettangolo extends Parallelogrammo, TrapezioRettangolo { ... }
         public interface Rombo extends Parallelogrammo { ... }
         // Ereditarietà multipla: Quadrato è sia Rettangolo che Rombo
         public interface Quadrato extends Rettangolo, Rombo { }
-        ```
+    ```
     2.  Si creano **classi concrete** per l'implementazione. Poiché non c'è ereditarietà multipla fra classi, si dovrà scegliere una gerarchia di classi che massimizzi il riuso del codice. Ad esempio, `ImplQuadrato` può estendere `ImplRettangolo` per riutilizzare il codice, implementando poi l'interfaccia `Quadrato`.
         ```java
         class ImplRettangolo implements Rettangolo { ... }
@@ -3606,16 +3603,13 @@ public class Main {
             // ...
         }
         ```
-- **Risultato:** L'utente vede solo la tassonomia pulita delle interfacce e usa le factory per ottenere le forme.
+L'utente vede solo la tassonomia pulita delle interfacce e usa le factory per ottenere le forme.
 
-#### 9. Caso di Studio 2: Numeri Complessi e Reali
-
-- **Problema:** Un numero reale è un numero complesso con parte immaginaria nulla. Modellare questa relazione con le classi è inefficiente (ogni reale deve comunque mantenere un campo `im = 0`).
-- **Soluzione con Interfacce:**
-    1.  **Interfaccia `Complex`:** Definisce le operazioni generali sui complessi (`getReal()`, `getIm()`, `sum(Complex)`, `mul(Complex)`, ecc.).
-    2.  **Interfaccia `Real extends Complex`:** Specializza `Complex` aggiungendo metodi che restituiscono `Real` (covarianza del tipo di ritorno).
-    3.  **Classi Separate:** Le classi `ComplexNum` e `RealNum` implementano le rispettive interfacce. `RealNum` non ha bisogno di memorizzare `im` perché il suo metodo `getIm()` restituisce sempre `0`.
-- **Architettura con Factory:**
+### Numeri Complessi e Reali
+Un numero reale è un numero complesso con parte immaginaria nulla. Modellare questa relazione con le classi è inefficiente (ogni reale deve comunque mantenere un campo `im = 0`).
+1.  **Interfaccia `Complex`:** Definisce le operazioni generali sui complessi (`getReal()`, `getIm()`, `sum(Complex)`, `mul(Complex)`, ecc.).
+2.  **Interfaccia `Real extends Complex`:** Specializza `Complex` aggiungendo metodi che restituiscono `Real` (covarianza del tipo di ritorno).
+3.  **Classi Separate:** Le classi `ComplexNum` e `RealNum` implementano le rispettive interfacce. `RealNum` non ha bisogno di memorizzare `im` perché il suo metodo `getIm()` restituisce sempre `0`.
     ```java
     // Interfaccia con factory internalizzata
     public interface Complex {
