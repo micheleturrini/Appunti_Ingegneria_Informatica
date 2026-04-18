@@ -3454,18 +3454,19 @@ Questa contemporaneità è un limite progettuale per tre motivi:
  **Classe Concreta (`class`):** Fornisce il **back-end** (implementazione reale) di una o più interfacce.
 ### L'Interfaccia in Java
 ![[120-Interfacce.pdf#page=9&rect=11,37,694,438|120-Interfacce, p.9|600]]
-- **Natura:** Una classe astratta portata all'estremo. Non contiene stato (variabili di istanza), né costruttori, né implementazioni di metodi (fino a Java 8, poi sono stati introdotti i metodi `default` e `static`, ma il concetto core rimane la pura specifica).
+- **Natura:** Una classe astratta portata all'estremo. **Non contiene alcuna definizione ma solo dichiarazioni.** Non contiene stato (variabili di istanza), né costruttori, né implementazioni di metodi (fino a Java 8, poi sono stati introdotti i metodi `default` e `static`, ma il concetto core rimane la pura specifica).
 - **Scopo:** Introdurre un **Tipo** puro, usabile per riferimenti e argomenti di metodi.
-- **Relazione di Realizzazione (`implements`):** Una classe che si impegna a fornire il codice per tutti i metodi dichiarati in un'interfaccia "realizza" (o "implementa") quell'interfaccia.
+- **Relazione di Realizzazione (`implements`):** Una classe che si impegna a fornire il codice per tutti i metodi dichiarati in un'interfaccia "realizza" (o "implementa") quell'interfaccia.compatibili
+- **Il tipo classe e il tipo interfaccia sono** 
 
-| Caratteristica        | Classe Astratta (`abstract class`)        | Interfaccia (`interface`)                           |
-| :-------------------- | :---------------------------------------- | :-------------------------------------------------- |
-| **Ereditarietà**      | Singola (`extends`)                       | Multipla (`implements`)                             |
-| **Stato (Campi)**     | Può definire variabili di istanza         | **No** (solo costanti `public static final`)        |
-| **Costruttori**       | Sì                                        | **No**                                              |
-| **Metodi**            | Astratti e concreti                       | Astratti (e `default`/`static` da Java 8+)          |
-| **Visibilità membri** | `public`, `protected`, `private`          | Solo `public` (implicito)                           |
-| **Relazione**         | Ereditarietà (**sempre una sottoclasse**) | Realizzazione (**qualunque classe che implementa**) |
+| Caratteristica        | Classe Astratta (`abstract class`)        | Interfaccia (`interface`)                                                 |
+| :-------------------- | :---------------------------------------- | :------------------------------------------------------------------------ |
+| **Ereditarietà**      | Singola (`extends`)                       | Multipla (`implements`)                                                   |
+| **Stato (Campi)**     | Può definire variabili di istanza         | **No** (solo costanti `public static final`)                              |
+| **Costruttori**       | Sì                                        | **No**                                                                    |
+| **Metodi**            | Astratti e concreti                       | Astratti (e `default`/`static` da Java 8+)                                |
+| **Visibilità membri** | `public`, `protected`, `private`          | Solo `public` (implicito)                                                 |
+| **Relazione**         | Ereditarietà (**sempre una sottoclasse**) | Realizzazione (**qualunque classe che implementa**) Ereditarietà multipla |
 ![[120-Interfacce.pdf#page=10&rect=31,88,688,376|120-Interfacce, p.10|550]]
 ```java
 public interface Rettangolo {
@@ -3516,7 +3517,19 @@ public interface Rettangolare {
     double lunghezza();
 }
 
-public class Tavolo implements Rettangolare { ... }
+public class Tavolo implements Rettangolare {
+	private double largh, lungh, h;
+	public Tavolo(double largh, double lungh, double h){
+	this.largh=largh; this.lungh=lungh; this.h=h;
+	}
+	@Override 
+	public double larghezza() { return largh;}
+	@Override 
+	public double lunghezza() { return lungh; }
+	public double altezza() { return h; }
+	
+	public double peso() {…} // in base al peso del legno… … // altre cose specifiche del tavolo: colore… 
+}
 public class Libro implements Rettangolare { ... }
 public class Appezzamento implements Rettangolare { ... }
 
@@ -3538,11 +3551,8 @@ public class Main {
     }
 }
 ```
-- **Interpretazione:**
-    - I riferimenti a **classi** offrono una vista **verticale** (solo quel ramo della gerarchia).
-    - I riferimenti a **interfacce** offrono una vista **orizzontale** (tagliano trasversalmente la gerarchia, catturando una caratteristica comune a classi non correlate).
-
-#### 7. Interfacce e Pattern Factory
+![[120-Interfacce.pdf#page=35&rect=48,31,708,402|120-Interfacce, p.35|600]]
+### Interfacce e Pattern Factory
 
 - Le interfacce sono perfette per il pattern **Factory**.
 - **Funzionamento:**
@@ -3550,7 +3560,7 @@ public class Main {
     2.  La **Factory**, in base a logiche interne (es. parametri passati, configurazione), decide quale classe concreta istanziare (es. `ImplRettangolo`, `Quadrato`, ecc.).
     3.  La Factory restituisce l'istanza come tipo **interfaccia**, nascondendo completamente al client il tipo concreto dell'oggetto.
 
-- **Factory Internalizzata (da Java 8 in poi):** Si può inserire un metodo `static` di factory direttamente nell'interfaccia.
+- **Factory Internalizzata:** Si può inserire un metodo `static` di factory direttamente nell'interfaccia.
     ```java
     public interface Rettangolo {
         double base();
@@ -3571,7 +3581,6 @@ public class Main {
     // Uso lato client
     Rettangolo r = Rettangolo.of(10, 5); // Non so se è un ImplRettangolo o un Quadrato
     ```
-
 #### 8. Caso di Studio 1: Forme Geometriche
 
 - **Problema:** Con le sole classi, l'ereditarietà singola impedisce di modellare in modo pulito criteri di classificazione ortogonali (es. "avere i lati paralleli" vs. "avere gli angoli retti"). Un `Quadrato` è sia un `Rettangolo` che un `Rombo`, ma non può ereditare da entrambi.
