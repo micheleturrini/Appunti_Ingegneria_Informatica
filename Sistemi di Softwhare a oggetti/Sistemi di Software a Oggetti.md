@@ -3668,13 +3668,10 @@ Real r1 = Real.of(18.5);
 `Studente` e `Lavoratore` estendono `Persona`. `StudenteLavoratore` è sia `Studente` che `Lavoratore`.
 - **Soluzione:**
     1.  **Front-End (Interfacce):** `Persona`, `Studente`, `Lavoratore` e `StudenteLavoratore` sono **interfacce**. `StudenteLavoratore` può estendere (`extends`) entrambe `Studente` e `Lavoratore` senza problemi.
-    2.  **Back-End (Classi):** Si creano classi concrete come `LaPersona`, `LoStudente` e `IlLavoratore`. La classe `LoStudenteLavoratore` **può estendere solo una classe** (es. `LoStudente`), ma **può implementare l'interfaccia** `StudenteLavoratore`. Il codice non ereditato (es. la parte di `Lavoratore`) dovrà essere re-implementato.
+    2.  **Back-End (Classi):** Si creano classi concrete come `LaPersona`, `LoStudente` e `IlLavoratore`. La classe `LoStudenteLavoratore` **può estendere solo una classe** (es. `LoStudente`), ma **può implementare l'interfaccia** `StudenteLavoratore`. 
         ```java
-        class LoStudenteLavoratore extends LoStudente implements StudenteLavoratore {
-            private String impiego;
-            private double stipendio;
-
-            // ... costruttore, getter per impiego e stipendio ...
-        }
+interface StudenteLavoratore extends Studente, Lavoratore { 
+	// interfaccia vuota! Definisce il tipo-intersezione 
+}
         ```
 La tassonomia di **interfacce** è concettualmente perfetta e supporta l'ereditarietà multipla. La tassonomia di **classi** è un dettaglio implementativo vincolato dall'ereditarietà singola di Java, che viene gestito internamente senza influenzare l'utente dell'API.
