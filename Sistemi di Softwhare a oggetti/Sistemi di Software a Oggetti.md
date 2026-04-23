@@ -3675,3 +3675,348 @@ interface StudenteLavoratore extends Studente, Lavoratore {
 }
         ```
 La tassonomia di **interfacce** è concettualmente perfetta e supporta l'ereditarietà multipla. La tassonomia di **classi** è un dettaglio implementativo vincolato dall'ereditarietà singola di Java, che viene gestito internamente senza influenzare l'utente dell'API.
+## Genericità e Polimorfismo Orizzontale
+Necessità di creare componenti software (strutture dati, metodi) che **funzionino indipendentemente dal tipo specifico** di dato trattato (es. una lista di `String` o una lista di `Frazione`).
+
+**Approccio Obsoleto: Polimorfismo Verticale con `Object`**
+Questo metodo sfrutta la radice della gerarchia Java, `Object`, per contenere qualsiasi cosa.
+```java
+package edutils;
+
+public class List {
+    private Object elem;
+    private List next;
+
+    public List() { elem = null; next = null; }
+    public List(Object e) { elem = e; next = null; }
+    public List(Object e, List l) { elem = e; next = l; }
+
+    public Object head() { return elem; }
+    public List tail() { return next; }
+    public boolean isEmpty() { return elem == null; }
+}
+```
+
+Metodo Generico (find) con `Object`
+```java
+class Main {
+    public static boolean find(Object[] array, Object elem) {
+        for (Object obj : array)
+            if (obj.equals(elem))
+                return true;
+        return false;
+    }
+}
+```
+
+> [!danger]
+> **Perdita del Type Safety:** Il compilatore non può verificare la coerenza dei tipi.
+**Mix Illegali:** È perfettamente legale (per il compilatore) creare una lista mista, anche se non voluta.
+```java
+// Codice che compila ma è logicamente scorretto
+List l = new List(new Frazione(2,3), new List("Pippo", new List(new Counter2(18))));ù
+```
+**ClassCastException a Runtime:** Passare tipi sbagliati a metodi come `find` compila, ma causa errori in esecuzione.
+```java
+String[] arr1 = { "Pippo", "Alberto" };
+// Compila, ma esplode a runtime perché cerca un Counter in un array di Stringhe
+boolean res = Main.find(arr1, new Counter(18));
+```
+
+**Approccio Moderno: Polimorfismo Orizzontale con Tipi Generici (`<T>`)**
+La soluzione è rendere il tipo un **parametro**. Il vincolo di tipo viene spostato dalla mente del programmatore al codice stesso, permettendo al compilatore di fare controlli.
+- Definizione classe: `class NomeClasse<T> { ... }`
+- Definizione metodo: `public <T> TipoRitorno nomeMetodo(T param) { ... }`
+L'utilizzo di del tipo generico T permette di non utilizzare Object
+
+Struttura Dati Generica (`List<T>`)
+```java
+package edutils2;
+
+public class List<T> {
+    private T elem;
+    private List<T> next;
+
+    public List() { elem = null; next = null; }
+    public List(T e) { elem = e; next = null; }
+    public List(T e, List<T> l) { elem = e; next = l; }
+
+    public T head() { return elem; }
+    public List<T> tail() { return next; }
+    public boolean isEmpty() { return elem == null; }
+
+    public String toString() {
+        if (isEmpty()) return "";
+        String tailStr = (next == null || next.isEmpty()) ? "" : ", " + next.toString();
+        return elem.toString() + tailStr;
+    }
+}
+```
+**Uso Corretto:**
+```java
+List<String> l1 = new List<>("Pippo", new List<>("Alberto"));
+List<Frazione> l2 = new List<>(new Frazione(2,3));
+
+// ERRORE DI COMPILAZIONE (Mix non consentito):
+l1 = l2; // Il compilatore blocca questa assegnazione
+```
+
+Metodo Generico (`find`)
+La posizione del parametro `<T>` va dichiarata prima del tipo di ritorno.
+```java
+public static <T> boolean idem(T[] a, T[] b) //stuttura
+
+//esempio
+public static <T> boolean find(T[] array, T elem) {
+    for (T obj : array)
+        if (obj.equals(elem))
+            return true;
+    return false;
+}
+```
+Chiamata (Se il tipo viene omesso si usa Object di default):
+```java
+String[] arr1 = { "Pippo", "Alberto", "Enrico" };
+Frazione[] arr2 = { new Frazione(2,3), new Frazione(5,7) };
+
+nomeclasse.<Counter>idem(array1, array2)//stuttura
+
+// esempi
+boolean res1 = Main.<String>find(arr1, "Giusy");
+boolean res2 = Main.<Frazione>find(arr2, new Frazione(4,6));
+
+// ERRORE DI COMPILAZIONE:
+boolean err = Main.<String>find(arr1, new Frazione(2,3));
+```
+
+#### Composizione con Generics
+È possibile comporre strutture dati generiche per crearne di più complesse.
+```java
+class Stack<T> {
+    private List<T> memory;
+
+    public Stack() { 
+        memory = new List<>(); 
+    }
+
+    // Restituisce Stack<T> per permettere la "Fluent Interface"
+    public Stack<T> push(T e) {
+        memory = new List<>(e, memory);
+        return this;
+    }
+
+    public T pop() {
+        T result = memory.head();
+        memory = memory.tail();
+        return result;
+    }
+
+    public boolean isEmpty() { 
+        return memory.isEmpty(); 
+    }
+
+    public String toString() { 
+        return memory.toString(); 
+    }
+}
+```
+Esempio di Fluent Interface:
+```java
+Stack<String> stack = new Stack<>();
+stack.push("pippo").push("pluto").push("paperino");
+```
+#### Ereditarietà con Generics (Esempio: `ReversibleList`)
+Le classi generiche possono essere estese.
+```java
+class ReversibleList<T> extends List<T> {
+    
+    // Costruttori da ridefinire esplicitamente (non ereditati)
+    public ReversibleList() { super(); }
+    public ReversibleList(T e) { super(e); }
+    public ReversibleList(T e, List<T> l) { super(e, l); }
+
+    public ReversibleList<T> reverse() {
+        // Caso base: lista vuota o con un solo elemento
+        if (this.isEmpty() || (!this.isEmpty() && this.tail().isEmpty()))
+            return this;
+        else
+            return reverse(this.tail(), new ReversibleList<>(this.head()));
+    }
+
+    // Metodo ricorsivo ausiliario
+    private ReversibleList<T> reverse(List<T> source, ReversibleList<T> accumulator) {
+        if (source.isEmpty()) 
+            return accumulator;
+        else 
+            return reverse(source.tail(), new ReversibleList<>(source.head(), accumulator));
+    }
+}
+```
+## Interfacce Standard: `Comparable`, `Comparator` e Marker Interface
+Le librerie Java forniscono interfacce standard per esprimere abilità o proprietà comuni degli oggetti.
+- **Interfacce di abilità:** Definiscono un comportamento (es. `Comparable` per confrontare, `Serializable` per serializzare). Tipicamente contengono uno o più metodi.
+- **Interfacce Marker:** Non contengono metodi. Fungono da "etichetta" (`tag`) per segnalare al compilatore o al runtime che una classe possiede una certa proprietà (es. `Serializable`, `Cloneable`).
+### La Confrontabilità: Ordinamento Naturale con `Comparable<T>`
+Ordinare una lista o un array di oggetti richiede un criterio di confronto. L'approccio generico delega questa responsabilità all'oggetto stesso se esso "sa confrontarsi".
+
+**Interfaccia `Comparable<T>`**
+- Definisce l'**ordinamento naturale** dell'oggetto (es. alfabetico per le stringhe, numerico per i numeri).
+- **Metodo:** `int compareTo(T o)`
+- **Semantica del valore di ritorno:**
+    - `-1` (o valore negativo) se `this < o`
+    - `0` se `this` equivale a `o` (deve essere coerente con `equals()`)
+    - `+1` (o valore positivo) se `this > o`
+
+Esempio: Classe `Counter` che implementa `Comparable`
+```java
+public class Counter implements Comparable<Counter> {
+    private int val;
+
+    // Costruttore, getter, ecc...
+
+    @Override
+    public int compareTo(Counter that) {
+        // Criterio naturale: confronto basato sul valore numerico
+        if (this.val < that.val) return -1;
+        if (this.val > that.val) return 1;
+        return 0;
+    }
+}
+```
+
+**Utilizzo con `Arrays.sort()`**
+Il metodo `Arrays.sort()` sfrutta internamente `compareTo()` per ordinare senza bisogno di scrivere algoritmi manuali.
+```java
+public class Test {
+    public static void main(String[] args) {
+        Counter[] myCounterArray = {
+            new Counter(110),
+            new Counter(100),
+            new Counter(30),
+            new Counter(50)
+        };
+
+        System.out.println("Pre-ordinamento:");
+        for (Counter c : myCounterArray) System.out.println(c);
+
+        // Ordina usando l'ordinamento naturale definito in compareTo
+        Arrays.sort(myCounterArray);
+
+        System.out.println("\nPost-ordinamento:");
+        for (Counter c : myCounterArray) System.out.println(c);
+    }
+}
+```
+*Nota:* Se una classe non implementa `Comparable`, chiamare `Arrays.sort()` su un suo array causerà una `ClassCastException` a runtime.
+#### Confrontabilità Personalizzata con `Comparator<T>`
+**Limitazione di `Comparable`:**
+- Non sempre esiste un criterio "naturale" (es. ordinare una `Persona`: per nome? cognome? età?).
+- Potrebbe servire un ordinamento diverso da quello predefinito (es. ordinare stringhe per lunghezza invece che alfabeticamente).
+
+**L'oggetto Comparatore**
+- Un comparatore è un oggetto **esterno** alla classe da confrontare.
+- Incapsula una specifica strategia di confronto.
+- Interfaccia: `Comparator<T>`
+- **Metodo:** `int compare(T o1, T o2)`
+- **Semantica:** Analoga a `compareTo`, ma confronta due oggetti passati come argomento.
+
+Esempio: Comparatore per `Counter` basato sul modulo 24
+Invece di modificare la classe `Counter`, creiamo un comparatore ad-hoc.
+```java
+import java.util.Comparator;
+
+public class MyComp implements Comparator<Counter> {
+    @Override
+    public int compare(Counter x, Counter y) {
+        // Ordina in base al valore % 24
+        int modX = x.getVal() % 24;
+        int modY = y.getVal() % 24;
+        
+        if (modX < modY) return -1;
+        if (modX > modY) return 1;
+        return 0;
+    }
+}
+```
+
+Utilizzo di `Comparator` con `Arrays.sort()`
+Il metodo `sort` ha un overload che accetta un `Comparator` come secondo argomento.
+```java
+Counter[] myCounterArray = { /* ... */ };
+
+// Uso l'ordinamento personalizzato passando un'istanza del comparatore
+Arrays.sort(myCounterArray, new MyComp());
+```
+
+Esempio: Comparatori per la classe `Persona`
+Se la classe `Persona` non ha un ordinamento naturale logico, creiamo tre comparatori esterni distinti.
+```java
+class CognomeComparator implements Comparator<Persona> {
+    public int compare(Persona p1, Persona p2) {
+        // Sfrutta il compareTo delle Stringhe
+        return p1.getCognome().compareTo(p2.getCognome());
+    }
+}
+
+class NomeComparator implements Comparator<Persona> {
+    public int compare(Persona p1, Persona p2) {
+        return p1.getNome().compareTo(p2.getNome());
+    }
+}
+
+class EtaComparator implements Comparator<Persona> {
+    public int compare(Persona p1, Persona p2) {
+        // Sfrutta il metodo statico di confronto per interi
+        return Integer.compare(p1.getEta(), p2.getEta());
+    }
+}
+
+// Utilizzo
+Arrays.sort(persone, new CognomeComparator());
+Arrays.sort(persone, new NomeComparator());
+Arrays.sort(persone, new EtaComparator());
+```
+
+**Sintassi Compatta: Classi Anonime**
+Se un comparatore viene usato una volta sola, definire una classe esterna risulta verboso. Si può usare una **classe anonima** per definire e istanziare il comparatore inline.
+
+```java
+Arrays.sort(persone, new Comparator<Persona>() {
+    @Override
+    public int compare(Persona p1, Persona p2) {
+        return p1.getCognome().compareTo(p2.getCognome());
+    }
+});
+```
+- `new Comparator<Persona>() { ... }` non sta istanziando l'interfaccia (cosa impossibile).
+- Il compilatore Java genera "dietro le quinte" una nuova classe anonima (es. `ClasseEsterna$1.class`) che implementa l'interfaccia e ne crea un'istanza.
+### Interfacce Marker (Esempio `Dentable`)
+Un'**interfaccia vuota usata per "marcare" una classe** come appartenente a una categoria logica, abilitando controlli a tempo di compilazione.
+
+**Problema:** Vogliamo che solo alcune classi possano essere passate a un metodo `show()`, anche se tutte le classi hanno un metodo `toString()`.
+
+**Soluzione:**
+1. Definire un'interfaccia marker vuota.
+   ```java
+   public interface Dentable { } // Nessun metodo
+   ```
+2. Fare implementare l'interfaccia solo alle classi "abilitate".
+   ```java
+   public class Good implements Dentable { ... }
+   public class Bad { ... } // Non implementa Dentable
+   ```
+3. Definire il metodo `show` con un vincolo di tipo.
+   ```java
+   public static void show(Dentable d) {
+       System.out.println(d.toString());
+   }
+   ```
+
+**Risultato:**
+```java
+Good g = new Good();
+show(g); // OK: Good è un sottotipo di Dentable
+
+Bad b = new Bad();
+show(b); // ERRORE DI COMPILAZIONE: Bad non è compatibile con Dentable
+```
