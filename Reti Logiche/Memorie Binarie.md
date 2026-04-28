@@ -42,31 +42,29 @@ Le funzioni logiche di costo minimo sono:
     - R₂' = CLR'·(PRE + R')
 - Grazie a proprietà associative degli OR, le porte OR aggiuntive possono essere assorbite nella struttura stessa del latch (ad esempio nei NOR che già presentano una negazione in uscita).
 ![[7_rsa_per_memorie binarie.pdf#page=12&rect=25,63,701,419|7_rsa_per_memorie binarie, p.12|500]]
-#### 2.5 Tempo minimo di scrittura e metastabilità
-- Per scrivere correttamente un “1” o uno “0”, gli ingressi S ed R devono rimanere attivi per una durata minima **tₕ** (pulse duration).
-- Tale durata minima è circa 2τₚ (due volte il ritardo di propagazione di una porta).
-- Se gli ingressi sono attivi per meno di tₕ, il latch può entrare in **metastabilità**.
+#### Tempo minimo di scrittura e metastabilità
+Per scrivere correttamente un “1” o uno “0”, gli ingressi S ed R devono rimanere attivi per una **durata minima $t_{w}$ (pulse duration).**
+Tale durata minima è circa 2τₚ (due volte il ritardo di propagazione di una porta).
+Se gli ingressi sono attivi per meno di $t_{w}$, il latch può entrare in **metastabilità**.
 
-##### Approfondimento sulla metastabilità:
-- In uno stato stabile, l’anello di retroazione mantiene Q = q (stato futuro = stato presente).
-- I segnali interni sono in realtà **analogici** (possono assumere qualsiasi valore tra L e H).
+**metastabilità**
+In uno stato stabile, l’anello di retroazione mantiene Q = q (stato futuro = stato presente).
+I segnali interni sono in realtà **analogici** (possono assumere qualsiasi valore tra L e H).
+![[7_rsa_per_memorie binarie.pdf#page=16&rect=414,0,715,338|7_rsa_per_memorie binarie, p.16|200]]
+![[7_rsa_per_memorie binarie.pdf#page=17&rect=51,-1,720,269|7_rsa_per_memorie binarie, p.17]]
 - La relazione ingresso‑uscita della rete combinatoria retroazionata presenta tratti con pendenza **< 1** intorno ai valori nominali H e L (stabilità: un piccolo disturbo viene attenuato, il segnale torna al valore nominale).
 - Per unire questi tratti deve esistere una zona con pendenza **> 1** che incrocia la retta Q = q in un terzo punto: lo **stato metastabile M**.
 - Analogia meccanica: due valli (H e L) separate da una collina (M). Una massa sulla cima della collina può restare ferma, ma un minimo disturbo la farà cadere in una valle in modo **casuale**.
 - Se il latch finisce in metastabilità a causa di un comando troppo breve, l’uscita potrà assestarsi su 0 o 1 in modo imprevedibile, annullando la scrittura intesa.
-
----
+![[7_rsa_per_memorie binarie.pdf#page=20&rect=48,1,688,252|7_rsa_per_memorie binarie, p.20]]
 
 ### 3. Il Latch CD (o D‑Latch)
-
-#### 3.1 Comportamento e comando
-
-- Il latch CD è una memoria binaria che memorizza un bit e lo rende disponibile in forma vera e negata.
+![[7_rsa_per_memorie binarie.pdf#page=22&rect=452,262,685,377|7_rsa_per_memorie binarie, p.22|200]]Il latch CD è una memoria binaria che memorizza un bit e lo rende disponibile in forma vera e negata.
 - Ha due ingressi: **C** (enable, comando) e **D** (dato).
 - Funzionamento:
     - C = 0 → *Memorizza*: Q mantiene l’ultimo valore scritto.
     - C = 1 → *Scrivi il valore di D*: Q = D (la memoria si dice **trasparente** perché le variazioni di D si ripercuotono su Q con un piccolo ritardo).
-- Vantaggio: non si dice *cosa* scrivere, ma *quando* campionare D. Pertanto, pilotando opportunamente C, si può comandare la scrittura simultanea di molti latch con un unico segnale di enable.
+- Vantaggio: non si dice *cosa* scrivere, ma *quandlo* campionare D. Pertanto, pilotando opportunamente C, si può comandare la scrittura simultanea di molti latch con un unico segnale di enable.
 
 #### 3.2 Sintesi del latch CD
 
