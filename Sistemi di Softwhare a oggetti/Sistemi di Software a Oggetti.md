@@ -3995,7 +3995,7 @@ Un'**interfaccia vuota usata per "marcare" una classe** come appartenente a una 
 
 **Problema:** Vogliamo che solo alcune classi possano essere passate a un metodo `show()`, anche se tutte le classi hanno un metodo `toString()`.
 
-**Soluzione:**
+Soluzione:
 1. Definire un'interfaccia marker vuota.
    ```java
    public interface Dentable { } // Nessun metodo
@@ -4012,7 +4012,7 @@ Un'**interfaccia vuota usata per "marcare" una classe** come appartenente a una 
    }
    ```
 
-**Risultato:**
+Risultato:
 ```java
 Good g = new Good();
 show(g); // OK: Good è un sottotipo di Dentable
@@ -4020,3 +4020,221 @@ show(g); // OK: Good è un sottotipo di Dentable
 Bad b = new Bad();
 show(b); // ERRORE DI COMPILAZIONE: Bad non è compatibile con Dentable
 ```
+
+## Null Safety e il tipo Optional
+
+- Spesso serve indicare che un oggetto o un valore **non esiste**:
+  - Risultato di una ricerca senza esito
+  - Input non valido (es. matrice non quadrata per il determinante)
+  - Argomenti opzionali di un metodo
+- L’approccio classico è restituire o passare `null`, ma è **fragile**:
+  - Obbliga il chiamante a controllare sempre `if (x != null)` prima di usare l’oggetto
+  - Il codice si riempie di controlli, la logica business diventa illeggibile
+  - Una dimenticanza causa `NullPointerException` (NPE) in punti imprevisti, difficile debug
+  - Non funziona con i tipi primitivi (`int`, `double`, …) che non possono essere `null`
+- Tony Hoare definì il `null` il suo "errore da un miliardo di dollari".
+
+## 2. Rappresentare l’assenza nei reali: `NaN`
+
+- Per i tipi `float` e `double`, le classi `Float` e `Double` forniscono la costante `NaN` (Not a Number).
+- `NaN` è usato per rappresentare un risultato mancante (es. forme indeterminate come ∞−∞).
+- Esempio: determinante di una matrice non quadrata → si restituisce `Double.NaN`.
+- Vantaggio: il chiamante riceve comunque un valore (non “nulla”), quindi non scatta NPE immediata. `NaN` si propaga nelle operazioni successive.
+- Controllo: metodo statico `Double.isNaN(valore)` o `Float.isNaN(valore)`.
+- **Limite**: soluzione solo per reali, non per oggetti o altri primitivi.
+
+## 3. L’approccio generale: il tipo Optional
+
+- Invece di passare `null`, si **incapsula** il valore in un oggetto wrapper `Optional<T>` che:
+  - non è mai `null`
+  - può contenere un valore di tipo `T` oppure essere vuoto (nessun valore)
+- Si dichiara esplicitamente nella firma del metodo che un risultato potrebbe mancare, migliorando la leggibilità e la sicurezza.
+- Il cliente sa che l’oggetto `Optional` esiste sempre, ma deve verificare la presenza del contenuto prima di usarlo.
+
+## 4. Classe `java.util.Optional<T>`
+
+Metodi principali:
+
+- **Creazione**:
+  - `Optional.of(valore)` – incapsula un valore **non nullo** (lancia `NullPointerException` se `valore` è `null`)
+  - `Optional.empty()` – crea un optional vuoto
+  - `Optional.ofNullable(valore)` – restituisce `Optional.of(valore)` se `valore` è non nullo, altrimenti `Optional.empty()`. È il modo più flessibile per gestire valori potenzialmente nulli.
+- **Verifica presenza**:
+  - `boolean isPresent()` – `true` se contiene un valore
+  - `boolean isEmpty()` (Java 11+) – `true` se vuoto
+- **Estrazione**:
+  - `T get()` – restituisce il valore se presente, altrimenti lancia `NoSuchElementException`
+  - `T orElse(T altro)` – restituisce il valore se presente, altrimenti `altro`
+  - `T orElseGet(Supplier<? extends T> supplier)` – restituisce il valore se presente, altrimenti invoca il supplier
+  - `void ifPresent(Consumer<? super T> action)` – esegue l’azione se presente
+- **Altri metodi (utili con lambda)**:
+  - `Optional<T> filter(Predicate<? super T> predicate)` – se presente e soddisfa il predicato, restituisce l’optional stesso, altrimenti `Optional.empty()`
+  - `<U> Optional<U> map(Function<? super T, ? extends U> mapper)` – trasforma il valore se presente
+  - `<U> Optional<U> flatMap(Function<? super T, Optional<U>> mapper)` – come map ma evita Optional annidati
+
+### 4.1 Optional per tipi primitivi
+
+Java fornisce classi specializzate perché i generics non supportano i primitivi:
+
+- `OptionalInt` → metodo `getAsInt()`
+- `OptionalLong` → `getAsLong()`
+- `OptionalDouble` → `getAsDouble()`
+
+Queste classi hanno metodi analoghi (`of`, `empty`, `isPresent`, `orElse`, ecc.) ma lavorano con il tipo primitivo.
+
+## 5. Esempi di utilizzo
+
+### 5.1 Uso di base con `OptionalDouble`
+
+```java
+OptionalDouble aliquota = OptionalDouble.of(8.6);
+if (aliquota.isPresent()) {
+    System.out.println(aliquota.getAsDouble());
+} else {
+    System.out.println("aliquota indefinita");
+}
+
+OptionalDouble detrazione = OptionalDouble.empty();
+if (detrazione.isEmpty()) {
+    System.out.println("nessuna detrazione");
+} else {
+    System.out.println(detrazione.getAsDouble());
+}
+// Output:
+// 8.6
+// nessuna detrazione
+```
+
+### 5.2 Metodo `orElse`
+
+```java
+OptionalDouble aliquota = OptionalDouble.of(8.6);
+System.out.println(aliquota.orElse(10.6));   // 8.6
+
+OptionalDouble aliquota2 = OptionalDouble.empty();
+System.out.println(aliquota2.orElse(10.6));  // 10.6
+```
+
+### 5.3 Gestione di riferimenti potenzialmente nulli
+
+```java
+String nome = null;
+
+// Costruzione condizionale
+Optional<String> opt1 = (nome == null) ? Optional.empty() : Optional.of(nome);
+
+// Equivalente con ofNullable
+Optional<String> opt2 = Optional.ofNullable(nome);
+
+System.out.println(opt1);  // Optional.empty
+System.out.println(opt2);  // Optional.empty
+```
+
+### 5.4 Combinazione con `orElse`
+
+```java
+String s1 = null;
+String s2 = "ciao";
+
+Optional<String> opt1 = Optional.ofNullable(s1);
+Optional<String> opt2 = Optional.ofNullable(s2);
+
+String value1 = opt1.orElse("boh");
+String value2 = opt2.orElse("buh");
+
+System.out.println(value1);  // boh
+System.out.println(value2);  // ciao
+```
+
+### 5.5 Esempio reale: compito BikeRent (12/9/2018)
+
+La classe `Rate` ha attributi opzionali come durata massima e orario limite di rientro. Il costruttore e i getter usano `Optional<Duration>` e `Optional<LocalTime>`:
+
+```java
+public class Rate {
+    private final String city;
+    private final double costFirstPeriod;
+    private final Duration firstPeriodDuration;
+    // ...
+    private final Optional<Duration> maxDuration;
+    private final Optional<LocalTime> returnTimeLimit;
+
+    public Rate(String city, double costFirstPeriod, Duration firstPeriodDuration,
+                Optional<Duration> maxDuration, Optional<LocalTime> returnTimeLimit) {
+        this.city = city;
+        // ...
+        this.maxDuration = maxDuration;
+        this.returnTimeLimit = returnTimeLimit;
+    }
+
+    public Optional<Duration> getMaxDuration() {
+        return maxDuration;
+    }
+
+    public Optional<LocalTime> getReturnTimeLimit() {
+        return returnTimeLimit;
+    }
+}
+```
+
+Il chiamante, sapendo che i campi sono opzionali, userà `isPresent()` o `orElse()` per gestirli in modo sicuro.
+
+### 5.6 Esempio reale: compito CambiaValute (12/1/2016)
+
+La classe `CambiaValute` ha metodi `acquisto` e `vendita` che restituiscono `OptionalDouble`: se la valuta richiesta non è trattata dall’agenzia, si restituisce un optional vuoto.
+
+```java
+public class CambiaValute {
+    // ...
+    public OptionalDouble acquisto(double importo, String valuta) {
+        Double tasso = tassi.get(valuta);
+        if (tasso == null) {
+            return OptionalDouble.empty();
+        }
+        return OptionalDouble.of(importo / tasso);
+    }
+
+    public OptionalDouble vendita(double importo, String valuta) {
+        Double tasso = tassi.get(valuta);
+        if (tasso == null) {
+            return OptionalDouble.empty();
+        }
+        return OptionalDouble.of(importo * tasso);
+    }
+}
+```
+
+Il cliente può usare `orElse` per fornire un valore di default o un messaggio:
+
+```java
+CambiaValute agenzia = new CambiaValute();
+double risultato = agenzia.acquisto(100, "USD").orElse(-1);
+if (risultato == -1) {
+    System.out.println("Valuta non disponibile");
+}
+```
+
+## 6. Quando usare (e non usare) Optional
+
+**Casi d’uso appropriati**:
+- Incapsulare un valore di ritorno che potrebbe essere assente (es. ricerca in una collezione).
+- Passare argomenti **realmente** opzionali a un metodo.
+
+**Casi da evitare**:
+- Non usare `Optional` per mascherare violazioni di precondizioni: se un argomento è obbligatorio e non viene fornito, è meglio lanciare un’eccezione.
+- Non usarlo per evitare la validazione dell’input: un dato mancante perché l’utente ha sbagliato non è un caso “opzionale” ma un errore.
+- Non usare `Optional` come campo di un oggetto serializzabile senza attenzione (la serializzazione di `Optional` era problematica in passato; meglio campi normali con getter che restituiscono `Optional`).
+
+## 7. Riepilogo dei metodi chiave
+
+- `Optional.of(T value)` → optional contenente `value` (no null)
+- `Optional.empty()` → optional vuoto
+- `Optional.ofNullable(T value)` → optional da valore potenzialmente null
+- `isPresent()` / `isEmpty()` → verifica presenza
+- `get()` → estrae il valore (può lanciare eccezione)
+- `orElse(T other)` → valore o default
+- `orElseGet(Supplier<? extends T> supplier)` → valore o risultato del supplier
+- `ifPresent(Consumer<? super T> action)` → esegue azione se presente
+- `filter`, `map`, `flatMap` per trasformazioni condizionali
+
+Questi appunti coprono i concetti e gli esempi Java presenti nel PDF, fornendo una base chiara per utilizzare `Optional` e comprendere la null safety in Java.
