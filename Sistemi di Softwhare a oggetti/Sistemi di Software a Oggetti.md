@@ -4022,70 +4022,54 @@ show(b); // ERRORE DI COMPILAZIONE: Bad non è compatibile con Dentable
 ```
 
 ## Null Safety e il tipo Optional
-
-- Spesso serve indicare che un oggetto o un valore **non esiste**:
+Spesso serve indicare che un oggetto o un valore **non esiste**:
   - Risultato di una ricerca senza esito
   - Input non valido (es. matrice non quadrata per il determinante)
   - Argomenti opzionali di un metodo
-- L’approccio classico è restituire o passare `null`, ma è **fragile**:
-  - Obbliga il chiamante a controllare sempre `if (x != null)` prima di usare l’oggetto
-  - Il codice si riempie di controlli, la logica business diventa illeggibile
+L’approccio classico è restituire o passare `null`, ma è **fragile**:
+  - Obbliga il chiamante a **controllare** sempre `if (x != null)` prima di usare l’oggetto
   - Una dimenticanza causa `NullPointerException` (NPE) in punti imprevisti, difficile debug
   - Non funziona con i tipi primitivi (`int`, `double`, …) che non possono essere `null`
-- Tony Hoare definì il `null` il suo "errore da un miliardo di dollari".
 
-## 2. Rappresentare l’assenza nei reali: `NaN`
-
-- Per i tipi `float` e `double`, le classi `Float` e `Double` forniscono la costante `NaN` (Not a Number).
-- `NaN` è usato per rappresentare un risultato mancante (es. forme indeterminate come ∞−∞).
+**Rappresentare l’assenza nei reali: `NaN`**
+Per i tipi `float` e `double`, le classi `Float` e `Double` forniscono le costanti
+- `NaN` (Not a Number).
+- `NEGATIVE_INFINITY` (-infinito).
+- `POSITIVE_INFINITY` (+infinito).
+`NaN` è usato per rappresentare un risultato mancante (es. forme indeterminate come ∞−∞).
 - Esempio: determinante di una matrice non quadrata → si restituisce `Double.NaN`.
-- Vantaggio: il chiamante riceve comunque un valore (non “nulla”), quindi non scatta NPE immediata. `NaN` si propaga nelle operazioni successive.
-- Controllo: metodo statico `Double.isNaN(valore)` o `Float.isNaN(valore)`.
-- **Limite**: soluzione solo per reali, non per oggetti o altri primitivi.
+**Controllo: metodo statico** `Double.isNaN(valore)` o `Float.isNaN(valore)`.
+**Limite**: soluzione solo per reali, non per oggetti o altri primitivi.
 
-## 3. L’approccio generale: il tipo Optional
-
-- Invece di passare `null`, si **incapsula** il valore in un oggetto wrapper `Optional<T>` che:
+**L’approccio generale: il tipo Optional**
+Invece di passare `null`, si **incapsula** il valore in un oggetto wrapper `Optional<T>` che:
   - non è mai `null`
   - può contenere un valore di tipo `T` oppure essere vuoto (nessun valore)
-- Si dichiara esplicitamente nella firma del metodo che un risultato potrebbe mancare, migliorando la leggibilità e la sicurezza.
-- Il cliente sa che l’oggetto `Optional` esiste sempre, ma deve verificare la presenza del contenuto prima di usarlo.
+Si **dichiara** esplicitamente nella **firma** del metodo che un risultato potrebbe mancare, migliorando la leggibilità e la sicurezza.
+Il cliente sa che l’oggetto `Optional` esiste sempre, ma deve verificare la presenza del contenuto prima di usarlo.
 
-## 4. Classe `java.util.Optional<T>`
-
-Metodi principali:
-
-- **Creazione**:
+**Classe `java.util.Optional<T>`**
+**Creazione**:
   - `Optional.of(valore)` – incapsula un valore **non nullo** (lancia `NullPointerException` se `valore` è `null`)
   - `Optional.empty()` – crea un optional vuoto
-  - `Optional.ofNullable(valore)` – restituisce `Optional.of(valore)` se `valore` è non nullo, altrimenti `Optional.empty()`. È il modo più flessibile per gestire valori potenzialmente nulli.
-- **Verifica presenza**:
+  - `Optional.ofNullable(T value)` -optional da valore potenzialmente null
+**Verifica presenza**:
   - `boolean isPresent()` – `true` se contiene un valore
   - `boolean isEmpty()` (Java 11+) – `true` se vuoto
-- **Estrazione**:
+**Estrazione**:
   - `T get()` – restituisce il valore se presente, altrimenti lancia `NoSuchElementException`
   - `T orElse(T altro)` – restituisce il valore se presente, altrimenti `altro`
-  - `T orElseGet(Supplier<? extends T> supplier)` – restituisce il valore se presente, altrimenti invoca il supplier
-  - `void ifPresent(Consumer<? super T> action)` – esegue l’azione se presente
-- **Altri metodi (utili con lambda)**:
-  - `Optional<T> filter(Predicate<? super T> predicate)` – se presente e soddisfa il predicato, restituisce l’optional stesso, altrimenti `Optional.empty()`
-  - `<U> Optional<U> map(Function<? super T, ? extends U> mapper)` – trasforma il valore se presente
-  - `<U> Optional<U> flatMap(Function<? super T, Optional<U>> mapper)` – come map ma evita Optional annidati
+  - `T getOrElse(Supplier<? extends T> supplier)` – restituisce il valore se presente, altrimenti invoca il supplier
+Altro
+`filter`, `map`, `flatMap` per trasformazioni condizionali
 
-### 4.1 Optional per tipi primitivi
-
-Java fornisce classi specializzate perché i generics non supportano i primitivi:
-
+**Optional per tipi primitivi**
 - `OptionalInt` → metodo `getAsInt()`
 - `OptionalLong` → `getAsLong()`
 - `OptionalDouble` → `getAsDouble()`
-
 Queste classi hanno metodi analoghi (`of`, `empty`, `isPresent`, `orElse`, ecc.) ma lavorano con il tipo primitivo.
 
-## 5. Esempi di utilizzo
-
-### 5.1 Uso di base con `OptionalDouble`
-
+Es. Uso di base con `OptionalDouble`
 ```java
 OptionalDouble aliquota = OptionalDouble.of(8.6);
 if (aliquota.isPresent()) {
@@ -4105,8 +4089,7 @@ if (detrazione.isEmpty()) {
 // nessuna detrazione
 ```
 
-### 5.2 Metodo `orElse`
-
+Metodo `orElse`
 ```java
 OptionalDouble aliquota = OptionalDouble.of(8.6);
 System.out.println(aliquota.orElse(10.6));   // 8.6
@@ -4115,8 +4098,7 @@ OptionalDouble aliquota2 = OptionalDouble.empty();
 System.out.println(aliquota2.orElse(10.6));  // 10.6
 ```
 
-### 5.3 Gestione di riferimenti potenzialmente nulli
-
+Gestione di riferimenti potenzialmente nulli
 ```java
 String nome = null;
 
@@ -4130,8 +4112,7 @@ System.out.println(opt1);  // Optional.empty
 System.out.println(opt2);  // Optional.empty
 ```
 
-### 5.4 Combinazione con `orElse`
-
+Combinazione con `orElse`
 ```java
 String s1 = null;
 String s2 = "ciao";
@@ -4179,8 +4160,7 @@ public class Rate {
 
 Il chiamante, sapendo che i campi sono opzionali, userà `isPresent()` o `orElse()` per gestirli in modo sicuro.
 
-### 5.6 Esempio reale: compito CambiaValute (12/1/2016)
-
+Esempio reale: compito Cambia Valute
 La classe `CambiaValute` ha metodi `acquisto` e `vendita` che restituiscono `OptionalDouble`: se la valuta richiesta non è trattata dall’agenzia, si restituisce un optional vuoto.
 
 ```java
@@ -4214,27 +4194,171 @@ if (risultato == -1) {
 }
 ```
 
-## 6. Quando usare (e non usare) Optional
-
+**Quando usare (e NON usare) Optional**
 **Casi d’uso appropriati**:
 - Incapsulare un valore di ritorno che potrebbe essere assente (es. ricerca in una collezione).
 - Passare argomenti **realmente** opzionali a un metodo.
-
 **Casi da evitare**:
 - Non usare `Optional` per mascherare violazioni di precondizioni: se un argomento è obbligatorio e non viene fornito, è meglio lanciare un’eccezione.
 - Non usarlo per evitare la validazione dell’input: un dato mancante perché l’utente ha sbagliato non è un caso “opzionale” ma un errore.
 - Non usare `Optional` come campo di un oggetto serializzabile senza attenzione (la serializzazione di `Optional` era problematica in passato; meglio campi normali con getter che restituiscono `Optional`).
+## Java Collection Framework (JCF)
+è un'architettura unificata per le strutture dati.
+Le strutture sono **generiche** in Java: usano il parametro di tipo `<T>` (es. `List<String>`).
+I tipi primitivi (`int`, `double`, …) **non possono essere utilizzati direttamente** come tipo parametrico: si usano i wrapper (`Integer`, `Double`).
 
-## 7. Riepilogo dei metodi chiave
+### Interfacce Fondamentali
+![[124-Collection Framework.pdf#page=6&rect=5,36,655,442|124-Collection Framework, p.6]]
+#### `Iterable<T>`
+È il punto di partenza: se una classe implementa `Iterable`, può essere scandita con `for (T item : collection)`.
+- `Collection<T>` estende `Iterable<T>`.
+#### `Collection<T>`
+Rappresenta un **gruppo di elementi** senza fare ipotesi su ordine, duplicati, posizione.
+**Operazioni base** (nessun `get`!):
+  - `boolean add(T element)` – aggiunge un elemento (opzionale)
+  - `boolean remove(Object o)` – rimuove un elemento se presente
+  - `boolean contains(Object o)` – verifica presenza
+  - `int size()` – numero di elementi
+  - `boolean isEmpty()`
+  - `Object[] toArray()` – esporta in array
+  - `boolean equals(Object o)` – confronto di collezioni
+Non esiste un metodo `get` perché non esiste una nozione univoca di “posizione”.
+#### `Set<T>` (estende `Collection<T>`)
+- **Insieme matematico**: non ammette duplicati.
+- Il metodo `add` **non inserisce se l'elemento è già presente** (restituisce `false`).
+- `equals` definisce uguaglianza insiemistica: due set sono uguali se contengono gli stessi elementi.
+- Non introduce nuovi metodi rispetto a `Collection`, ma **ridefinisce il contratto** per garantire l'assenza di duplicati.
+####  `SortedSet<T>` (estende `Set<T>`)
+- Aggiunge l'**ordinamento totale** sugli elementi.
+- Gli elementi devono implementare `Comparable<T>` o va fornito un `Comparator<T>` al momento della creazione.
+- Nuovi metodi:
+  - `T first()` – elemento minimo
+  - `T last()` – elemento massimo
+  - `SortedSet<T> headSet(T toElement)` – elementi strettamente minori di `toElement`
+  - `SortedSet<T> tailSet(T fromElement)` – elementi maggiori o uguali a `fromElement`
+  - `SortedSet<T> subSet(T from, T to)` – intervallo [from, to)
+#### `List<T>` (estende `Collection<T>`)
+- **Sequenza ordinata** di elementi. Ammette duplicati.
+- Introduce la **nozione di posizione (indice)**. Ecco perché compare il `get`.
+- Metodi principali:
+  - `T get(int index)` – elemento alla posizione `index`
+  - `void add(int index, T element)` – inserisce in posizione
+  - `T set(int index, T element)` – sostituisce
+  - `T remove(int index)` – rimuove per posizione
+  - `int indexOf(Object o)`
+  - `int lastIndexOf(Object o)`
+- L’iteratore naturalmente segue l'ordine di inserimento.
 
-- `Optional.of(T value)` → optional contenente `value` (no null)
-- `Optional.empty()` → optional vuoto
-- `Optional.ofNullable(T value)` → optional da valore potenzialmente null
-- `isPresent()` / `isEmpty()` → verifica presenza
-- `get()` → estrae il valore (può lanciare eccezione)
-- `orElse(T other)` → valore o default
-- `orElseGet(Supplier<? extends T> supplier)` → valore o risultato del supplier
-- `ifPresent(Consumer<? super T> action)` → esegue azione se presente
-- `filter`, `map`, `flatMap` per trasformazioni condizionali
+#### `Queue<T>` (estende `Collection<T>`)
+- Modella una **coda** (tipicamente FIFO, ma può essere anche LIFO).
+- Metodi di accesso alla testa della coda (due versioni: una lancia eccezione, l'altra restituisce un valore speciale come `null` o `false`):
+- Metodi
+	- `add(e)` inserimento
+	- `remove()` restituisce e rimuove
+	- `element()` ispeziona
+- Non c'è accesso posizionale.
+#### `Deque<T>` (estende `Queue<T>`)
+- **Coda doppia** (Double Ended Queue): inserimento e rimozione da entrambi gli estremi.
+- Aggiunge versioni con suffisso `First`/`Last` (es. `addFirst`, `pollLast`).
 
-Questi appunti coprono i concetti e gli esempi Java presenti nel PDF, fornendo una base chiara per utilizzare `Optional` e comprendere la null safety in Java.
+#### `Map<K, V>` (non estende `Collection`)
+Struttura dati **bidimensionale**: associa una **chiave** univoca (tipo `K`) a un **valore** (tipo `V`). Non è una `Collection` perché lavora su coppie chiave-valore.
+Metodi essenziali:
+  - `V put(K key, V value)` – inserisce/aggiorna
+  - `V get(Object key)` – recupera il valore associato a `key` (null se assente)
+  - `boolean containsKey(Object key)`
+  - `boolean containsValue(Object value)`
+  - `V remove(Object key)`
+**Collection views** per estrarre i dati in forma di collection:
+  - `Set<K> keySet()` – l’insieme delle chiavi (non può avere duplicati)
+  - `Collection<V> values()` – la collezione dei valori
+  - `Set<Map.Entry<K,V>> entrySet()` – l’insieme delle coppie (righe)
+    - `Map.Entry` offre `getKey()` e `getValue()`.
+
+####  `SortedMap<K, V>` (estende `Map<K, V>`)
+Mappa con **chiavi ordinate**.
+- Metodi aggiuntivi:
+  - `K firstKey()`
+  - `K lastKey()`
+  - `SortedMap<K,V> headMap(K toKey)`
+  - `SortedMap<K,V> tailMap(K fromKey)`
+  - `SortedMap<K,V> subMap(K fromKey, K toKey)`
+### `java.util.Collections`
+Contiene **metodi statici di utilità** per operare sulle collezioni.
+  - `sort(List<T> list)` – merge sort ottimizzato (O(n log n)), **solo su liste** perché richiede riposizionamento.
+  - `binarySearch(List<? extends Comparable<? super T>> list, T key)` – lista deve essere ordinata.
+  - `min(Collection<? extends T> coll)`, `max(...)` – restituisce minimo/massimo.
+  - `reverse(List<?> list)`, `shuffle(List<?> list)`, `fill(List<? super T> list, T obj)`
+  - `emptyList()`, `emptySet()`, `emptyMap()` – restituiscono collezioni immutabili vuote.
+## 5. Implementazioni Concrete (Classi)
+
+### 5.1 Implementazioni general‑purpose modificabili
+
+| Interfaccia | Hash Table | Array ridimensionabile | Albero bilanciato | Lista concatenata | Hash + lista linkata |
+|-------------|------------|------------------------|-------------------|-------------------|-----------------------|
+| **Set**     | `HashSet`  |                        | `TreeSet`         |                   | `LinkedHashSet`       |
+| **List**    |            | `ArrayList`            |                   | `LinkedList`      |                       |
+| **Queue/Deque** |        | (`ArrayList`)          | `PriorityQueue`   | `LinkedList`      |                       |
+| **Map**     | `HashMap`  |                        | `TreeMap`         |                   | `LinkedHashMap`       |
+
+- `HashSet` / `HashMap`: basati su tabella hash, tempo medio O(1) per le operazioni di base.
+- `TreeSet` / `TreeMap`: implementano `SortedSet`/`SortedMap`, basati su albero bilanciato, garantiscono ordinamento, tempo O(log n).
+- `LinkedHashSet` / `LinkedHashMap`: oltre alla tabella hash mantengono una lista doppiamente linkata per tenere traccia dell’**ordine di inserimento** durante l’iterazione.
+- `ArrayList`: realizzata con array ridimensionabile, accesso posizionale O(1).
+- `LinkedList`: doppia lista concatenata, inserimenti/rimozioni in testa e mezzo efficienti.
+
+### 5.2 Implementazioni immodificabili
+
+- Non esistono classi pubbliche **per le versioni immodificabili** (come invece accade in Scala/.NET).
+- Si ottengono tramite **factory method statici**:
+  - `List.of(...)`
+  - `Set.of(...)`
+  - `Map.of(...)`, `Map.ofEntries(...)`
+- Questi restituiscono istanze di classi interne (non visibili) che non permettono modifiche.
+
+---
+
+## 6. Costruzione delle Collezioni in Java
+
+- **Costruttore vuoto**: `new ArrayList<>()`, `new HashSet<>()`, `new HashMap<>()` ecc. → collezione modificabile inizialmente vuota.
+- **Costruttore di copia**: accetta un’altra `Collection` (o `Map`) per inizializzare la nuova collezione con gli stessi elementi.
+  ```java
+  List<String> list1 = new ArrayList<>(existingSet);
+  ```
+- **Factory per collezioni pre‑popolate immodificabili**:
+  ```java
+  List<Integer> immutableList = List.of(1, 2, 3);
+  Set<String> immutableSet = Set.of("a", "b");
+  Map<String, Integer> immutableMap = Map.of("key1", 10, "key2", 20);
+  // Per mappe con più di 10 entry: Map.ofEntries(...)
+  ```
+
+---
+
+## 7. Linee Guida nella Scelta delle Implementazioni
+
+- **Set / Map**:
+  - Se serve **ordinamento**: `TreeSet` / `TreeMap`.
+  - Altrimenti, `HashSet` / `HashMap` sono più veloci (tempo costante vs logaritmico).
+  - Se serve **ordine di inserimento predicibile** durante l'iterazione: `LinkedHashSet` / `LinkedHashMap`.
+  - Se gli elementi sono **costanti enumerative**, considerare `EnumSet` / `EnumMap` (estremamente efficienti).
+
+- **List**:
+  - In generale, preferire `ArrayList` (accesso posizionale costante).
+  - Usare `LinkedList` se le operazioni più frequenti sono aggiunta/rimozione in testa o nel mezzo.
+
+- **Queue / Deque**:
+  - `PriorityQueue` per code con priorità.
+  - `LinkedList` o `ArrayDeque` (non citata ma molto usata) per code/deque standard.
+
+---
+
+## 8. Note Aggiuntive su Ordinamento e `SortedSet`/`SortedMap`
+
+- L’ordinamento è basato su `Comparable` (naturale) o su `Comparator` fornito in costruzione.
+- Metodi di intervallo (`headSet`, `subSet`, `tailSet`) restituiscono **viste** live, non copie.
+- L’iteratore sulle `SortedSet` e sulle `SortedMap` (attraverso `keySet`/`entrySet`) segue l’ordine delle chiavi.
+
+---
+
+Questi appunti coprono i concetti fondamentali del Java Collection Framework così come presentati nelle slide, concentrandosi esclusivamente sul linguaggio Java.
