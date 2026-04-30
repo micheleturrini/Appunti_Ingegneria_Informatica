@@ -737,10 +737,14 @@ Quando più test condividono operazioni di setup o cleanup, è utile fattorizzar
 |`@AfterAll`|Metodo **statico** eseguito **una sola volta** dopo tutti i test della classe.|
 |`@BeforeEach`|Metodo **non statico** eseguito **prima di ogni** metodo `@Test`.|
 |`@AfterEach`|Metodo **non statico** eseguito **dopo ogni** metodo `@Test`.|
-## Gestione delle Eccezioni
-In Java c'è un sistema integrato di gestione di errori e eccezioni.
 
-**Blocco Try Catch**
+## Gestione delle Eccezioni
+In Java esiste un sistema integrato per gestire errori e situazioni anomale basato sul concetto di **eccezione**. L’obiettivo è separare nettamente il flusso normale (l’*happy path*) dal codice di gestione errori, evitando codice rumoroso pieno di `if` e permettendo una propagazione controllata dei problemi.
+### Blocco Try-Catch
+Il costrutto `try-catch` delimita un blocco “sorvegliato”:  
+- si **tenta** (`try`) di eseguire le operazioni critiche;  
+- se qualcosa va storto, viene **lanciata un’eccezione**, l’esecuzione si interrompe immediatamente e il controllo passa al blocco `catch` corrispondente.
+
 ```java
 try {
     // codice che può generare eccezioni
@@ -752,100 +756,186 @@ try {
 }
 System.out.println("Il programma continua normalmente...");
 ```
-- Se avviene un'eccezione, l'esecuzione del `try` si interrompe e passa al `catch`
-- Dopo il `catch` il programma continua
 
-**Catch multiple**
-Per gestire eccezioni diverse si possono utilizzare più catch ordinate dalla più specifica alla più generale.
+Se non si verifica alcun errore, il `catch` viene saltato e l’esecuzione prosegue normalmente dopo il blocco.
+### Catch multipli e Multi-catch
+Per gestire eccezioni di tipo diverso si possono usare più blocchi `catch`, **sempre dalla più specifica alla più generale** (la prima corrispondenza termina la ricerca).
+
 ```java
-// CORRETTO: dal più specifico al più generale
-catch (FileNotFoundException e) { ... }
-catch (IOException e) { ... }
-
-// ERRATO: IOException è più generale di FileNotFoundException
-catch (IOException e) { ... }
-catch (FileNotFoundException e) { ... } // Non raggiungibile!
+try {
+    // operazioni che possono lanciare eccezioni diverse
+} catch (FileNotFoundException e) {
+    // gestione file mancante (specifica)
+} catch (IOException e) {
+    // gestione altri errori di I/O (generale)
+}
 ```
 
-**Finally**
-Codice che viene eseguito sempre dopo
-Tipicamente usato per operazioni di pulizia:
-- Chiudere file
-- Rilasciare connessioni al database
-- Liberare risorse
+quando si vuole eseguire lo stesso trattamento per più tipi di eccezione, si può usare il **multi-catch**:
+
+```java
+catch (IOException | SQLException e) {
+    // gestione unificata per entrambi i tipi
+}
+```
+### Finally
+Il blocco `finally` contiene codice che viene **sempre** eseguito, sia che l’operazione riesca sia che venga lanciata un’eccezione. Viene usato tipicamente per rilasciare risorse (file, connessioni, lock). Con l’introduzione del **try-with-resources**ò, molte operazioni di chiusura vengono gestite automaticamente, riducendo la necessità del `finally`.
+
 ```java
 FileReader file = null;
 try {
     file = new FileReader("testo.txt");
-    // ... operazioni sul file
+    // operazioni sul file
 } catch (IOException e) {
     System.out.println("Errore nella lettura");
 } finally {
     if (file != null) {
         try {
-            file.close();  // Chiusura sicura
+            file.close();  // chiusura sicura
         } catch (IOException e) {
             System.out.println("Errore nella chiusura");
         }
     }
 }
 ```
+### Throw: lanciare deliberatamente un’eccezione
+L’istruzione **`throw`** serve a **lanciare esplicitamente** un’eccezione. Si crea un oggetto eccezione con `new` e lo si “lancia” interrompendo il flusso corrente.
 
-**Throw**
-`throw` serve per **lanciare esplicitamente** un'eccezione.
 ```java
 throw new TipoEccezione("Messaggio di errore");
-// oppure
-throw variabileEccezione;
-```
-Esempio
-```java
-    public static void verificaEta(int eta) {
-        if (eta < 0) {
-            throw new IllegalArgumentException("L'età non può essere negativa: " + eta);
-        }
-        System.out.println("Età valida: " + eta);
-    }
 ```
 
-Se l'eccezione è unchecked deve essere dichiarata assieme al metodo
+**Esempio pratico:** controllo di precondizioni.
 ```java
-    // Questo metodo dichiara di poter lanciare IOException
-    public static void leggiFile(String nomeFile) throws IOException {
-        //....
+public static void verificaEta(int eta) {
+    if (eta < 0) {
+        throw new IllegalArgumentException("L'età non può essere negativa: " + eta);
     }
+    System.out.println("Età valida: " + eta);
+}
 ```
 
-Esempio completo
+Questo meccanismo è fondamentale per impedire la creazione di oggetti inconsistenti (ad es. un triangolo impossibile o una frazione con denominatore zero) o per segnalare argomenti non validi.
+### Eccezioni Checked e Unchecked
+In Java le eccezioni si dividono in due grandi categorie:
+
+| Tipo                 | Gerarchia                                        | Obbligo di gestione      | Significato tipico                                                                 |
+|----------------------|--------------------------------------------------|---------------------------|-----------------------------------------------------------------------------------|
+| **Checked** (a controllo obbligatorio) | `Exception` (ma non `RuntimeException`)          | Sì: `try-catch` o `throws` | Situazioni esterne al controllo del programma (file mancante, rete assente)       |
+| **Unchecked** (a controllo facoltativo) | `RuntimeException` e sottoclassi<br>`Error` e sottoclassi | No (facoltativo)           | Bug o violazioni di precondizioni (`NullPointerException`, `IllegalArgumentException`, ecc.)<br>Gli `Error` sono problemi gravi della JVM (es. `OutOfMemoryError`) e non andrebbero catturati. |
+
+Gerarchia semplificata:
+```
+Throwable
+├── Error (unchecked, problemi JVM)
+└── Exception
+    ├── RuntimeException (unchecked, bug/precondizioni)
+    └── (altre) Exception (checked, situazioni esterne)
+```
+
+La scelta tra checked e unchecked è parte della progettazione:
+- Un’eccezione **checked** costringe il chiamante a pensare alla possibile anomalia. Funziona bene in sistemi a piccola/media scala, ma può diventare onerosa in architetture a molti strati.
+- Un’eccezione **unchecked** non impone vincoli di compilazione; si assume che le precondizioni siano rispettate e che eventuali violazioni vadano scoperte durante il testing.
+### Throws: dichiarare le eccezioni lanciabili
+Quando un metodo può lanciare un’eccezione **checked** senza gestirla internamente, **deve** dichiararlo nella propria firma con la clausola **`throws`**. In questo modo avverte i chiamanti che quel metodo è “pericoloso” e che devono farsene carico (con un `try-catch` o rilanciandola).
+
+```java
+public void leggiFile(String nomeFile) throws IOException {
+    // ...
+}
+```
+
+Per le eccezioni **unchecked** la dichiarazione `throws` **è facoltativa**; per chiarezza, la si può aggiungere solo nei casi in cui l’eccezione è particolarmente inattesa o significativa per chi usa il metodo.
+
+**Rilancio di un’eccezione:** un metodo può catturare un’eccezione ma decidere di non saperla gestire, limitandosi a incapsularla in un’eccezione logica o semplicemente a **rilanciarla** (con `throw e;`). In questo caso, se è checked, deve comunque dichiarare `throws` (o il nuovo tipo).
+### Eccezioni Personalizzate
+Creare nuovi tipi di eccezione aiuta a descrivere con precisione il problema e permette di distinguere in fase di `catch` situazioni diverse (ad es. `ImpossibleTriangleException`, `BadFileFormatException`).
+
+- Per un’eccezione **checked**, estendere direttamente `Exception`.
+- Per un’eccezione **unchecked**, estendere `RuntimeException` (o una sua sottoclasse come `IllegalArgumentException`).
+
+Tipicamente si forniscono costruttori che accettano un messaggio e, se si vuole mantenere traccia della causa originale, un `Throwable` (l’eccezione fisica).
+
+```java
+public class ImpossibleTriangleException extends IllegalArgumentException {
+    public ImpossibleTriangleException() { super(); }
+    public ImpossibleTriangleException(String message) { super(message); }
+    public ImpossibleTriangleException(String message, Throwable cause) { super(message, cause); }
+}
+```
+
+**Uso:**
+```java
+if (a >= b + c || b >= a + c || c >= a + b) {
+    throw new ImpossibleTriangleException(
+        "Lati impossibili: " + a + ", " + b + ", " + c);
+}
+```
+### Incapsulamento di Eccezioni (fisiche → logiche)
+Spesso si intercetta un’eccezione “fisica” (es. `FileNotFoundException`) per convertirla in un’eccezione “logica” che abbia più significato nel contesto dell’applicazione (es. `ImageNotFoundException`). Ciò si realizza catturando l’eccezione originale e costruendo la nuova eccezione passandole la causa con il costruttore apposito. In questo modo lo stack della causa rimane accessibile.
+
+```java
+public void caricaImmagine(String percorso) throws ImageNotFoundException {
+    try {
+        FileReader f = new FileReader(percorso);
+        // ...
+    } catch (FileNotFoundException e) {
+        throw new ImageNotFoundException("Immagine non trovata: " + percorso, e);
+    }
+}
+```
+### Verifica delle Precondizioni con java.util.Objects
+La classe di utilità **`java.util.Objects`** offre metodi statici per controllare i parametri in modo sintetico e standardizzato:
+- `requireNonNull(T obj)` lancia `NullPointerException` se `obj` è `null`.
+- `requireNonNull(T obj, String message)` con messaggio personalizzato.
+- `checkIndex(...)` e `checkFromToIndex(...)` per validare indici e intervalli, lanciano `IndexOutOfBoundsException`.
+Questi metodi vengono impiegati spesso all’inizio di un metodo o costruttore per validare le precondizioni.
+
+```java
+public void setNome(String nome) {
+    this.nome = Objects.requireNonNull(nome, "Il nome non può essere null");
+}
+```
+
+Esempio Completo: Lettura di un File con Eccezioni Personalizzate
 ```java
 /**
- * Legge un file e restituisce il contenuto come stringa.
- * 
+ * Legge il contenuto di un file di testo.
+ *
  * @param percorso percorso del file
- * @return contenuto del file
- * @throws FileNotFoundException se il file non esiste
- * @throws IOException per altri errori di I/O
+ * @return contenuto del file come stringa
+ * @throws FileNonTrovatoException se il file non esiste
+ * @throws LetturaFileException per altri errori di I/O
  */
-public String leggiFile(String percorso) throws IOException {
+public String leggiFile(String percorso) throws FileNonTrovatoException, LetturaFileException {
     StringBuilder contenuto = new StringBuilder();
-    
+
+    // try-with-resources: il reader viene chiuso automaticamente
     try (BufferedReader reader = new BufferedReader(new FileReader(percorso))) {
         String linea;
         while ((linea = reader.readLine()) != null) {
             contenuto.append(linea).append("\n");
         }
     } catch (FileNotFoundException e) {
-        System.err.println("File non trovato: " + percorso);
-        throw e;  // rilancio per gestione a livello superiore
+        // incapsulo l'eccezione fisica in una logica specifica
+        throw new FileNonTrovatoException("File non trovato: " + percorso, e);
     } catch (IOException e) {
-        System.err.println("Errore durante la lettura: " + e.getMessage());
-        throw e;
+        throw new LetturaFileException("Errore durante la lettura del file", e);
     }
-    
     return contenuto.toString();
 }
 ```
 
+**Definizione delle eccezioni personalizzate:**
+```java
+public class FileNonTrovatoException extends Exception {
+    public FileNonTrovatoException(String msg, Throwable cause) { super(msg, cause); }
+}
+
+public class LetturaFileException extends Exception {
+    public LetturaFileException(String msg, Throwable cause) { super(msg, cause); }
+}
+```
 ## Array
 In Java gli array sono **oggetti** veri e propri, istanze di una classe speciale.
 
