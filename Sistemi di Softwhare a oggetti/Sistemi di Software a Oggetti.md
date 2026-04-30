@@ -1,4 +1,4 @@
-[[0 - Index]]
+\[[0 - Index]]
 
 Mail: sistemidisoftwhareaoggetti@live.unibo.it
 
