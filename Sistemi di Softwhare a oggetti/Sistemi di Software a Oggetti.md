@@ -4761,3 +4761,207 @@ Esecuzione:
 ```
 L’ordine delle chiavi è garantito dal `TreeMap` (ordine naturale delle stringhe o secondo `Comparator` fornito). L’iteratore sulle viste (`keySet`, `entrySet`) seguirà lo stesso ordinamento.
 ### Conversioni fra strutture
+**Costruttori per copia** – tutte le classi del Collection Framework accettano una `Collection` qualsiasi come argomento e ne copiano (shallow) gli elementi.
+**Metodi di conversione** specifici per array.
+#### Da List a Set (e viceversa)
+```java
+List<String> l1 = List.of("Pippo", "Pluto", "QuiQuoQua", "Paperino", "Zio Paperone");
+System.out.println(l1); // [Pippo, Pluto, QuiQuoQua, Paperino, Zio Paperone]
+
+// Costruttore per copia: da List a HashSet (non ordinato)
+Set<String> s1 = new HashSet<>(l1);
+System.out.println(s1); // [Paperino, QuiQuoQua, Pippo, Pluto, Zio Paperone]
+
+// Costruttore per copia: da List a TreeSet (ordinato)
+Set<String> s2 = new TreeSet<>(l1);
+System.out.println(s2); // [Paperino, Pippo, Pluto, QuiQuoQua, Zio Paperone]
+```
+#### Da lista immodificabile a lista modificabile
+```java
+List<String> l1 = List.of("Pippo", "Pluto", "QuiQuoQua", "Paperino", "Zio Paperone");
+List<String> l2 = new ArrayList<>(l1); // ora l2 è modificabile
+l2.add("Archimede");
+l2.add("Paperino");
+System.out.println(l2); // [Pippo, Pluto, QuiQuoQua, Paperino, Zio Paperone, Archimede, Paperino]
+```
+#### Da lista ad array
+```java
+List<String> l1 = List.of("Pippo", "Pluto", "QuiQuoQua", "Paperino", "Zio Paperone");
+String[] a1 = l1.toArray(new String[0]); // l’argomento serve solo per specificare il tipo
+// ora a1 è un array: {"Pippo", "Pluto", "QuiQuoQua", "Paperino", "Zio Paperone"}
+```
+#### Da array a lista
+```java
+String[] arr = { "One", "Three", "Ten" };
+List<String> list = Arrays.asList(arr); // metodo statico della libreria Arrays
+System.out.println(list); // [One, Three, Ten]
+```
+**Attenzione:** la lista ottenuta con `Arrays.asList` è **modificabile** (si possono fare `set`) ma ha **dimensione fissa** (non si possono aggiungere/rimuovere elementi). Per una lista completamente modificabile si può usare:
+
+```java
+List<String> listMod = new ArrayList<>(Arrays.asList(arr));
+```
+### Esempi di ordinamento e ricerca
+```java
+class Persona implements Comparable<Persona> {
+    private String nome, cognome;
+	//...
+    public int compareTo(Persona that) {
+        int confrontoCognomi = cognome.compareTo(that.cognome);
+        if (confrontoCognomi != 0) return confrontoCognomi;
+        return nome.compareTo(that.nome);
+    }
+}
+```
+#### Ordinare una lista di persone
+La lista deve essere **modificabile** perché `Collections.sort` modifica l’ordine degli elementi.
+
+**Opzione 1** – da array a lista tramite `Arrays.asList`:
+```java
+List<Persona> l = Arrays.asList(
+    new Persona("Eugenio", "Bennato"),
+    new Persona("Roberto", "Benigni"),
+    new Persona("Edoardo", "Bennato"),
+    new Persona("Bruno", "Vespa")
+);
+Collections.sort(l);
+System.out.println(l);
+// [Roberto Benigni, Edoardo Bennato, Eugenio Bennato, Bruno Vespa]
+```
+
+**Opzione 2** – da lista immodificabile a lista modificabile con costruttore di copia:
+```java
+List<Persona> l = new ArrayList<>(List.of(
+    new Persona("Eugenio", "Bennato"),
+    new Persona("Roberto", "Benigni"),
+    new Persona("Edoardo", "Bennato"),
+    new Persona("Bruno", "Vespa")
+));
+Collections.sort(l);
+System.out.println(l);
+```
+**Nota:** `List.of` produce una lista immodificabile, per cui `Collections.sort(l)` lancierebbe `UnsupportedOperationException` se si tentasse di ordinare direttamente quella.
+#### Ordinare un array di persone
+```java
+Persona[] persone = {
+    new Persona("Eugenio", "Bennato"),
+    new Persona("Roberto", "Benigni"),
+    new Persona("Edoardo", "Bennato"),
+    new Persona("Bruno", "Vespa")
+};
+Arrays.sort(persone);
+System.out.println(Arrays.toString(persone));
+```
+Oppure partendo da una lista e convertendo in array:
+```java
+List<Persona> l = List.of( /* elementi */ );
+Persona[] persone = l.toArray(new Persona[0]);
+Arrays.sort(persone);
+```
+#### Ricerca binaria su lista
+La lista deve essere **già ordinata** (altrimenti il risultato è imprevedibile). Può essere immodificabile, purché ordinata.
+
+```java
+List<Persona> l = List.of(
+    new Persona("Edoardo", "Bennato"),
+    new Persona("Eugenio", "Bennato"),
+    new Persona("Roberto", "Benigni"),
+    new Persona("Bruno", "Vespa")
+); // già in ordine naturale
+
+System.out.println(Collections.binarySearch(l, new Persona("Bruno", "Vespa"))); // 3 (posizione)
+System.out.println(Collections.binarySearch(l, new Persona("Bruno", "Ape")));   // -1 (non trovato)
+```
+Se la lista fosse inizialmente non ordinata, si può ordinare prima (richiede modificabilità):
+```java
+List<Persona> l = new ArrayList<>(List.of( /* elementi */ ));
+Collections.sort(l);
+System.out.println(Collections.binarySearch(l, new Persona("Bruno", "Vespa")));
+```
+#### Ricerca in una mappa di persone (con chiave codice fiscale)
+Si usa una `Map<String, PersonaCF>` dove la chiave è il codice fiscale.
+```java
+class PersonaCF extends Persona {
+    private String cf;
+    public PersonaCF(String nome, String cognome, String cf) {
+        super(nome, cognome);
+        this.cf = cf;
+    }
+    // eventualmente equals & hashCode basati su cf
+}
+```
+
+```java
+Map<String, PersonaCF> m = new TreeMap<>(Map.of(
+    "BNNGNEyymddxxxxu", new PersonaCF("Eugenio", "Bennato", "BNNGNEyymddxxxxu"),
+    "BNGRRTyymddxxxxu", new PersonaCF("Roberto", "Benigni", "BNGRRTyymddxxxxu"),
+    "BNNDRDyymddxxxxu", new PersonaCF("Edoardo", "Bennato", "BNNDRDyymddxxxxu"),
+    "VSPBRNyymddxxxxu", new PersonaCF("Bruno", "Vespa", "VSPBRNyymddxxxxu")
+));
+
+System.out.println(m);
+// {BNGRRTyymddxxxxu=Roberto Benigni, ...}
+System.out.println(m.get("BNGRRTyymddxxxxu"));
+// Roberto Benigni
+```
+Con `TreeMap` la mappa è ordinata per chiave (codice fiscale).
+
+### Approfondimento facoltativo: `EnumSet` e `EnumMap` in Java
+
+Quando gli elementi di un set o le chiavi di una mappa sono **costanti enumerative**, esistono implementazioni specializzate estremamente efficienti.
+
+#### `EnumSet`
+
+- `EnumSet` è una **classe astratta**; non ha costruttori pubblici.
+- Le istanze si ottengono tramite **metodi factory statici**:
+  - `EnumSet.allOf(Class<E> elementType)` – tutte le costanti dell’enumerazione
+  - `EnumSet.noneOf(Class<E> elementType)` – set vuoto
+  - `EnumSet.of(E e1)`, `of(E e1, E e2)`, …, fino a 5 argomenti
+  - `EnumSet.range(E from, E to)` – intervallo di costanti (secondo l’ordine dichiarato)
+  - `EnumSet.copyOf(Collection<E> c)` – copia da una collection esistente (utile anche per set ordinari)
+  - `EnumSet.complementOf(EnumSet<E> s)` – complemento rispetto all’insieme totale delle costanti
+- **Non accetta elementi nulli** – lancia `NullPointerException`.
+
+**Esempio d’uso:**
+
+```java
+import java.time.DayOfWeek;
+import java.util.EnumSet;
+
+// Set di un solo giorno
+Set<DayOfWeek> s = EnumSet.of(DayOfWeek.MONDAY);
+s.add(DayOfWeek.FRIDAY);
+System.out.println(s); // [MONDAY, FRIDAY]
+
+// Range di giorni
+EnumSet<DayOfWeek> workingDays = EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY);
+System.out.println(workingDays); // [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY]
+
+// Set vuoto
+EnumSet<DayOfWeek> empty = EnumSet.noneOf(DayOfWeek.class);
+```
+
+#### `EnumMap`
+
+- `EnumMap<K extends Enum<K>, V>` è una mappa ottimizzata per chiavi enumerative.
+- Ha costruttori pubblici:
+  - `EnumMap(Class<K> keyType)` – mappa vuota
+  - `EnumMap(EnumMap<K, ? extends V> m)` – copia da un’altra EnumMap
+  - `EnumMap(Map<K, ? extends V> m)` – copia da una mappa qualsiasi (se le chiavi sono tutte dello stesso enum)
+- Fornisce i classici metodi `put`, `get`, `keySet`, ecc.
+- **Non accetta chiavi nulle** (`NullPointerException`).
+
+**Esempio d’uso:**
+
+```java
+import java.time.DayOfWeek;
+import java.util.EnumMap;
+
+EnumMap<DayOfWeek, Double> costoSosta = new EnumMap<>(DayOfWeek.class);
+costoSosta.put(DayOfWeek.MONDAY, 1.50);
+costoSosta.put(DayOfWeek.SATURDAY, 2.00);
+costoSosta.put(DayOfWeek.SUNDAY, 0.0);
+
+System.out.println(costoSosta.get(DayOfWeek.MONDAY)); // 1.5
+System.out.println(costoSosta); // {MONDAY=1.5, SATURDAY=2.0, SUNDAY=0.0}
+```
