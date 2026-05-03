@@ -4439,11 +4439,8 @@ Il tipo restituito è una classe ad hoc (non una semplice Map)
 Idea base: ogni entità iterabile «sa» come navigare al proprio interno e, su richiesta, è in grado di produrre un **iteratore** adatto alla propria struttura.
 Il metodo chiave è `Iterator<T> iterator()`, una sorta di **factory** che restituisce un oggetto iteratore per quella specifica collezione.
 
-
-
-## 2. L’interfaccia `Iterator<T>`
-
-- Un iteratore è un oggetto che permette di **navigare una collezione un elemento alla volta**, senza fare ipotesi su indici o posizioni.
+> [!summary]
+> L’**iteratore** è un **oggetto capace di navigare in una cosa «iterabile» del «suo» tipo**
 - Dichiara tre metodi:
   - `T next()` – restituisce il prossimo elemento e fa avanzare l’iteratore.
   - `boolean hasNext()` – restituisce `true` se ci sono ancora elementi da visitare.
@@ -4475,8 +4472,7 @@ for (Iterator<T> i = coll.iterator(); i.hasNext(); ) {
 
 ---
 
-## 4. Esempio pratico: iteratore implicito ed esplicito
-
+Esempio: iteratore implicito ed esplicito
 ```java
 import java.util.*;
 
