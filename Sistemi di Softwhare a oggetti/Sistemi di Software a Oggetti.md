@@ -4314,141 +4314,551 @@ Rappresenta un **gruppo di elementi** senza fare ipotesi su ordine, duplicati, p
   - `boolean equals(Object o)` – confronto di collezioni
 Non esiste un metodo `get` perché non esiste una nozione univoca di “posizione”.
 #### `Set<T>` (estende `Collection<T>`)
-- **Insieme matematico**: non ammette duplicati.
+**Insieme matematico**: non ammette duplicati e non esiste un ordine.
 - Il metodo `add` **non inserisce se l'elemento è già presente** (restituisce `false`).
 - `equals` definisce uguaglianza insiemistica: due set sono uguali se contengono gli stessi elementi.
-- Non introduce nuovi metodi rispetto a `Collection`, ma **ridefinisce il contratto** per garantire l'assenza di duplicati.
+Non introduce nuovi metodi rispetto a `Collection`, ma **ridefinisce il contratto** per garantire l'assenza di duplicati.
 ####  `SortedSet<T>` (estende `Set<T>`)
-- Aggiunge l'**ordinamento totale** sugli elementi.
-- Gli elementi devono implementare `Comparable<T>` o va fornito un `Comparator<T>` al momento della creazione.
-- Nuovi metodi:
+Aggiunge l'**ordinamento totale** sugli elementi.
+Gli elementi devono implementare `Comparable<T>` o va fornito un `Comparator<T>` al momento della creazione.
+Nuovi metodi:
   - `T first()` – elemento minimo
   - `T last()` – elemento massimo
   - `SortedSet<T> headSet(T toElement)` – elementi strettamente minori di `toElement`
   - `SortedSet<T> tailSet(T fromElement)` – elementi maggiori o uguali a `fromElement`
-  - `SortedSet<T> subSet(T from, T to)` – intervallo [from, to)
+  - `SortedSet<T> subSet(T from, T to)` – intervallo $[from, to)$
 #### `List<T>` (estende `Collection<T>`)
-- **Sequenza ordinata** di elementi. Ammette duplicati.
-- Introduce la **nozione di posizione (indice)**. Ecco perché compare il `get`.
-- Metodi principali:
+**Sequenza ordinata** di elementi. Ammette duplicati.
+A differenza di SortedSet gli elementi sono **ordinati per ordine di inserimento.**
+Introduce la **nozione di posizione (indice)**. Ecco perché compare il `get`.
+Metodi principali:
   - `T get(int index)` – elemento alla posizione `index`
-  - `void add(int index, T element)` – inserisce in posizione
+  - `void add(T element)` – inserisce in coda
   - `T set(int index, T element)` – sostituisce
   - `T remove(int index)` – rimuove per posizione
-  - `int indexOf(Object o)`
-  - `int lastIndexOf(Object o)`
-- L’iteratore naturalmente segue l'ordine di inserimento.
-
 #### `Queue<T>` (estende `Collection<T>`)
-- Modella una **coda** (tipicamente FIFO, ma può essere anche LIFO).
-- Metodi di accesso alla testa della coda (due versioni: una lancia eccezione, l'altra restituisce un valore speciale come `null` o `false`):
-- Metodi
-	- `add(e)` inserimento
-	- `remove()` restituisce e rimuove
-	- `element()` ispeziona
-- Non c'è accesso posizionale.
+Modella una **coda** (tipicamente FIFO, ma può essere anche LIFO).
+Metodi di accesso alla testa della coda (due versioni: una lancia eccezione, l'altra restituisce un valore speciale come `null` o `false`):
+Metodi
+- `add(e)` inserimento
+- `remove()` restituisce e rimuove
+- `element()` ispeziona
+Non c'è accesso posizionale.
 #### `Deque<T>` (estende `Queue<T>`)
 - **Coda doppia** (Double Ended Queue): inserimento e rimozione da entrambi gli estremi.
 - Aggiunge versioni con suffisso `First`/`Last` (es. `addFirst`, `pollLast`).
-
 #### `Map<K, V>` (non estende `Collection`)
-Struttura dati **bidimensionale**: associa una **chiave** univoca (tipo `K`) a un **valore** (tipo `V`). Non è una `Collection` perché lavora su coppie chiave-valore.
+Struttura dati **bidimensionale** (tabella a 2 colonne): associa una **chiave** univoca (tipo `K`) a un **valore** (tipo `V`). Non è una `Collection` perché lavora su coppie chiave-valore.
 Metodi essenziali:
   - `V put(K key, V value)` – inserisce/aggiorna
   - `V get(Object key)` – recupera il valore associato a `key` (null se assente)
   - `boolean containsKey(Object key)`
   - `boolean containsValue(Object value)`
   - `V remove(Object key)`
+Equals e hashcode vanno ridefinite assieme.
 **Collection views** per estrarre i dati in forma di collection:
   - `Set<K> keySet()` – l’insieme delle chiavi (non può avere duplicati)
   - `Collection<V> values()` – la collezione dei valori
   - `Set<Map.Entry<K,V>> entrySet()` – l’insieme delle coppie (righe)
-    - `Map.Entry` offre `getKey()` e `getValue()`.
-
 ####  `SortedMap<K, V>` (estende `Map<K, V>`)
 Mappa con **chiavi ordinate**.
-- Metodi aggiuntivi:
-  - `K firstKey()`
-  - `K lastKey()`
+Metodi aggiuntivi:
+  - `K firstKey()` prima chiave
+  - `K lastKey()` ultima chiave
   - `SortedMap<K,V> headMap(K toKey)`
   - `SortedMap<K,V> tailMap(K fromKey)`
   - `SortedMap<K,V> subMap(K fromKey, K toKey)`
+#### Aggiunte per Sorted
+- L’ordinamento è basato su `Comparable` (naturale) o su `Comparator` fornito in costruzione.
+- Metodi di intervallo (`headSet`, `subSet`, `tailSet`) restituiscono **viste** live, non copie.
+- L’iteratore sulle `SortedSet` e sulle `SortedMap` (attraverso `keySet`/`entrySet`) segue l’ordine delle chiavi.
 ### `java.util.Collections`
 Contiene **metodi statici di utilità** per operare sulle collezioni.
-  - `sort(List<T> list)` – merge sort ottimizzato (O(n log n)), **solo su liste** perché richiede riposizionamento.
-  - `binarySearch(List<? extends Comparable<? super T>> list, T key)` – lista deve essere ordinata.
-  - `min(Collection<? extends T> coll)`, `max(...)` – restituisce minimo/massimo.
-  - `reverse(List<?> list)`, `shuffle(List<?> list)`, `fill(List<? super T> list, T obj)`
+  - `sort(List<T> list)` – merge sort, **solo su liste** perché richiede riposizionamento.
+  - `binarySearch(List<T> list, T key)` – lista deve essere ordinata.
+  - `min(Collection<T> coll)`, `max(...)` – restituisce minimo/massimo.
+  - `reverse(List<T> list)`, `shuffle(List<T> list)`, `fill(List<T> list, T obj)`
   - `emptyList()`, `emptySet()`, `emptyMap()` – restituiscono collezioni immutabili vuote.
-## 5. Implementazioni Concrete (Classi)
+### Implementazioni Concrete (Classi)
+**Implementazioni general‑purpose modificabili**
 
-### 5.1 Implementazioni general‑purpose modificabili
-
-| Interfaccia | Hash Table | Array ridimensionabile | Albero bilanciato | Lista concatenata | Hash + lista linkata |
-|-------------|------------|------------------------|-------------------|-------------------|-----------------------|
-| **Set**     | `HashSet`  |                        | `TreeSet`         |                   | `LinkedHashSet`       |
-| **List**    |            | `ArrayList`            |                   | `LinkedList`      |                       |
-| **Queue/Deque** |        | (`ArrayList`)          | `PriorityQueue`   | `LinkedList`      |                       |
-| **Map**     | `HashMap`  |                        | `TreeMap`         |                   | `LinkedHashMap`       |
-
-- `HashSet` / `HashMap`: basati su tabella hash, tempo medio O(1) per le operazioni di base.
-- `TreeSet` / `TreeMap`: implementano `SortedSet`/`SortedMap`, basati su albero bilanciato, garantiscono ordinamento, tempo O(log n).
-- `LinkedHashSet` / `LinkedHashMap`: oltre alla tabella hash mantengono una lista doppiamente linkata per tenere traccia dell’**ordine di inserimento** durante l’iterazione.
+| Interfaccia     | Hash Table | Array ridimensionabile | Albero bilanciato | Lista concatenata | Hash + lista linkata |
+| --------------- | ---------- | ---------------------- | ----------------- | ----------------- | -------------------- |
+| **Set**         | `HashSet`  |                        | `TreeSet`         |                   | `LinkedHashSet`      |
+| **List**        |            | `ArrayList`            |                   | `LinkedList`      |                      |
+| **Queue/Deque** |            | `ArrayDeque`           |                   | `LinkedList`      |                      |
+| **Map**         | `HashMap`  |                        | `TreeMap`         |                   | `LinkedHashMap`      |
+**Set e Map**
+- Se non serve l'ordinamento`HashSet` / `HashMap`: basati su tabella hash.
+- Se serve l'ordinamento`TreeSet` / `TreeMap`: implementano `SortedSet`/`SortedMap`, basati su albero bilanciato.
+-  `LinkedHashSet` / `LinkedHashMap`: oltre alla tabella hash mantengono una lista doppiamente linkata per tenere traccia dell’**ordine di inserimento** durante l’iterazione.
+- Se gli elementi sono Enum: `EnumSet` e `EnumMap` molto efficienti.
+**List**
 - `ArrayList`: realizzata con array ridimensionabile, accesso posizionale O(1).
 - `LinkedList`: doppia lista concatenata, inserimenti/rimozioni in testa e mezzo efficienti.
 
-### 5.2 Implementazioni immodificabili
-
-- Non esistono classi pubbliche **per le versioni immodificabili** (come invece accade in Scala/.NET).
-- Si ottengono tramite **factory method statici**:
+**Implementazioni immodificabili**
+Non esistono classi pubbliche **per le versioni immodificabili**.
+Si ottengono tramite **factory method statici**:
   - `List.of(...)`
   - `Set.of(...)`
   - `Map.of(...)`, `Map.ofEntries(...)`
-- Questi restituiscono istanze di classi interne (non visibili) che non permettono modifiche.
+Questi restituiscono istanze di classi interne (non visibili) che non permettono modifiche.
+### Costruzione delle Collezioni in Java
+- **Costruttore vuoto**: `new ArrayList<T>()`, `new HashSet<T>()`, `new HashMap<T>()` ecc. → collezione modificabile inizialmente vuota.
+```java
+List<String> l1 = new LinkedList<String>();
+l1.add("Bologna"); l1.add("Modena");
 
----
+List<String> l2 = new ArrayList<String>();
+l2.add("Ferrara"); l2.add("Ravenna");
+//costruzioni compatte
+var l1 = new ArrayList<String>(); // type inference
+List<String> l1 = new ArrayList<>(); // diamond operator (sottointende lo stesso tipo)
 
-## 6. Costruzione delle Collezioni in Java
+Set<String> s1 = new HashSet<String>();
+Set<String> s2 = new TreeSet<String>();
 
-- **Costruttore vuoto**: `new ArrayList<>()`, `new HashSet<>()`, `new HashMap<>()` ecc. → collezione modificabile inizialmente vuota.
+Map<String,Integer> m = new HashMap<String,Integer>(); m.put("Bologna", 395416); m.put("Modena", 189013);
+Map<String,Integer> m2 = new TreeMap<String,Integer>();
+```
 - **Costruttore di copia**: accetta un’altra `Collection` (o `Map`) per inizializzare la nuova collezione con gli stessi elementi.
   ```java
   List<String> list1 = new ArrayList<>(existingSet);
   ```
 - **Factory per collezioni pre‑popolate immodificabili**:
+Il tipo restituito è una classe ad hoc (non una semplice Map)
   ```java
   List<Integer> immutableList = List.of(1, 2, 3);
   Set<String> immutableSet = Set.of("a", "b");
   Map<String, Integer> immutableMap = Map.of("key1", 10, "key2", 20);
   // Per mappe con più di 10 entry: Map.ofEntries(...)
   ```
+### Iteratori
+**`Iterable<T>`** è l’interfaccia che permette a un oggetto di essere scandito con il costrutto **for‑each** (`for (T x : collezione)`).
+Idea base: ogni entità iterabile «sa» come navigare al proprio interno e, su richiesta, è in grado di produrre un **iteratore** adatto alla propria struttura.
+Il metodo chiave è `Iterator<T> iterator()`, una sorta di **factory** che restituisce un oggetto iteratore per quella specifica collezione.
+
+
+
+## 2. L’interfaccia `Iterator<T>`
+
+- Un iteratore è un oggetto che permette di **navigare una collezione un elemento alla volta**, senza fare ipotesi su indici o posizioni.
+- Dichiara tre metodi:
+  - `T next()` – restituisce il prossimo elemento e fa avanzare l’iteratore.
+  - `boolean hasNext()` – restituisce `true` se ci sono ancora elementi da visitare.
+  - `void remove()` – **operazione opzionale**; rimuove l’ultimo elemento restituito da `next()`.
+- Le collezioni della JCF lo implementano; le collezioni **immutabili** (es. quelle ottenute con `List.of`) lanciano `UnsupportedOperationException` se si invoca `remove()`.
 
 ---
 
-## 7. Linee Guida nella Scelta delle Implementazioni
+## 3. Uso dell’iteratore nel for‑each
 
-- **Set / Map**:
-  - Se serve **ordinamento**: `TreeSet` / `TreeMap`.
-  - Altrimenti, `HashSet` / `HashMap` sono più veloci (tempo costante vs logaritmico).
-  - Se serve **ordine di inserimento predicibile** durante l'iterazione: `LinkedHashSet` / `LinkedHashMap`.
-  - Se gli elementi sono **costanti enumerative**, considerare `EnumSet` / `EnumMap` (estremamente efficienti).
+- Il costrutto `for (T x : coll)` si basa proprio sull’iteratore. Il codice:
 
-- **List**:
-  - In generale, preferire `ArrayList` (accesso posizionale costante).
-  - Usare `LinkedList` se le operazioni più frequenti sono aggiunta/rimozione in testa o nel mezzo.
+```java
+for (T x : coll) {
+    // corpo del ciclo
+}
+```
 
-- **Queue / Deque**:
-  - `PriorityQueue` per code con priorità.
-  - `LinkedList` o `ArrayDeque` (non citata ma molto usata) per code/deque standard.
+equivale a:
 
----
+```java
+for (Iterator<T> i = coll.iterator(); i.hasNext(); ) {
+    T x = i.next();
+    // corpo del ciclo
+}
+```
 
-## 8. Note Aggiuntive su Ordinamento e `SortedSet`/`SortedMap`
-
-- L’ordinamento è basato su `Comparable` (naturale) o su `Comparator` fornito in costruzione.
-- Metodi di intervallo (`headSet`, `subSet`, `tailSet`) restituiscono **viste** live, non copie.
-- L’iteratore sulle `SortedSet` e sulle `SortedMap` (attraverso `keySet`/`entrySet`) segue l’ordine delle chiavi.
+- Grazie a ciò, è possibile iterare su qualsiasi `Collection` (e anche sugli array) con una sintassi uniforme.
 
 ---
 
-Questi appunti coprono i concetti fondamentali del Java Collection Framework così come presentati nelle slide, concentrandosi esclusivamente sul linguaggio Java.
+## 4. Esempio pratico: iteratore implicito ed esplicito
+
+```java
+import java.util.*;
+
+public class IteratorExample {
+    public static void main(String[] args) {
+        List<String> listOfStrings = List.of("Pippo", "Pluto", "Paperino", "Zio Paperone");
+        iterateOn("lista disney", listOfStrings);
+
+        Set<Number> setOfNums = Set.of(18, 22.2, 37.4F);
+        iterateOn("numeri vari", setOfNums);
+    }
+
+    public static <T> void iterateOn(String msg, Collection<T> coll) {
+        System.out.println("-----------------------------");
+        System.out.println(msg);
+
+        // Uso implicito (for-each)
+        System.out.println("uso di iteratore implicito");
+        for (T s : coll) {
+            System.out.println(s);
+        }
+
+        // Uso esplicito
+        System.out.println("uso di iteratore esplicito");
+        Iterator<T> it = coll.iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
+}
+```
+
+**Output:**
+```
+lista disney
+uso di iteratore implicito
+Pippo
+Pluto
+Paperino
+Zio Paperone
+uso di iteratore esplicito
+Pippo
+Pluto
+Paperino
+Zio Paperone
+numeri vari
+uso di iteratore implicito
+18
+22.2
+37.4
+uso di iteratore esplicito
+18
+22.2
+37.4
+```
+
+- La funzione `iterateOn` è **generica** e funziona su qualunque `Collection<T>`, indipendentemente dal tipo concreto degli elementi.
+
+---
+
+## 5. Regole e limitazioni nell’uso degli iteratori
+
+- **Cosa si può fare:**
+  - Iterare per leggere gli elementi.
+  - Su collezioni **modificabili**, modificare gli elementi stessi (es. `list.set(i, newValue)`).
+- **Cosa NON si può fare:**
+  - Modificare la **struttura della collezione** mentre l’iteratore è attivo (aggiungere o rimuovere elementi direttamente sulla collezione).
+  - Farlo causa una **`ConcurrentModificationException`**.
+
+### Esempio di errore
+
+```java
+public static <T> void iterateAndChange(String msg, Collection<T> coll) {
+    for (T element : coll) {
+        System.out.println(element);
+        coll.add(element); // ERRORE: modifica la collezione sotto iterazione
+    }
+}
+```
+
+- Se la collezione è immutabile (es. `List.of`) si ottiene `UnsupportedOperationException`; se è modificabile ma la si modifica durante l’iterazione, si ottiene `ConcurrentModificationException`.
+
+---
+
+## 6. Iteratori e Mappe
+
+- `Map<K,V>` non estende `Collection`, quindi **non si può iterare direttamente su una mappa**. Tuttavia, si può iterare sulle sue **viste**:
+
+  - `keySet()` → `Set<K>` (insieme delle chiavi)
+  - `values()` → `Collection<V>` (insieme dei valori)
+  - `entrySet()` → `Set<Map.Entry<K,V>>` (insieme delle righe)
+
+- `Map.Entry<K,V>` è una **interfaccia interna** a `Map` che rappresenta una coppia chiave-valore, con metodi `getKey()` e `getValue()`.
+
+### Esempio completo
+
+```java
+import java.util.*;
+
+public class MapIteratorExample {
+    public static void main(String[] args) {
+        Map<String, Integer> peopleMap = Map.of(
+            "Anna", 21,
+            "Piero", 25,
+            "Silvia", 43,
+            "Guido", 56
+        );
+
+        // 1) Iterazione sulle chiavi
+        for (String name : peopleMap.keySet()) {
+            System.out.println(name + " ha " + peopleMap.get(name) + " anni");
+        }
+
+        System.out.println();
+
+        // 2) Iterazione sui valori (es. calcolo età media)
+        float sum = 0;
+        for (int value : peopleMap.values()) {
+            sum += value;
+        }
+        System.out.println("L'età media è di " + sum / peopleMap.size() + " anni");
+
+        // 3) Iterazione sulle entry (righe)
+        for (Map.Entry<String, Integer> entry : peopleMap.entrySet()) {
+            System.out.println(entry);  // stampa nella forma "chiave=valore"
+        }
+    }
+}
+```
+
+**Output tipico:**
+```
+Silvia ha 43 anni
+Piero ha 25 anni
+Anna ha 21 anni
+Guido ha 56 anni
+
+L'età media è di 36.25 anni
+Silvia=43
+Piero=25
+Anna=21
+Guido=56
+```
+
+---
+
+## 7. Esercizi pratici con le collezioni
+
+### Esercizio 1 – Insieme di parole distinte (`Set`)
+
+**Obiettivo:** analizzare un elenco di parole (es. argomenti da riga di comando) e:
+- stampare le parole duplicate
+- contare e stampare le parole distinte
+- mostrare l’elenco delle parole senza duplicati
+
+**Struttura dati:** `Set<String>` perché non ammette duplicati per definizione; il metodo `add` restituisce `false` se l’elemento è già presente.
+
+```java
+import java.util.*;
+
+public class FindDups {
+    public static void main(String[] args) {
+        Set<String> s = new HashSet<>();  // o TreeSet per ordinamento
+
+        for (String a : args) {
+            if (!s.add(a)) {
+                System.out.println("Parola duplicata: " + a);
+            }
+        }
+
+        System.out.println(s.size() + " parole distinte: " + s);
+
+        // Stampa personalizzata
+        for (String st : s) {
+            System.out.print(st + " ");
+        }
+    }
+}
+```
+
+**Esecuzione:**
+```
+> java FindDups Io sono Io esisto Io parlo
+Parola duplicata: Io
+Parola duplicata: Io
+4 parole distinte: [Io, parlo, esisto, sono]
+Io parlo esisto sono
+```
+
+**Scelta dell’implementazione:**
+- `HashSet`: nessun ordine garantito, tempo medio O(1) per `add`/`contains`.
+- `TreeSet`: elementi ordinati (alfabeticamente), tempo O(log n). Si usa se serve un elenco ordinato.
+
+---
+
+### Esercizio 2 – Scambio di elementi in una lista (`List`)
+
+**Obiettivo:** scambiare due elementi in una sequenza (es. argomenti da riga di comando).
+
+**Struttura dati:** `List<T>` perché fornisce accesso posizionale (indicizzato) e duplicati ammessi.
+
+**Funzione di swap generica:**
+```java
+static <T> void swap(List<T> list, int i, int j) {
+    T temp = list.get(i);
+    list.set(i, list.get(j));
+    list.set(j, temp);
+}
+```
+
+**Programma principale:**
+```java
+import java.util.*;
+
+public class EsList {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>(); // o LinkedList
+        for (String arg : args) {
+            list.add(arg);
+        }
+        System.out.println(list);
+        swap(list, 2, 3);
+        System.out.println(list);
+    }
+}
+```
+
+**Esecuzione:**
+```
+> java EsList cane gatto pappagallo canarino cane canarino pescerosso
+[cane, gatto, pappagallo, canarino, cane, canarino, pescerosso]
+[cane, gatto, canarino, pappagallo, cane, canarino, pescerosso]
+```
+
+**Scelta dell’implementazione:**
+- `ArrayList`: accesso posizionale O(1), ottimo per la maggior parte degli usi.
+- `LinkedList`: doppia lista concatenata, efficiente se si fanno molti inserimenti/rimozioni all’inizio o nel mezzo. Implementa anche `Queue` e `Deque`.
+
+---
+
+### Esercizio 3 – Iterazione a ritroso con `ListIterator`
+
+- `ListIterator<T>` estende `Iterator<T>` ed è specifico per le liste. Permette:
+  - di muoversi all’indietro (`hasPrevious()`, `previous()`)
+  - di conoscere l’indice corrente e di aggiungere/sostituire elementi durante l’iterazione.
+
+**Iterazione inversa:**
+```java
+import java.util.*;
+
+public class EsListIt {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>();
+        for (String arg : args) {
+            list.add(arg);
+        }
+
+        // Partiamo dalla fine
+        for (ListIterator<String> it = list.listIterator(list.size()); it.hasPrevious(); ) {
+            System.out.print(it.previous() + " ");
+        }
+    }
+}
+```
+
+**Esecuzione:**
+```
+> java EsListIt cane gatto cane canarino
+canarino cane gatto cane
+```
+
+**Nota:** Per iniziare dalla fine si usa `list.listIterator(list.size())`; così il cursore è posizionato dopo l’ultimo elemento.
+
+---
+
+### Esercizio 4 – Conteggio delle occorrenze (`Map`)
+
+**Obiettivo:** contare quante volte ogni parola compare in un insieme di argomenti.
+
+**Struttura dati:** `Map<String, Integer>` che associa a ogni parola (chiave) il numero di occorrenze (valore).
+
+**Logica:**
+- Se la parola non è ancora nella mappa (`get` restituisce `null`), la si inserisce con conteggio 1.
+- Altrimenti, si incrementa il conteggio esistente.
+
+```java
+import java.util.*;
+
+public class ContaFrequenza {
+    public static void main(String[] args) {
+        Map<String, Integer> m = new HashMap<>();  // o TreeMap per ordinamento
+
+        for (String parola : args) {
+            Integer freq = m.get(parola);
+            m.put(parola, (freq == null) ? 1 : freq + 1);
+        }
+
+        System.out.println(m.size() + " parole distinte:");
+        System.out.println(m); // toString() produce {parola=occorrenze, ...}
+    }
+}
+```
+
+**Esecuzione:**
+```
+> java ContaFrequenza cane gatto cane pesce gatto gatto cane
+3 parole distinte:
+{cane=3, pesce=1, gatto=3}
+```
+
+**Iterare sulla mappa risultante**:
+
+1. Via `keySet`:
+```java
+public static void myPrint(Map<String, Integer> m) {
+    for (String key : m.keySet()) {
+        System.out.println(key + "\t" + m.get(key));
+    }
+}
+```
+
+2. Via `entrySet` (evita di chiamare `get`):
+```java
+public static void myPrint2(Map<String, Integer> m) {
+    for (Map.Entry<String, Integer> entry : m.entrySet()) {
+        System.out.println(entry); // stampa "chiave=valore"
+    }
+}
+```
+
+**Scelta dell’implementazione:**
+- `HashMap`: tempo costante, nessun ordinamento.
+- `TreeMap`: chiavi ordinate, tempo O(log n).
+
+---
+
+### Esercizio 5 – Conteggio con ordinamento (`SortedMap`)
+
+**Obiettivo:** come sopra, ma con output **ordinato per chiave**.
+
+**Struttura dati:** `SortedMap<String, Integer>` con implementazione `TreeMap`.
+
+```java
+import java.util.*;
+
+public class ContaFrequenzaOrd {
+    public static void main(String[] args) {
+        SortedMap<String, Integer> m = new TreeMap<>();
+
+        for (String parola : args) {
+            Integer freq = m.get(parola);
+            m.put(parola, (freq == null) ? 1 : freq + 1);
+        }
+
+        System.out.println(m.size() + " parole distinte:");
+        System.out.println(m);
+    }
+}
+```
+
+**Esecuzione:**
+```
+> java ContaFrequenzaOrd cane gatto cane pesce gatto gatto cane
+3 parole distinte:
+{cane=3, gatto=3, pesce=1}
+```
+
+L’ordine delle chiavi è garantito dal `TreeMap` (ordine naturale delle stringhe o secondo `Comparator` fornito). L’iteratore sulle viste (`keySet`, `entrySet`) seguirà lo stesso ordinamento.
+
+---
+
+## 8. Riepilogo delle scelte implementative
+
+| Interfaccia | Implementazione | Caratteristiche principali |
+|-------------|-----------------|----------------------------|
+| `Set` | `HashSet` | O(1) medio, nessun ordine |
+|  | `TreeSet` | O(log n), ordinamento totale |
+| `List` | `ArrayList` | accesso O(1), buona per la maggior parte dei casi |
+|  | `LinkedList` | O(1) per inserimenti/rimozioni in testa; implementa anche `Queue`/`Deque` |
+| `Map` | `HashMap` | O(1) medio, nessun ordine |
+|  | `TreeMap` | O(log n), chiavi ordinate (interfaccia `SortedMap`) |
+
+---
+
+Questi appunti completano la panoramica sul Java Collection Framework per quanto riguarda il meccanismo di iterazione e gli esempi pratici di utilizzo delle principali strutture dati.
