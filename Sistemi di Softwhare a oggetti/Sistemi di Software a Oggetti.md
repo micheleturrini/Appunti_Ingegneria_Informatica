@@ -4576,7 +4576,7 @@ Anna=21
 Guido=56
 ```
 ### Esempi
-**Esercizio 1 – Insieme di parole distinte (`Set`)**
+#### Esercizio 1 – Insieme di parole distinte (`Set`)
 **Obiettivo:** analizzare un elenco di parole (es. argomenti da riga di comando) e:
 - stampare le parole duplicate
 - contare e stampare le parole distinte
@@ -4618,13 +4618,11 @@ Io parlo esisto sono
 **Scelta dell’implementazione:**
 - `HashSet`: nessun ordine garantito, tempo medio O(1) per `add`/`contains`.
 - `TreeSet`: elementi ordinati (alfabeticamente), tempo O(log n). Si usa se serve un elenco ordinato.
-### Esercizio 2 – Scambio di elementi in una lista (`List`)
-
+#### Esercizio 2 – Scambio di elementi in una lista (`List`)
 **Obiettivo:** scambiare due elementi in una sequenza (es. argomenti da riga di comando).
-
 **Struttura dati:** `List<T>` perché fornisce accesso posizionale (indicizzato) e duplicati ammessi.
 
-**Funzione di swap generica:**
+Funzione di swap generica:
 ```java
 static <T> void swap(List<T> list, int i, int j) {
     T temp = list.get(i);
@@ -4632,8 +4630,7 @@ static <T> void swap(List<T> list, int i, int j) {
     list.set(j, temp);
 }
 ```
-
-**Programma principale:**
+Programma principale:
 ```java
 import java.util.*;
 
@@ -4649,8 +4646,7 @@ public class EsList {
     }
 }
 ```
-
-**Esecuzione:**
+Esecuzione:
 ```
 > java EsList cane gatto pappagallo canarino cane canarino pescerosso
 [cane, gatto, pappagallo, canarino, cane, canarino, pescerosso]
@@ -4660,16 +4656,11 @@ public class EsList {
 **Scelta dell’implementazione:**
 - `ArrayList`: accesso posizionale O(1), ottimo per la maggior parte degli usi.
 - `LinkedList`: doppia lista concatenata, efficiente se si fanno molti inserimenti/rimozioni all’inizio o nel mezzo. Implementa anche `Queue` e `Deque`.
-
----
-
-### Esercizio 3 – Iterazione a ritroso con `ListIterator`
-
+#### Esercizio 3 – Iterazione a ritroso con `ListIterator`
 - `ListIterator<T>` estende `Iterator<T>` ed è specifico per le liste. Permette:
   - di muoversi all’indietro (`hasPrevious()`, `previous()`)
   - di conoscere l’indice corrente e di aggiungere/sostituire elementi durante l’iterazione.
 
-**Iterazione inversa:**
 ```java
 import java.util.*;
 
@@ -4687,23 +4678,15 @@ public class EsListIt {
     }
 }
 ```
-
-**Esecuzione:**
+Esecuzione:
 ```
 > java EsListIt cane gatto cane canarino
 canarino cane gatto cane
 ```
-
-**Nota:** Per iniziare dalla fine si usa `list.listIterator(list.size())`; così il cursore è posizionato dopo l’ultimo elemento.
-
----
-
-### Esercizio 4 – Conteggio delle occorrenze (`Map`)
-
+Per iniziare dalla fine si usa `list.listIterator(list.size())`; così il cursore è posizionato dopo l’ultimo elemento.
+#### Esercizio 4 – Conteggio delle occorrenze (`Map`)
 **Obiettivo:** contare quante volte ogni parola compare in un insieme di argomenti.
-
 **Struttura dati:** `Map<String, Integer>` che associa a ogni parola (chiave) il numero di occorrenze (valore).
-
 **Logica:**
 - Se la parola non è ancora nella mappa (`get` restituisce `null`), la si inserisce con conteggio 1.
 - Altrimenti, si incrementa il conteggio esistente.
@@ -4725,8 +4708,7 @@ public class ContaFrequenza {
     }
 }
 ```
-
-**Esecuzione:**
+Esecuzione:
 ```
 > java ContaFrequenza cane gatto cane pesce gatto gatto cane
 3 parole distinte:
@@ -4734,7 +4716,6 @@ public class ContaFrequenza {
 ```
 
 **Iterare sulla mappa risultante**:
-
 1. Via `keySet`:
 ```java
 public static void myPrint(Map<String, Integer> m) {
@@ -4743,7 +4724,6 @@ public static void myPrint(Map<String, Integer> m) {
     }
 }
 ```
-
 2. Via `entrySet` (evita di chiamare `get`):
 ```java
 public static void myPrint2(Map<String, Integer> m) {
@@ -4752,17 +4732,8 @@ public static void myPrint2(Map<String, Integer> m) {
     }
 }
 ```
-
-**Scelta dell’implementazione:**
-- `HashMap`: tempo costante, nessun ordinamento.
-- `TreeMap`: chiavi ordinate, tempo O(log n).
-
----
-
-### Esercizio 5 – Conteggio con ordinamento (`SortedMap`)
-
+#### Esercizio 5 – Conteggio con ordinamento (`SortedMap`)
 **Obiettivo:** come sopra, ma con output **ordinato per chiave**.
-
 **Struttura dati:** `SortedMap<String, Integer>` con implementazione `TreeMap`.
 
 ```java
@@ -4782,12 +4753,11 @@ public class ContaFrequenzaOrd {
     }
 }
 ```
-
-**Esecuzione:**
+Esecuzione:
 ```
 > java ContaFrequenzaOrd cane gatto cane pesce gatto gatto cane
 3 parole distinte:
 {cane=3, gatto=3, pesce=1}
 ```
-
 L’ordine delle chiavi è garantito dal `TreeMap` (ordine naturale delle stringhe o secondo `Comparator` fornito). L’iteratore sulle viste (`keySet`, `entrySet`) seguirà lo stesso ordinamento.
+### Conversioni fra strutture
