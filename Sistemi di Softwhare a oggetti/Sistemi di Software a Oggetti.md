@@ -4397,6 +4397,15 @@ Contiene **metodi statici di utilità** per operare sulle collezioni.
 - `ArrayList`: realizzata con array ridimensionabile, accesso posizionale O(1).
 - `LinkedList`: doppia lista concatenata, inserimenti/rimozioni in testa e mezzo efficienti.
 
+| Interfaccia | Implementazione | Caratteristiche principali |
+|-------------|-----------------|----------------------------|
+| `Set` | `HashSet` | O(1) medio, nessun ordine |
+|  | `TreeSet` | O(log n), ordinamento totale |
+| `List` | `ArrayList` | accesso O(1), buona per la maggior parte dei casi |
+|  | `LinkedList` | O(1) per inserimenti/rimozioni in testa; implementa anche `Queue`/`Deque` |
+| `Map` | `HashMap` | O(1) medio, nessun ordine |
+|  | `TreeMap` | O(log n), chiavi ordinate (interfaccia `SortedMap`) |
+
 **Implementazioni immodificabili**
 Non esistono classi pubbliche **per le versioni immodificabili**.
 Si ottengono tramite **factory method statici**:
@@ -4445,32 +4454,23 @@ Il metodo chiave è `Iterator<T> iterator()`, una sorta di **factory** che resti
   - `T next()` – restituisce il prossimo elemento e fa avanzare l’iteratore.
   - `boolean hasNext()` – restituisce `true` se ci sono ancora elementi da visitare.
   - `void remove()` – **operazione opzionale**; rimuove l’ultimo elemento restituito da `next()`.
-- Le collezioni della JCF lo implementano; le collezioni **immutabili** (es. quelle ottenute con `List.of`) lanciano `UnsupportedOperationException` se si invoca `remove()`.
+Le collezioni della JCF lo implementano; le collezioni **immutabili** (es. quelle ottenute con `List.of`) lanciano `UnsupportedOperationException` se si invoca `remove()`.
 
----
-
-## 3. Uso dell’iteratore nel for‑each
-
+**Uso dell’iteratore nel for‑each**
 - Il costrutto `for (T x : coll)` si basa proprio sull’iteratore. Il codice:
-
 ```java
 for (T x : coll) {
     // corpo del ciclo
 }
 ```
-
 equivale a:
-
 ```java
 for (Iterator<T> i = coll.iterator(); i.hasNext(); ) {
     T x = i.next();
     // corpo del ciclo
 }
 ```
-
-- Grazie a ciò, è possibile iterare su qualsiasi `Collection` (e anche sugli array) con una sintassi uniforme.
-
----
+Grazie a ciò, è possibile iterare su qualsiasi `Collection` (e anche sugli array) con una sintassi uniforme.
 
 Esempio: iteratore implicito ed esplicito
 ```java
@@ -4504,46 +4504,15 @@ public class IteratorExample {
     }
 }
 ```
+La funzione `iterateOn` è **generica** e funziona su qualunque `Collection<T>`, indipendentemente dal tipo concreto degli elementi.
 
-**Output:**
-```
-lista disney
-uso di iteratore implicito
-Pippo
-Pluto
-Paperino
-Zio Paperone
-uso di iteratore esplicito
-Pippo
-Pluto
-Paperino
-Zio Paperone
-numeri vari
-uso di iteratore implicito
-18
-22.2
-37.4
-uso di iteratore esplicito
-18
-22.2
-37.4
-```
-
-- La funzione `iterateOn` è **generica** e funziona su qualunque `Collection<T>`, indipendentemente dal tipo concreto degli elementi.
-
----
-
-## 5. Regole e limitazioni nell’uso degli iteratori
-
-- **Cosa si può fare:**
-  - Iterare per leggere gli elementi.
+**Regole nell'utilizzo degli iteratori**
+**Cosa si può fare:**
+  - Iterare per **leggere** gli elementi.
   - Su collezioni **modificabili**, modificare gli elementi stessi (es. `list.set(i, newValue)`).
-- **Cosa NON si può fare:**
-  - Modificare la **struttura della collezione** mentre l’iteratore è attivo (aggiungere o rimuovere elementi direttamente sulla collezione).
-  - Farlo causa una **`ConcurrentModificationException`**.
-
-### Esempio di errore
-
+**Cosa NON si può fare:**
+  - Modificare collection immodificabili (es. `List.of`): `UnsupportedOperationException`
+  - Modificare la **struttura della collezione** mentre l’iteratore è attivo (**aggiungere o rimuovere elementi** direttamente sulla collezione). Farlo causa una **`ConcurrentModificationException`**
 ```java
 public static <T> void iterateAndChange(String msg, Collection<T> coll) {
     for (T element : coll) {
@@ -4553,22 +4522,13 @@ public static <T> void iterateAndChange(String msg, Collection<T> coll) {
 }
 ```
 
-- Se la collezione è immutabile (es. `List.of`) si ottiene `UnsupportedOperationException`; se è modificabile ma la si modifica durante l’iterazione, si ottiene `ConcurrentModificationException`.
-
----
-
-## 6. Iteratori e Mappe
-
-- `Map<K,V>` non estende `Collection`, quindi **non si può iterare direttamente su una mappa**. Tuttavia, si può iterare sulle sue **viste**:
-
+#### Iteratori e Mappe
+`Map<K,V>` non estende `Collection`, quindi **non si può iterare direttamente su una mappa**. Tuttavia, si può iterare sulle sue **viste**:
   - `keySet()` → `Set<K>` (insieme delle chiavi)
   - `values()` → `Collection<V>` (insieme dei valori)
   - `entrySet()` → `Set<Map.Entry<K,V>>` (insieme delle righe)
-
 - `Map.Entry<K,V>` è una **interfaccia interna** a `Map` che rappresenta una coppia chiave-valore, con metodi `getKey()` e `getValue()`.
-
-### Esempio completo
-
+Es
 ```java
 import java.util.*;
 
@@ -4586,9 +4546,7 @@ public class MapIteratorExample {
             System.out.println(name + " ha " + peopleMap.get(name) + " anni");
         }
 
-        System.out.println();
-
-        // 2) Iterazione sui valori (es. calcolo età media)
+     // 2) Iterazione sui valori (es. calcolo età media)
         float sum = 0;
         for (int value : peopleMap.values()) {
             sum += value;
@@ -4603,7 +4561,7 @@ public class MapIteratorExample {
 }
 ```
 
-**Output tipico:**
+Output:
 ```
 Silvia ha 43 anni
 Piero ha 25 anni
@@ -4611,25 +4569,20 @@ Anna ha 21 anni
 Guido ha 56 anni
 
 L'età media è di 36.25 anni
+
 Silvia=43
 Piero=25
 Anna=21
 Guido=56
 ```
-
----
-
-## 7. Esercizi pratici con le collezioni
-
-### Esercizio 1 – Insieme di parole distinte (`Set`)
-
+### Esempi
+**Esercizio 1 – Insieme di parole distinte (`Set`)**
 **Obiettivo:** analizzare un elenco di parole (es. argomenti da riga di comando) e:
 - stampare le parole duplicate
 - contare e stampare le parole distinte
 - mostrare l’elenco delle parole senza duplicati
 
 **Struttura dati:** `Set<String>` perché non ammette duplicati per definizione; il metodo `add` restituisce `false` se l’elemento è già presente.
-
 ```java
 import java.util.*;
 
@@ -4653,7 +4606,7 @@ public class FindDups {
 }
 ```
 
-**Esecuzione:**
+Esecuzione:
 ```
 > java FindDups Io sono Io esisto Io parlo
 Parola duplicata: Io
@@ -4665,9 +4618,6 @@ Io parlo esisto sono
 **Scelta dell’implementazione:**
 - `HashSet`: nessun ordine garantito, tempo medio O(1) per `add`/`contains`.
 - `TreeSet`: elementi ordinati (alfabeticamente), tempo O(log n). Si usa se serve un elenco ordinato.
-
----
-
 ### Esercizio 2 – Scambio di elementi in una lista (`List`)
 
 **Obiettivo:** scambiare due elementi in una sequenza (es. argomenti da riga di comando).
@@ -4841,20 +4791,3 @@ public class ContaFrequenzaOrd {
 ```
 
 L’ordine delle chiavi è garantito dal `TreeMap` (ordine naturale delle stringhe o secondo `Comparator` fornito). L’iteratore sulle viste (`keySet`, `entrySet`) seguirà lo stesso ordinamento.
-
----
-
-## 8. Riepilogo delle scelte implementative
-
-| Interfaccia | Implementazione | Caratteristiche principali |
-|-------------|-----------------|----------------------------|
-| `Set` | `HashSet` | O(1) medio, nessun ordine |
-|  | `TreeSet` | O(log n), ordinamento totale |
-| `List` | `ArrayList` | accesso O(1), buona per la maggior parte dei casi |
-|  | `LinkedList` | O(1) per inserimenti/rimozioni in testa; implementa anche `Queue`/`Deque` |
-| `Map` | `HashMap` | O(1) medio, nessun ordine |
-|  | `TreeMap` | O(log n), chiavi ordinate (interfaccia `SortedMap`) |
-
----
-
-Questi appunti completano la panoramica sul Java Collection Framework per quanto riguarda il meccanismo di iterazione e gli esempi pratici di utilizzo delle principali strutture dati.
