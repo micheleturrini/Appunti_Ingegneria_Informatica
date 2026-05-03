@@ -4906,12 +4906,8 @@ System.out.println(m.get("BNGRRTyymddxxxxu"));
 ```
 Con `TreeMap` la mappa è ordinata per chiave (codice fiscale).
 
-### Approfondimento facoltativo: `EnumSet` e `EnumMap` in Java
-
-Quando gli elementi di un set o le chiavi di una mappa sono **costanti enumerative**, esistono implementazioni specializzate estremamente efficienti.
-
+### `EnumSet` e `EnumMap` (facoltativo)
 #### `EnumSet`
-
 - `EnumSet` è una **classe astratta**; non ha costruttori pubblici.
 - Le istanze si ottengono tramite **metodi factory statici**:
   - `EnumSet.allOf(Class<E> elementType)` – tutte le costanti dell’enumerazione
@@ -4922,8 +4918,7 @@ Quando gli elementi di un set o le chiavi di una mappa sono **costanti enumerati
   - `EnumSet.complementOf(EnumSet<E> s)` – complemento rispetto all’insieme totale delle costanti
 - **Non accetta elementi nulli** – lancia `NullPointerException`.
 
-**Esempio d’uso:**
-
+Esempio d’uso:
 ```java
 import java.time.DayOfWeek;
 import java.util.EnumSet;
@@ -4942,7 +4937,6 @@ EnumSet<DayOfWeek> empty = EnumSet.noneOf(DayOfWeek.class);
 ```
 
 #### `EnumMap`
-
 - `EnumMap<K extends Enum<K>, V>` è una mappa ottimizzata per chiavi enumerative.
 - Ha costruttori pubblici:
   - `EnumMap(Class<K> keyType)` – mappa vuota
@@ -4951,8 +4945,7 @@ EnumSet<DayOfWeek> empty = EnumSet.noneOf(DayOfWeek.class);
 - Fornisce i classici metodi `put`, `get`, `keySet`, ecc.
 - **Non accetta chiavi nulle** (`NullPointerException`).
 
-**Esempio d’uso:**
-
+Esempio d’uso:
 ```java
 import java.time.DayOfWeek;
 import java.util.EnumMap;
@@ -4965,3 +4958,159 @@ costoSosta.put(DayOfWeek.SUNDAY, 0.0);
 System.out.println(costoSosta.get(DayOfWeek.MONDAY)); // 1.5
 System.out.println(costoSosta); // {MONDAY=1.5, SATURDAY=2.0, SUNDAY=0.0}
 ```
+## Classi generiche
+La notazione `<T>` (tipo generico) può essere usata per definire **classi o interfacce** parametrizzate rispetto al tipo manipolato.
+Caso tipico: nuovi contenitori o strutture dati (stack, code, alberi, …).
+
+**Esempio concreto:** vogliamo realizzare un nostro stack (LIFO) generico `MyStack<T>`, in modo da poter creare stack di interi, stringhe, ecc. senza duplicare codice.
+```java
+public class MyStack<T> {
+    public void push(T elem) { /* ... */ }
+    public T pop() { /* ... */ }
+    public boolean isEmpty() { /* ... */ }
+}
+```
+
+### Implementazione basata su lista (`ArrayList`)
+È l’approccio più semplice e pulito, perché le collection sono già generiche e non soffrono dei problemi degli array (vedi oltre).
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class MyStack<T> {
+    private List<T> storage;
+
+    public MyStack() {storage = new ArrayList<>();}
+    public void push(T elem) {storage.add(elem);}
+    public T pop() {return storage.remove(storage.size() - 1);}
+    public boolean isEmpty() {return storage.isEmpty();}
+}
+```
+
+```java
+MyStack<Integer> stack = new MyStack<>();
+stack.push(18);
+stack.push(22);
+stack.push(34);
+
+while (!stack.isEmpty()) {
+    System.out.println(stack.pop()); // stampa 34, 22, 18
+}
+```
+
+**Miglioramento: Cascading & Fluent Interface**
+Per rendere l’uso più fluido (es. concatenare più `push`) si fa restituire a `push` l’oggetto stesso (`this`) invece di `void`.
+
+```java
+public class MyStack<T> {
+    private List<T> storage;
+    // ...
+    public MyStack<T> push(T elem) {
+        storage.add(elem);
+        return this;   // permette il cascading
+    }
+    // pop() e isEmpty() invariati
+}
+```
+
+```java
+stack.push(18).push(22).push(34);
+while (!stack.isEmpty()) {
+    System.out.println(stack.pop());
+}
+```
+**Nota:** in Java i tipi primitivi vengono gestiti con i wrapper (`Integer`, `Double`, …) e l’autoboxing/unboxing automatico.
+### Implementazione con array e il problema del type erasure
+Si potrebbe pensare di usare un array di `T` come “magazzino” interno:
+```java
+public class MyStackBis<T> {
+    private T[] storage;
+    private int elements;
+
+    public MyStackBis(int size) {
+        storage = new T[size];   // ERRORE DI COMPILAZIONE!
+        elements = 0;
+    }
+    // ...
+}
+```
+**Il problema:** in Java **non si può istanziare un array di un tipo generico** (`new T[size]`) a causa del *type erasure*.
+ **Cos’è il type erasure?**
+- I generici in Java esistono solo a livello di compilatore; nel bytecode il tipo `T` viene **cancellato** e sostituito con `Object` (o con il tipo bound più restrittivo).
+- A runtime non è nota l’effettiva identità di `T`, quindi non si può allocare un array del tipo esatto garantendo *type safety*.
+- 
+**Workaround “povero” (sconsigliato): cast da `Object[]`**
+Si può forzare il cast di un array di `Object` a `T[]`:
+```java
+class PoorGenericArray<T> {
+    private T[] array;
+
+    public PoorGenericArray(int size) {
+        array = (T[]) new Object[size]; // warning di tipo "unchecked cast"
+    }
+
+    public T get(int index) { return array[index]; }
+    public void set(int index, T elem) { array[index] = elem; }
+    public int size() { return array.length; }
+
+    // Metodo pericoloso: espone l'array interno
+    public T[] getArray() {
+        return array;
+    }
+}
+```
+**Funziona finché l’array rimane interno,** perché i singoli elementi vengono letti/scritti con il tipo `T`
+
+Esempio senza problemi:
+```java
+PoorGenericArray<String> arr = new PoorGenericArray<>(5);
+arr.set(0, "pluto");
+arr.set(1, "paperino");
+System.out.println(arr.get(0));  // pluto
+```
+
+**Ma se l’array viene esposto all’esterno:** `getArray()` restituisce un `T[]` che in realtà è un `Object[]`. Un assegnazione come
+```java
+String[] strings = arr.getArray(); // ClassCastException a runtime!
+```
+
+```
+java.lang.ClassCastException: class [Ljava.lang.Object; cannot be cast to class [Ljava.lang.String;
+```
+**Conclusione:** l’approccio è fragile e va evitato.
+
+**Workaround elegante: factory con `Arrays.copyOf`**
+Si sfrutta il metodo `Arrays.copyOf(array, length)` passandogli un **array “farlocco”** (dummy) del tipo corretto, usato solo come template.
+
+```java
+import java.util.Arrays;
+
+public class GenericArrayFactory {
+    @SafeVarargs
+    public static <T> T[] of(int size, T... dummyArray) {
+        // dummyArray è un varargs di tipo T, usato solo per dedurre il tipo
+        return Arrays.copyOf(dummyArray, size);
+    }
+}
+```
+- `copyOf` crea un nuovo array del **vero tipo** di `dummyArray`, lungo `size`.
+- L’array restituito non è più un `Object[]`, ma un `T[]` **pulito**, e può essere usato con la notazione `[]` e tutti i metodi degli array.
+
+Esempio d’uso:
+```java
+String[] strings = GenericArrayFactory.of(5, new String[0]);
+Integer[] integers = GenericArrayFactory.of(9, new Integer[0]);
+
+strings[0] = "pluto";
+strings[1] = "paperino";
+strings[3] = "paperone";
+System.out.println(String.join(",", strings));
+// stampa: pluto,paperino,null,paperone,null
+
+integers[0] = 22;
+integers[1] = 33;
+integers[2] = 44;
+System.out.println(Arrays.toString(integers));
+// [22, 33, 44, null, null, null, null, null, null]
+```
+##
