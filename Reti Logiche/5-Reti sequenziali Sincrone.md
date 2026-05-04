@@ -35,7 +35,7 @@ Per superare i limiti delle RSA si introduce un **ritardo controllato** mediante
 
 ---
 
-## 4. Struttura generale di una Rete Sequenziale Sincrona (RSS)
+### Struttura generale
 ![[8_reti_sequenziali_sincrone.pdf#page=10&rect=12,1,702,326|8_reti_sequenziali_sincrone, p.10|600]]
 - Una o più **reti combinatorie** $F$ (uscita) e $G$ (stato futuro).
 - **Flip-flop D** in retroazione: il loro ingresso $D$ è lo stato futuro $Y$, l'uscita $Q$ è lo stato presente $y$.
@@ -55,28 +55,21 @@ La rete **non funziona ad inseguimento**: ogni stato presente è stabile per alm
 > Il **solo evento** che fa evolvere lo stato e l'uscita è il **fronte di salita del clock**.
 
 ![[8_reti_sequenziali_sincrone.pdf#page=15&rect=20,6,708,319|8_reti_sequenziali_sincrone, p.15|700]]
-## 5. Vincoli temporali di una RSS
-
+### Vincoli temporali
 Il periodo di clock $T_0$ ha un **valore minimo** determinato da:
-
 - $t_r$: tempo di risposta dei FF-D dopo il fronte di clock (dopo $t_r$, i $y$ sono stabili).
 - $t_i$: ritardo con cui gli ingressi $x$ diventano stabili (si assume che gli ingressi siano sincroni, cioè varino subito dopo il clock).
 - $t_{pd,G}$: ritardo di propagazione della rete combinatoria $G$ (che genera $Y$ a partire da $x$ e $y$).
 - $t_{su}$: tempo di setup dei FF-D (i dati $Y$ devono essere stabili prima del fronte di salita successivo).
 - $t_h$: tempo di hold (i dati devono rimanere stabili per un breve tempo dopo il fronte).
 
-Condizione necessaria:
+$$T_0 \;\ge\; \max(t_r, t_i) \;+\; t_{pd,G} \;+\; t_{su}$$
 
-\[
-T_0 \;\ge\; \max(t_r, t_i) \;+\; t_{pd,G} \;+\; t_{su}
-\]
-
----
-
-## 6. Il modello matematico: Finite State Machine (FSM)
-
+![[8_reti_sequenziali_sincrone.pdf#page=17&rect=441,279,681,486|8_reti_sequenziali_sincrone, p.17|200]]
+![[8_reti_sequenziali_sincrone.pdf#page=17&rect=2,-2,705,260|8_reti_sequenziali_sincrone, p.17|700]]
+### Il modello matematico: Finite State Machine (FSM)
 Una RSS realizza un **automa a stati finiti** (FSM), definito da:
-
+$$FSM = {I, U, S, F, G}$$
 - **Insiemi**:
   - $I$: alfabeto di ingresso $\{i_1, i_2, \dots, i_N\}$
   - $U$: alfabeto di uscita $\{u_1, u_2, \dots, u_M\}$
@@ -84,43 +77,31 @@ Una RSS realizza un **automa a stati finiti** (FSM), definito da:
 - **Funzioni**:
   - Funzione di uscita: $F : S \times I \to U$
   - Funzione di aggiornamento dello stato: $G : S \times I \to S$
-
 Nelle RSS la **memoria** che mantiene lo stato presente $s$ fino all'aggiornamento con $s^*$ è realizzata dai flip-flop D.
-
----
-
-## 7. Modelli di Mealy e Moore
-
-### Modello di Moore
-
-![Struttura Moore](placeholder.png)
-
+### Modelli di Mealy e Moore
+![[8_reti_sequenziali_sincrone.pdf#page=19&rect=74,2,650,405|8_reti_sequenziali_sincrone, p.19|700]]
+#### Modello di Moore
 L'uscita $F$ dipende **solo dallo stato presente** $y$: $z = F(y)$. Non c'è percorso combinatorio diretto tra ingressi e uscite.
-
 **Implicazioni**:
 - L'uscita varia **in sincrono col clock**, con un periodo di clock di **ritardo** rispetto alla variazione degli ingressi.
 - Gli ingressi possono variare anche in modo asincrono (purché rispettino setup/hold): l'uscita rimane stabile durante il periodo.
-
-Principale limite: **latenza** maggiore (risposta ritardata di un colpo di clock).
-
+Principale limite: **latenza** maggiore **(risposta potenzialmente ritardata di un colpo di clock).**
+![[8_reti_sequenziali_sincrone.pdf#page=21&rect=3,6,716,437|8_reti_sequenziali_sincrone, p.21|700]]
 ### Modello di Mealy
-
-![Struttura Mealy](placeholder.png)
-
 L'uscita $F$ dipende sia dallo stato presente $y$ **che dagli ingressi** $x$: $z = F(y, x)$. Esiste un percorso combinatorio diretto tra $x$ e $z$.
 
 **Implicazioni**:
 - L'uscita **può cambiare immediatamente** al variare degli ingressi, anche nello stesso periodo di clock.
-- Se gli ingressi non sono sincroni, si possono avere più variazioni dell'uscita in un ciclo; la rete mostra un comportamento asincrono sull'uscita.
 - La risposta è **anticipata** rispetto a Moore: l'uscita può riconoscere la sequenza nello stesso periodo in cui arriva l'ultimo simbolo.
+![[8_reti_sequenziali_sincrone.pdf#page=23&rect=3,-1,682,447|8_reti_sequenziali_sincrone, p.23|700]]
+> [!danger]
+> Se gli ingressi non sono sincroni, **si possono avere più variazioni dell'uscita in un ciclo**; la rete mostra un comportamento asincrono sull'uscita.
+> *Per questo motivo spesso si usa la sintesi di Moore*
 
----
-
-## 8. Sincronizzazione di ingressi asincroni
-
+### Sincronizzazione di ingressi asincroni
 Il modello RSS assume ingressi **sincroni col clock** (cambiano subito dopo il fronte e una volta per ciclo). In pratica molti segnali sono **asincroni** (es. pulsanti, sensori).
-
-**Condizione di sincronizzabilità**: la frequenza del segnale asincrono deve essere **minore** della frequenza di clock. Se il segnale varia più velocemente non è possibile sincronizzarlo; bisogna aumentare il clock.
+> [!Condizione di sincronizzabilità]
+la **frequenza del segnale asincrono deve essere minore della frequenza di clock.** Se il segnale varia più velocemente non è possibile sincronizzarlo; bisogna aumentare il clock.
 
 **Sincronizzatore a due flip-flop D**:
 
@@ -130,8 +111,6 @@ Il modello RSS assume ingressi **sincroni col clock** (cambiano subito dopo il f
 - L'incertezza sulla transizione di $x$ si traduce in un'incertezza sul **ritardo** con cui $x_{\text{sync}}$ commuta (1 o 2 cicli di clock dopo il fronte reale di $x$).
 
 Si possono usare più di due FF in cascata per ridurre ulteriormente la probabilità di metastabilità alla rete a valle.
-
----
 
 ## 9. Sintesi formale di una RSS
 
