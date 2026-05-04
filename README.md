@@ -8,4 +8,6 @@ L'estensione PDF++ aiuta...
 
 Puoi anche visualizzare direttamente il PDF gia esportato.
 
+PS gli appunti di analisi 1 e 2 e algebra se ci sono fanno schifo [Ahh la matematica :( ]
+
 Buono Studio!
