@@ -73,26 +73,26 @@ Analogia meccanica: due valli (H e L) separate da una collina (M). Una massa sul
         - Scrivi “0” (C=1, D=0) → S=0, R=1.
     - Rete combinatoria: S = C·D, R = C·D'.
     - Il latch CD risulta quindi composto da una rete di campionamento (due AND) seguita da un latch SR.
-
+![[7_rsa_per_memorie binarie.pdf#page=26&rect=105,197,615,443|7_rsa_per_memorie binarie, p.26|500]]
 
 - **Sintesi diretta** (senza inizializzazione):
     - Utilizzando un latch S̅R̅ (a NAND) e negando i segnali prodotti dalla rete di campionamento, si ottiene una struttura con 4 NAND e 1 NOT.
     - Poiché quando C=1 il NAND superiore produce D', si può usare questa uscita al posto del NOT, eliminando così la porta NOT: schema finale con **4 NAND** (due per il campionamento, due per la retroazione).
 - Anche il latch CD può essere dotato di ingressi di inizializzazione PRE' e CLR' impiegando il latch SR con init.
 
-#### 3.3 Tempi caratteristici (set‑up, hold, risposta)
-
+#### Tempi caratteristici (set‑up, hold, risposta)
+![[7_rsa_per_memorie binarie.pdf#page=29&rect=124,-1,645,252|7_rsa_per_memorie binarie, p.29|500]]
 - **tₕ** (o t_hold per il latch): durata minima del comando C=1 per evitare metastabilità.
 - **tₛᵤ** (set‑up time): tempo minimo durante il quale D deve essere stabile **prima** della discesa di C (fronte di chiusura del campionamento).
 - **tₕ** (hold time): tempo minimo durante il quale D deve rimanere stabile **dopo** la discesa di C.
 - D deve essere costante per tutto l’intervallo tₛᵤ + tₕ attorno al fronte di discesa di C. Ciò evita cambiamenti simultanei degli ingressi, proibiti nelle RSA.
 - **tₚ** (response time): ritardo con cui Q riflette una variazione di D (quando C=1). È tipicamente diverso per transizioni LH e HL.
 
-#### 3.4 Uscita trasparente e retroazioni pericolose
-
-- Quando C=1, Q è **trasparente** (segue D con un piccolo ritardo). Ne consegue che una connessione in retroazione diretta (es. D = Q') crea un anello combinatorio.
-- In tali condizioni la rete può diventare instabile: se D dipende da Q (ad esempio D = NOT Q), quando C=1 la rete oscillerà senza mai raggiungere uno stato stabile, violando i vincoli di setup e hold. Allo spegnimento di C lo stato memorizzato sarà casuale.
-- **Il semplice latch CD non garantisce stabilità in configurazioni con retroazione diretta**; per questo si usa il flip‑flop D.
+#### Uscita trasparente e retroazioni
+![[7_rsa_per_memorie binarie.pdf#page=30&rect=13,68,711,342|7_rsa_per_memorie binarie, p.30|500]]
+Quando C=1, Q è **trasparente** (segue D con un piccolo ritardo). Ne consegue che una **connessione in retroazione** diretta (es. D = Q') crea uno stato di **oscillazione**.
+![[7_rsa_per_memorie binarie.pdf#page=33&rect=391,108,684,355|7_rsa_per_memorie binarie, p.33|200]]
+**Il semplice latch CD non garantisce stabilità in configurazioni con retroazione diretta**; per questo si usa il flip‑flop D.
 
 ### Il Flip‑Flop D (“Edge‑Triggered”)
 ![[7_rsa_per_memorie binarie.pdf#page=34&rect=228,341,490,465|7_rsa_per_memorie binarie, p.34|200]]
