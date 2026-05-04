@@ -1,3 +1,4 @@
+[[0 - Index]]
 ## Analisi con le mappe
 1. Si scrive l’**espressione associata allo schema** e, se necessario, la si manipola fino ad ottenere una espressione **SP o PS**
 ![[3_reti_costo_minimo.pdf#page=40&rect=19,249,712,414|3_reti_costo_minimo, p.40|500]]

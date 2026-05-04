@@ -1,3 +1,4 @@
+[[0 - Index]]
 A differenza delle reti combinatorie, dove l'uscita dipende solo dagli ingressi attuali, nelle reti sequenziali l'uscita dipende anche dalla **storia passata** degli ingressi.
 - **Problema**: la tabella della verità non è sufficiente per descrivere il comportamento di una rete sequenziale. A parità di ingresso, l'uscita può essere diversa.
 es. cassaforte che per aprirsi deve ricevere 11 01 11.
