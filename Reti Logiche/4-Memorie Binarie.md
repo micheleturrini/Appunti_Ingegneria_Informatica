@@ -79,7 +79,6 @@ Analogia meccanica: due valli (H e L) separate da una collina (M). Una massa sul
     - Utilizzando un latch S̅R̅ (a NAND) e negando i segnali prodotti dalla rete di campionamento, si ottiene una struttura con 4 NAND e 1 NOT.
     - Poiché quando C=1 il NAND superiore produce D', si può usare questa uscita al posto del NOT, eliminando così la porta NOT: schema finale con **4 NAND** (due per il campionamento, due per la retroazione).
 - Anche il latch CD può essere dotato di ingressi di inizializzazione PRE' e CLR' impiegando il latch SR con init.
-
 #### Tempi caratteristici (set‑up, hold, risposta)
 ![[7_rsa_per_memorie binarie.pdf#page=29&rect=124,-1,645,252|7_rsa_per_memorie binarie, p.29|500]]
 - **tₕ** (o t_hold per il latch): durata minima del comando C=1 per evitare metastabilità.

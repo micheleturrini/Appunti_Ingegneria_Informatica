@@ -103,6 +103,7 @@ Il modello RSS assume ingressi **sincroni col clock** (cambiano subito dopo il f
 > [!Condizione di sincronizzabilità]
 la **frequenza del segnale asincrono deve essere minore della frequenza di clock.** Se il segnale varia più velocemente non è possibile sincronizzarlo; bisogna aumentare il clock.
 
+![[8_reti_sequenziali_sincrone.pdf#page=25&rect=57,9,711,201|8_reti_sequenziali_sincrone, p.25|600]]
 **Sincronizzatore a due flip-flop D**:
 
 - Il segnale asincrono $x$ viene campionato da un primo FF-D, la cui uscita $x_1$ viene poi campionata da un secondo FF-D producendo $x_{\text{sync}}$.
