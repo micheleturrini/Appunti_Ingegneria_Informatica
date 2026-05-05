@@ -13,28 +13,14 @@ Un primo approccio è la **retroazione diretta** (RSA): lo stato futuro è rical
 - Lo stato futuro deve variare un bit alla volta $\Rightarrow$ necessità di rimuovere le **corse critiche** nella codifica degli stati.
 - Rischio di **instabilità** a causa di **alee** nelle reti combinatorie di aggiornamento dello stato.
 - Progettazione molto complessa al crescere del numero di ingressi e stati.
-
-**Due ulteriori limiti importanti**:
-1.  A causa del vincolo di variazione di un bit alla volta, l'RSA **non può riconoscere combinazioni come `00 → 11 → 01`** (gli ingressi passerebbero da 00 a 11 cambiando due bit).
-2.  L'RSA non può **discriminare la durata degli ingressi**: sequenze con simboli d'ingresso ripetuti (es. `00 → 01 → 01 → 11`) non sono gestibili perché la rete "insegue" gli ingressi e non ha un meccanismo per scandire il tempo.
-
----
-
-## 3. Soluzione: il ritardo controllato e il campionamento periodico
-
+- A causa del vincolo di variazione di un bit alla volta, l'RSA **non può riconoscere combinazioni come `00 → 11 → 01`** (gli ingressi passerebbero da 00 a 11 cambiando due bit).
+- L'RSA non può **discriminare la durata degli ingressi**: sequenze con simboli d'ingresso ripetuti (es. `00 → 01 → 01 → 11`) non sono gestibili perché la rete "insegue" gli ingressi e non ha un meccanismo per scandire il tempo.
+### Soluzione: il ritardo controllato e il campionamento periodico
 Per superare i limiti delle RSA si introduce un **ritardo controllato** mediante **campionamento periodico** dello stato futuro. L'idea:
-
 - Si calcola lo stato futuro $S^*$ tramite una rete combinatoria $G$.
 - Invece di riportarlo immediatamente allo stato presente, lo si **campiona** (memorizza) ad intervalli regolari $T_0$ usando dei **flip-flop D**.
 - Lo stato presente $S$ si aggiorna solo nei fronti di salita del clock con il valore campionato alla fine del periodo precedente.
-
-**Vantaggi delle RSS**:
-- Eliminazione dei vincoli di adiacenza: gli ingressi e lo stato possono cambiare più bit alla volta (codice arbitrario).
-- Non si devono eliminare le alee statiche.
-- Espressioni booleane minime, complessità progettuale molto più bassa.
-
----
-
+![[8_reti_sequenziali_sincrone.pdf#page=6&rect=31,29,715,469|8_reti_sequenziali_sincrone, p.6|600]]
 ### Struttura generale
 ![[8_reti_sequenziali_sincrone.pdf#page=10&rect=12,1,702,326|8_reti_sequenziali_sincrone, p.10|600]]
 - Una o più **reti combinatorie** $F$ (uscita) e $G$ (stato futuro).

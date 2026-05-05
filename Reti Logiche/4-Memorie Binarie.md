@@ -67,32 +67,22 @@ Analogia meccanica: due valli (H e L) separate da una collina (M). Una massa sul
 - Vantaggio: non si dice *cosa* scrivere, ma *quandlo* campionare D. Pertanto, pilotando opportunamente C, si può comandare la scrittura simultanea di molti latch con un unico segnale di enable.
 #### Sintesi del latch CD
 **Sintesi a partire dal latch SR**: è sufficiente una rete combinatoria che traduca i comandi (C,D) in segnali S ed R per il latch SR.
- - Tabella di trascodifica:
-    - Memorizza (C=0) → S=0, R=0.
-    - Scrivi “1” (C=1, D=1) → S=1, R=0.
-        - Scrivi “0” (C=1, D=0) → S=0, R=1.
-    - Rete combinatoria: S = C·D, R = C·D'.
-    - Il latch CD risulta quindi composto da una rete di campionamento (due AND) seguita da un latch SR.
-![[7_rsa_per_memorie binarie.pdf#page=26&rect=105,197,615,443|7_rsa_per_memorie binarie, p.26|500]]
-
-- **Sintesi diretta** (senza inizializzazione):
-    - Utilizzando un latch S̅R̅ (a NAND) e negando i segnali prodotti dalla rete di campionamento, si ottiene una struttura con 4 NAND e 1 NOT.
-    - Poiché quando C=1 il NAND superiore produce D', si può usare questa uscita al posto del NOT, eliminando così la porta NOT: schema finale con **4 NAND** (due per il campionamento, due per la retroazione).
-- Anche il latch CD può essere dotato di ingressi di inizializzazione PRE' e CLR' impiegando il latch SR con init.
+![[7_rsa_per_memorie binarie.pdf#page=28&rect=109,193,610,441|7_rsa_per_memorie binarie, p.28|500]]
+Poiché quando C=1 il NAND superiore produce D', si può usare questa uscita al posto del NOT, eliminando così la porta NOT: schema finale con **4 NAND** (due per il campionamento, due per la retroazione).
+Anche il latch CD può essere dotato di ingressi di inizializzazione PRE' e CLR' impiegando il latch SR con init.
 #### Tempi caratteristici (set‑up, hold, risposta)
 ![[7_rsa_per_memorie binarie.pdf#page=29&rect=124,-1,645,252|7_rsa_per_memorie binarie, p.29|500]]
-- **tₕ** (o t_hold per il latch): durata minima del comando C=1 per evitare metastabilità.
-- **tₛᵤ** (set‑up time): tempo minimo durante il quale D deve essere stabile **prima** della discesa di C (fronte di chiusura del campionamento).
-- **tₕ** (hold time): tempo minimo durante il quale D deve rimanere stabile **dopo** la discesa di C.
+- **$t_{w}$** **durata minima del comando C=1** per evitare metastabilità.
+- prima e dopo il fronte di discesa di C
+	- $t_{su}$ (set‑up time): tempo minimo durante il quale D deve essere stabile **prima** della discesa di C (fronte di chiusura del campionamento).
+	- **tₕ** (hold time): tempo minimo durante il quale D deve rimanere stabile **dopo** la discesa di C.
 - D deve essere costante per tutto l’intervallo tₛᵤ + tₕ attorno al fronte di discesa di C. Ciò evita cambiamenti simultanei degli ingressi, proibiti nelle RSA.
-- **tₚ** (response time): ritardo con cui Q riflette una variazione di D (quando C=1). È tipicamente diverso per transizioni LH e HL.
-
+- $t_{r}$ (response time): ritardo con cui Q riflette una variazione di D (quando C=1). È tipicamente diverso per transizioni LH e HL.
 #### Uscita trasparente e retroazioni
 ![[7_rsa_per_memorie binarie.pdf#page=30&rect=13,68,711,342|7_rsa_per_memorie binarie, p.30|500]]
 Quando C=1, Q è **trasparente** (segue D con un piccolo ritardo). Ne consegue che una **connessione in retroazione** diretta (es. D = Q') crea uno stato di **oscillazione**.
 ![[7_rsa_per_memorie binarie.pdf#page=33&rect=391,108,684,355|7_rsa_per_memorie binarie, p.33|200]]
 **Il semplice latch CD non garantisce stabilità in configurazioni con retroazione diretta**; per questo si usa il flip‑flop D.
-
 ### Il Flip‑Flop D (“Edge‑Triggered”)
 ![[7_rsa_per_memorie binarie.pdf#page=34&rect=228,341,490,465|7_rsa_per_memorie binarie, p.34|200]]
 Il flip‑flop D è un elemento di memoria **positive edge‑triggered**, cioè sensibile ai fronti di salita del segnale di clock (CLK).
