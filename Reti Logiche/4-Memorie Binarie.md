@@ -100,7 +100,7 @@ Questa caratteristica lo rende **robusto in qualunque montaggio in retroazione**
 #### Realizzazioni
 **Flip‑Flop D Master‑Slave**
 ![[7_rsa_per_memorie binarie.pdf#page=36&rect=123,276,578,401|7_rsa_per_memorie binarie, p.36|400]]
-- Due latch CD in cascata: il **Master** (collegato a D) controllato da C, lo **Slave** controllato da C' (C negato).
+- Due latch CD in cascata: il **Master** (collegato a D) controllato da C' (C negato), lo **Slave** controllato da C.
 - Quando C=0, il Master è trasparente (segue D), lo Slave memorizza il valore precedente di QM.
 - Quando C va a 1 (fronte di salita), il Master memorizza l’ultimo valore di D e lo Slave diventa trasparente, riportando in uscita Q il valore appena memorizzato dal Master.
 

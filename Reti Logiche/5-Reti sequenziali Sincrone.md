@@ -21,6 +21,7 @@ Per superare i limiti delle RSA si introduce un **ritardo controllato** mediante
 - Invece di riportarlo immediatamente allo stato presente, lo si **campiona** (memorizza) ad intervalli regolari $T_0$ usando dei **flip-flop D**.
 - Lo stato presente $S$ si aggiorna solo nei fronti di salita del clock con il valore campionato alla fine del periodo precedente.
 ![[8_reti_sequenziali_sincrone.pdf#page=6&rect=31,29,715,469|8_reti_sequenziali_sincrone, p.6|600]]
+![[8_reti_sequenziali_sincrone.pdf#page=7&rect=71,174,625,471|8_reti_sequenziali_sincrone, p.7|600]]
 ### Struttura generale
 ![[8_reti_sequenziali_sincrone.pdf#page=10&rect=12,1,702,326|8_reti_sequenziali_sincrone, p.10|600]]
 - Una o più **reti combinatorie** $F$ (uscita) e $G$ (stato futuro).
@@ -49,8 +50,16 @@ Il periodo di clock $T_0$ ha un **valore minimo** determinato da:
 - $t_{su}$: tempo di setup dei FF-D (i dati $Y$ devono essere stabili prima del fronte di salita successivo).
 - $t_h$: tempo di hold (i dati devono rimanere stabili per un breve tempo dopo il fronte).
 
-$$T_0 \;\ge\; \max(t_r, t_i) \;+\; t_{pd,G} \;+\; t_{su}$$
-
+L’unico vincolo in una RSS è che **il periodo di clock $T_{0}$ ha un valore minimo**: i nuovi ingressi e lo stato presente devono avere **il tempo di propagarsi attraverso la funzione G**.
+In aggiunta al ritardo della rete G, **anche i FF-D aggiungono vincoli temporali.** 
+- Tempo di **set-up** $t_{su}$ : tempo minimo in cui D deve essere costante prima del fronte
+- Tempo di **hold** $t_{h}$ : tempo minimo in cui D deve essere costante dopo il fronte 
+- Tempo di **risposta** $t_{r}$ : tempo massimo di durata del transitorio sulle uscite (Q e Q’) dopo il fronte
+Quindi:
+- i bit di **stato futuro** $Y$ devono **rimanere costanti per $t_{su}+t_{h}$**
+- i bit di **stato presente** $y$ saranno **ingressi stabili per G dopo $t_{r}$ dal fronte del clock**
+![[8_reti_sequenziali_sincrone.pdf#page=16&rect=5,6,675,279|8_reti_sequenziali_sincrone, p.16|500]]
+Per garantire il corretto funzionamento della rete il periodo del segnale di clock $T_{0}$ deve essere quindi **maggiore della somma del tempo necessario ad avere ingressi a regime, del ritardo della rete combinatoria G e del tempo di set-up dei FF-D.**
 ![[8_reti_sequenziali_sincrone.pdf#page=17&rect=441,279,681,486|8_reti_sequenziali_sincrone, p.17|200]]
 ![[8_reti_sequenziali_sincrone.pdf#page=17&rect=2,-2,705,260|8_reti_sequenziali_sincrone, p.17|700]]
 ### Il modello matematico: Finite State Machine (FSM)
@@ -65,16 +74,16 @@ $$FSM = {I, U, S, F, G}$$
   - Funzione di aggiornamento dello stato: $G : S \times I \to S$
 Nelle RSS la **memoria** che mantiene lo stato presente $s$ fino all'aggiornamento con $s^*$ è realizzata dai flip-flop D.
 ### Modelli di Mealy e Moore
-![[8_reti_sequenziali_sincrone.pdf#page=19&rect=74,2,650,405|8_reti_sequenziali_sincrone, p.19|700]]
+![[8_reti_sequenziali_sincrone.pdf#page=19&rect=74,2,650,405|8_reti_sequenziali_sincrone, p.19|500]]
 #### Modello di Moore
 L'uscita $F$ dipende **solo dallo stato presente** $y$: $z = F(y)$. Non c'è percorso combinatorio diretto tra ingressi e uscite.
 **Implicazioni**:
-- L'uscita varia **in sincrono col clock**, con un periodo di clock di **ritardo** rispetto alla variazione degli ingressi.
+- L'uscita varia **in sincrono col clock**, sempre con un periodo di clock di **ritardo** rispetto alla variazione degli ingressi.
 - Gli ingressi possono variare anche in modo asincrono (purché rispettino setup/hold): l'uscita rimane stabile durante il periodo.
-Principale limite: **latenza** maggiore **(risposta potenzialmente ritardata di un colpo di clock).**
+Principale limite: **latenza** maggiore **(risposta ritardata di un colpo di clock).**
 ![[8_reti_sequenziali_sincrone.pdf#page=21&rect=3,6,716,437|8_reti_sequenziali_sincrone, p.21|700]]
 ### Modello di Mealy
-L'uscita $F$ dipende sia dallo stato presente $y$ **che dagli ingressi** $x$: $z = F(y, x)$. Esiste un percorso combinatorio diretto tra $x$ e $z$.
+L'uscita $F$ dipende sia dallo stato presente $y$ **che dagli ingressi** $x$: $z = F(y, x)$. Esiste sempre un percorso combinatorio diretto tra $x$ e $z$.
 
 **Implicazioni**:
 - L'uscita **può cambiare immediatamente** al variare degli ingressi, anche nello stesso periodo di clock.
@@ -83,21 +92,30 @@ L'uscita $F$ dipende sia dallo stato presente $y$ **che dagli ingressi** $x$: $z
 > [!danger]
 > Se gli ingressi non sono sincroni, **si possono avere più variazioni dell'uscita in un ciclo**; la rete mostra un comportamento asincrono sull'uscita.
 > *Per questo motivo spesso si usa la sintesi di Moore*
-
 ### Sincronizzazione di ingressi asincroni
 Il modello RSS assume ingressi **sincroni col clock** (cambiano subito dopo il fronte e una volta per ciclo). In pratica molti segnali sono **asincroni** (es. pulsanti, sensori).
 > [!Condizione di sincronizzabilità]
 la **frequenza del segnale asincrono deve essere minore della frequenza di clock.** Se il segnale varia più velocemente non è possibile sincronizzarlo; bisogna aumentare il clock.
 
 ![[8_reti_sequenziali_sincrone.pdf#page=25&rect=57,9,711,201|8_reti_sequenziali_sincrone, p.25|600]]
-**Sincronizzatore a due flip-flop D**:
-
-- Il segnale asincrono $x$ viene campionato da un primo FF-D, la cui uscita $x_1$ viene poi campionata da un secondo FF-D producendo $x_{\text{sync}}$.
+Il sincronizzatore più semplice **è un singolo FF-D** ma i suoi $t_{su}$ e $t_{h}$ sono una debolezza-
+Per evitare il rischio di **metastabilità** si utilizza il **sincronizzatore a due flip-flop D**:
+Il segnale asincrono $x$ viene campionato da un primo FF-D, la cui uscita $x_1$ viene poi campionata da un secondo FF-D producendo $x_{\text{sync}}$.
+![[8_reti_sequenziali_sincrone.pdf#page=26&rect=16,13,683,283|8_reti_sequenziali_sincrone, p.26|600]]
 - Se il campionamento del primo FF avviene in violazione dei tempi di setup/hold, il FF1 può entrare in **metastabilità**.
 - Tuttavia, è molto probabile che la metastabilità si risolva entro un periodo di clock. Il secondo FF campiona $x_1$ quando è ormai stabile, garantendo che $x_{\text{sync}}$ non sia mai metastabile.
 - L'incertezza sulla transizione di $x$ si traduce in un'incertezza sul **ritardo** con cui $x_{\text{sync}}$ commuta (1 o 2 cicli di clock dopo il fronte reale di $x$).
-
 Si possono usare più di due FF in cascata per ridurre ulteriormente la probabilità di metastabilità alla rete a valle.
+
+
+**DA QUI IN POI é SOLO TRASCRIZIONE DI DEEPSEEK NON APPUNTI**
+buono studio :)
+
+
+
+
+
+
 
 ## 9. Sintesi formale di una RSS
 
@@ -138,16 +156,16 @@ Riporta, per ogni stato presente e per ogni configurazione d'ingresso, lo **stat
 
 Esempio per Mealy (solo righe significative):
 
-\[
-\begin{array}{c|cccc}
+
+$$\begin{array}{c|cccc}
 \text{Stato} & 00 & 01 & 11 & 10 \\
 \hline
 A & B,0 & A,0 & A,0 & A,0 \\
 B & B,0 & A,0 & C,0 & A,0 \\
 C & A,0 & A,0 & D,0 & A,0 \\
 D & A,0 & A,1 & D,0 & A,0 \\
-\end{array}
-\]
+\end{array}$$
+
 
 ---
 
