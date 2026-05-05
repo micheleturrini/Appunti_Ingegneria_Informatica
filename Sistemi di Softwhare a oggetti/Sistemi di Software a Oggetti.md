@@ -847,7 +847,23 @@ public void leggiFile(String nomeFile) throws IOException {
 
 Per le eccezioni **unchecked** la dichiarazione `throws` **è facoltativa**; per chiarezza, la si può aggiungere solo nei casi in cui l’eccezione è particolarmente inattesa o significativa per chi usa il metodo.
 
-**Rilancio di un’eccezione:** un metodo può catturare un’eccezione ma decidere di non saperla gestire, limitandosi a incapsularla in un’eccezione logica o semplicemente a **rilanciarla** (con `throw e;`). In questo caso, se è checked, deve comunque dichiarare `throws` (o il nuovo tipo).
+**Rilancio di un’eccezione:** un metodo può catturare un’eccezione ma decidere di non saperla gestire, limitandosi a **rilanciarla** con`throws`.
+```java
+void read(String fname) throws FileNotFoundException{ 
+	ileReader f = new FileReader(fname);
+}
+
+public void printAll(String filename){
+	try{
+		read(filename); // è pericolosa!
+	} catch(FileNotFoundException e){ … }
+}
+
+//posso rilanciarla ancora
+public void printAll(String filename) throws FileNotFoundException{
+	read(filename); // è pericolosa!
+}
+```
 ### Eccezioni Personalizzate
 Creare nuovi tipi di eccezione aiuta a descrivere con precisione il problema e permette di distinguere in fase di `catch` situazioni diverse (ad es. `ImpossibleTriangleException`, `BadFileFormatException`).
 
@@ -872,7 +888,8 @@ if (a >= b + c || b >= a + c || c >= a + b) {
 }
 ```
 ### Incapsulamento di Eccezioni (fisiche → logiche)
-Spesso si intercetta un’eccezione “fisica” (es. `FileNotFoundException`) per convertirla in un’eccezione “logica” che abbia più significato nel contesto dell’applicazione (es. `ImageNotFoundException`). Ciò si realizza catturando l’eccezione originale e costruendo la nuova eccezione passandole la causa con il costruttore apposito. In questo modo lo stack della causa rimane accessibile.
+Spesso **si intercetta un’eccezione “fisica”** (es. `FileNotFoundException`) per **convertirla in un’eccezione “logica”** che abbia **più significato** nel contesto dell’applicazione (es. `ImageNotFoundException`).
+Ciò si realizza catturando l’eccezione originale e costruendo la nuova eccezione passandole la causa con il costruttore apposito. In questo modo lo stack della causa rimane accessibile.
 
 ```java
 public void caricaImmagine(String percorso) throws ImageNotFoundException {
@@ -883,7 +900,26 @@ public void caricaImmagine(String percorso) throws ImageNotFoundException {
         throw new ImageNotFoundException("Immagine non trovata: " + percorso, e);
     }
 }
+
+public void readUserData(String filename) throws BadFileFormatException {
+	try {
+		FileReader f = new FileReader(filename);
+		String s = null; ... // lettura linea di testo
+		int n = Integer.parseInt(s);
+	} catch(FileNotFoundException | NumberFormatException e ){ //sintassi comoda
+		throw new BadFileFormatException(e);
+	}
+}
 ```
+![[126-Eccezioni.pdf#page=82&rect=27,34,671,374|126-Eccezioni, p.82|600]]
+
+Il parsing non lancia eccezioni anche se a volte sarebbe necessario
+```java
+ParsePosition position = new ParsePosition(0);
+Number n = f.parse("10-10", position);
+if (position.getIndex() != str.length()) { throw new OpportunaEccezione(…); }
+```
+Se il parsing non è arrivato in fondo lancia un'eccezione.
 ### Verifica delle Precondizioni con java.util.Objects
 La classe di utilità **`java.util.Objects`** offre metodi statici per controllare i parametri in modo sintetico e standardizzato:
 - `requireNonNull(T obj)` lancia `NullPointerException` se `obj` è `null`.
