@@ -117,46 +117,31 @@ buono studio :)
 
 
 
-## 9. Sintesi formale di una RSS
-
+## Sintesi formale di una RSS
 Procedura in 5 passi:
-
 1.  **Comprensione delle specifiche e grafo degli stati**.
 2.  **Tabella di flusso**.
 3.  **Codifica degli stati** e tabella delle transizioni.
 4.  **Sintesi della parte combinatoria** (funzioni $D_i$ per i FF e uscita $z$).
 5.  **Schema logico**.
 
----
-
-### 9.1 Grafo degli stati
-
+### 1 Grafo degli stati
+![[8_reti_sequenziali_sincrone.pdf#page=31&rect=36,7,691,199|8_reti_sequenziali_sincrone, p.31|600]]
 Simile a quello delle RSA, ma con differenze fondamentali:
-
 - Si assume che gli ingressi siano **sincroni**: all'inizio del clock si ricevono i nuovi ingressi, che rimangono stabili per tutto il periodo.
 - La permanenza su ogni arco (transizione) dura **un intero periodo di clock**.
-- **Non esistono più stati stabili per configurazione d'ingresso**; uno stato viene raggiunto e immediatamente al clock successivo può evolvere anche se gli ingressi non cambiano (se la $G$ prevede un diverso stato futuro).
+- **Non esistono più stati stabili per configurazione d'ingresso**; **uno stato viene raggiunto e immediatamente al clock successivo può evolvere anche se gli ingressi non cambiano** (se la $G$ prevede un diverso stato futuro).
 - Occorre considerare **tutte le configurazioni d'ingresso** per ogni stato (a meno che non siano impossibili per le specifiche).
 - Non ci sono automaticamente indifferenze sulle uscite quando cambiano (a differenza delle RSA).
 
 **Esempio**: cassaforte con sequenza da riconoscere `00-11-11-01` (per sfruttare la possibilità di ingressi ripetuti).
 
-- **Moore**:
-  Stati: A (reset), B (visto `00`), C (visto `00-11`), D (visto `00-11-11`), E (sequenza riconosciuta).
-  L'uscita si attiva nello stato E, quindi al periodo di clock successivo all'ultimo ingresso `01`.
-- **Mealy**:
-  Stati: A, B, C, D.
-  L'uscita $z=1$ viene attivata sull'arco da D quando arriva `01`; quindi nello **stesso** periodo di clock dell'ultimo simbolo.
+- **Moore**:![[8_reti_sequenziali_sincrone.pdf#page=32&rect=4,8,702,440|8_reti_sequenziali_sincrone, p.32]]
+- **Mealy**:![[8_reti_sequenziali_sincrone.pdf#page=33&rect=2,13,718,442|8_reti_sequenziali_sincrone, p.33]]
+### 2 Tabella di flusso
+Riporta, per ogni stato presente e per ogni configurazione d'ingresso, lo **stato futuro** e l'**uscita** (eventualmente nella notazione di Mealy: $S^*,\,z$). Non devo fare **nessun controllo**.
 
----
-
-### 9.2 Tabella di flusso
-
-Riporta, per ogni stato presente e per ogni configurazione d'ingresso, lo **stato futuro** e l'**uscita** (eventualmente nella notazione di Mealy: $S^*,\,z$).
-
-Esempio per Mealy (solo righe significative):
-
-
+Esempio per Mealy :
 $$\begin{array}{c|cccc}
 \text{Stato} & 00 & 01 & 11 & 10 \\
 \hline
@@ -166,15 +151,8 @@ C & A,0 & A,0 & D,0 & A,0 \\
 D & A,0 & A,1 & D,0 & A,0 \\
 \end{array}$$
 
-
----
-
-### 9.3 Codifica degli stati
-
+### 3 Codifica degli stati
 La codifica è **arbitraria** (es. A=00, B=01, C=10, D=11). Non esistono corse critiche perché il campionamento filtra le transizioni multiple. Bit di stato spesso indicati con $Q_1 Q_0$ (uscite dei FF). Una codifica opportuna può minimizzare la complessità combinatoria, ma non è oggetto di questa trattazione.
-
----
-
 ### 9.4 Sintesi combinatoria
 
 Dalla tabella delle transizioni codificata si ricavano le funzioni booleane per:
@@ -207,3 +185,330 @@ I segnali asincroni in ingresso devono essere **sincronizzati** con un sincroniz
 ## 10. Limiti della cassaforte sincrona
 
 Dallo schema logico finale **non è immediato capire quale sequenza sia riconosciuta**; la rete diventa una "scatola nera". Eventuali modifiche alla sequenza target richiedono un nuovo progetto. Inoltre, per sequenze di ingressi asincroni con più bit, la semplice sincronizzazione con un FF per bit non garantisce la correttezza (problema della coerenza dei segnali multi-bit).
+
+Appunti dettagliati su **Sintesi diretta di RSS tramite uso di reti notevoli**
+
+---
+
+
+
+
+## 1. Introduzione: due approcci alla sintesi
+
+Esistono due strategie per progettare reti sequenziali sincrone (RSS):
+
+- **Approccio formale** (già visto per le RSA): si parte dalle specifiche, si disegna il grafo degli stati, si codificano gli stati, si ricavano le funzioni booleane e si disegna lo schema logico.
+- **Approccio diretto** (tipico per le RSS): si utilizzano **blocchi notevoli** già pronti – registri, shift register, contatori – e li si interconnette con opportuna logica combinatoria per ottenere il comportamento desiderato.
+
+Questa seconda strada semplifica il progetto perché molti componenti sono già ottimizzati e testati.
+
+---
+
+## 2. Registro a k bit
+
+Un **registro a k bit** è una rete sincrona che memorizza un dato di k bit. Possiede:
+
+- **Ingressi**: $IN[k-1..0]$ (dato da scrivere), $WE$ (write enable, sincrono).
+- **Uscite**: $OUT[k-1..0]$ (dato memorizzato).
+- **Reset asincrono**: $A\_RESET$ (o $A\_RESET'$, attivo basso), che azzera tutti i bit indipendentemente dal clock.
+
+Il comportamento al fronte di salita del clock:
+
+- Se $WE = 1$, $OUT \leftarrow IN$.
+- Se $WE = 0$, $OUT$ mantiene il valore precedente.
+
+**Realizzazione a 1 bit**:
+Si usa un flip‑flop D e un multiplexer a 2 vie.
+
+- Al FF‑D arriva l'uscita del MUX.
+- Il MUX ha ingressi $Q$ (uscita attuale) e $IN$, selezionati da $WE$.
+
+Schema:
+
+\[
+\text{MUX}:\; \text{uscita} = 
+\begin{cases}
+Q & \text{se } WE = 0 \\
+IN & \text{se } WE = 1
+\end{cases}
+\]
+
+Il FF‑D campiona al fronte di clock. L'azzeramento asincrono si ottiene collegando il segnale $A\_RESET'$ all'ingresso $\overline{CLR}$ del flip‑flop.
+
+**Estensione a k bit**: si replicano $k$ FF‑D e $k$ MUX a 2 vie, condividendo i segnali $WE$, $A\_RESET$ e il clock.
+
+---
+
+## 3. Comandi sincroni e priorità
+
+Spesso i registri offrono più comandi sincroni, con diversi livelli di priorità. Regola generale: **i comandi asincroni sono sempre prioritari su quelli sincroni**. Tra comandi sincroni bisogna specificare l'ordine.
+
+Esempi con un registro dotato di $WE$ e di un segnale di reset sincrono $RESET$:
+
+- **RESET prioritario su WE**: se al fronte di clock $RESET = 1$, l'uscita diventa $0$ indipendentemente da $WE$ e $IN$.
+- **WE prioritario su RESET**: l'azzeramento sincrono avviene solo se $RESET = 1$ e contemporaneamente $WE = 1$, altrimenti il comando di reset viene ignorato.
+
+In fase di sintesi occorre sapere esattamente l'ordine delle priorità per costruire la logica combinatoria di pilotaggio dei FF‑D.
+
+---
+
+## 4. Esempio 1: flip‑flop T (toggle)
+
+Specifiche: rete di Moore con un ingresso sincrono $T$. L'uscita $Q$ commuta (toggle) ad ogni ciclo in cui $T = 1$; con $T = 0$ mantiene il valore. All'accensione ($A\_RESET = 1$) la rete memorizza $1$.
+
+Soluzione: si usa un registro a 1 bit. Il valore da scrivere è il complemento del valore attuale: $IN = Q'$. Si pone $WE = T$. Così quando $T = 1$, al clock successivo $Q \leftarrow Q'$ (toggle); quando $T = 0$, $WE = 0$ e il registro mantiene il valore.
+
+Questo circuito è noto come **flip‑flop T**. Può essere ulteriormente ottimizzato eliminando il multiplexer, ma il concetto rimane lo stesso.
+
+---
+
+## 5. Esempio 2: controllo di livello in un serbatoio
+
+Specifiche: ingresso sincrono $N[3..0]$ (livello come numero senza segno). L'uscita $Z$ deve andare a $1$ quando $N \ge 12$ e rimanere a $1$ finché $N \ge 8$ (isteresi). All'accensione $Z=0$.
+
+Analisi: nell'intervallo $8 \le N < 12$ l'uscita dipende dalla storia passata: serve un bit di memoria. Si usa un registro a 1 bit.
+
+Si definiscono due segnali combinatori:
+
+- $NGTE12 = 1$ se $N \ge 12$, cioè $N_3 N_2$.
+- $NLT8 = 1$ se $N < 8$, cioè $N_3'$ (poiché 8 è la potenza di due successiva, basta il bit più significativo).
+
+Il registro deve essere scritto solo quando si esce dall'intervallo di isteresi o vi si entra: $WE = NGTE12 + NLT8$. Il dato da scrivere è $NGTE12$ (perché quando si attiva $NGTE12$ va scritto $1$, quando si attiva $NLT8$ va scritto $0$). L'uscita $Z$ coincide con lo stato del registro.
+
+La logica combinatoria aggiuntiva calcola $NGTE12$ e $NLT8$, poi il tutto pilota il registro.
+
+---
+
+## 6. Shift register (registro a scorrimento)
+
+Uno **shift register a k bit** è una catena di $k$ flip‑flop D in serie. L'ingresso seriale $IN$ viene campionato e tutti i bit memorizzati scalano di una posizione ad ogni fronte di clock.
+
+- **Uscite**: $OUT[k-1..0]$ (il bit $OUT[0]$ è il più recente, $OUT[k-1]$ è il più vecchio, oppure viceversa a seconda della direzione).
+- **Reset asincrono**: $A\_RESET$ azzera tutti i registri.
+
+Le forme d'onda mostrano che l'andamento di $IN$ si ritrova sulle uscite con ritardi crescenti di un ciclo di clock ciascuna.
+
+**Comandi sincroni tipici**:
+
+- **Enable (EN)**: lo scorrimento avviene solo se $EN = 1$.
+- **Load (LD)**: se $LD = 1$, il registro carica in parallelo un bus $I[k-1..0]$ indipendentemente da $IN$ e $EN$. Normalmente $LD$ è prioritario su $EN$.
+- **Direzione (R/L')**: stabilisce se lo scorrimento è verso destra (verso il bit meno significativo) o verso sinistra.
+
+**Universal shift register**: dotato di tutti i comandi, codificati su 2 bit ($S_1 S_0$):
+
+| $S_1 S_0$ | Comando       | Funzione                              |
+|-----------|---------------|---------------------------------------|
+| 00        | Hold          | Mantiene il valore                    |
+| 01        | Shift right   | $OUT[i] \leftarrow OUT[i-1]$ (i>0), $OUT[0] \leftarrow IN\_R$ |
+| 10        | Shift left    | $OUT[i] \leftarrow OUT[i+1]$ (i<k-1), $OUT[k-1] \leftarrow IN\_L$ |
+| 11        | Load          | $OUT[i] \leftarrow I[i]$              |
+
+---
+
+## 7. Comunicazione seriale e parallela
+
+Un'applicazione classica degli shift register è la conversione tra formato seriale e parallelo.
+
+- **Seriale → Parallelo (S/P)**:
+  - **Moore**: l'ultimo bit di un dato di $k$ bit viene caricato nello shift register al clock $k$, e il dato completo è disponibile sulle uscite al clock $k+1$. (Es.: 3 bit, il dato appare un ciclo dopo la ricezione dell'ultimo bit).
+  - **Mealy**: si può risparmiare un flip‑flop se l'ultimo bit viene mandato direttamente sull'uscita senza passare per il registro. Il dato è disponibile già nello stesso ciclo in cui arriva l'ultimo bit, ma l'uscita è parzialmente combinatoria.
+
+- **Parallelo → Seriale (P/S)**: si usa uno shift register con comando di load. Al primo ciclo si carica il dato parallelo ($LD=1$), poi con $LD=0$ e $EN=1$ (o semplicemente facendo shift) i bit escono uno al ciclo dall'uscita seriale ($OUT[k-1]$ o $OUT[0]$ a seconda della connessione). Conoscendo la posizione del bit più significativo si può trasmettere correttamente.
+
+---
+
+## 8. Shift come moltiplicazione/divisione per 2
+
+Uno shift register con $IN=0$ e controllo di direzione realizza moltiplicazioni/divisioni per $2$ di numeri senza segno.
+
+- **Shift a sinistra** (verso il bit più significativo) $\Rightarrow$ moltiplicazione per $2$. Es.: $010100_2 = 20$ shift left $\rightarrow 101000_2 = 40$.
+- **Shift a destra** $\Rightarrow$ divisione per $2$ (intera). Es.: $010100_2 \rightarrow 001010_2 = 10$.
+
+Attenzione: bisogna stabilire quale bit è il più significativo all'interno del registro. L'overflow è segnalato dal bit che esce: se un $1$ esce dal registro durante uno shift a sinistra, si è persa una cifra significativa.
+
+**Shift aritmetico** per numeri con segno in complemento a due:
+
+- **Shift a destra (divisione)**: per preservare il segno, il bit che entra deve essere uguale al bit più significativo (estensione del segno). Es.: $111010_2 = -6$ shift right $ \rightarrow 111101_2 = -3$.
+- **Shift a sinistra (moltiplicazione)**: come lo shift logico, entra $0$. L'overflow in complemento a 2 è segnalato da $Q_0 \neq Q_1$ (il bit di segno cambierebbe).
+
+---
+
+## 9. Riconoscitore di sequenze a 3 byte (soluzioni con shift register)
+
+Specifiche: rete di Moore che riconosce la sequenza di byte (mentre $EN=1$): `FF – 27 – 30`. Dopo il riconoscimento, l'uscita $OUT$ va a $1$ e vi rimane fino a un $A\_RESET$. Dopo reset, la rete ricomincia da capo.
+
+**Soluzione 1 (inefficiente)**:
+Si usa uno shift register a 3 stadi da 8 bit ciascuno (totale 24 FF). Ad ogni clock si carica $IN$ se $EN=1$ e non è già stato riconosciuto ($OUT=0$). L'uscita si attiva quando i tre byte memorizzati corrispondono esattamente a FF, 27, 30. La condizione di mantenimento di $OUT$ si ottiene disabilitando lo scorrimento ($EN\_SHIFT = EN \cdot OUT'$) una volta riconosciuta la sequenza, cosicché $OUT$ rimane $1$ fino al reset.
+
+**Soluzione 2 (più efficiente)**:
+Invece di memorizzare gli interi byte, si ricorda solo se in ciascuno degli ultimi 3 colpi di clock validi è stato visto il simbolo corretto atteso in quell'istante. Si utilizzano:
+- Uno shift register a 3 bit per l'attesa di FF: se 3 cicli fa c'era FF, questo bit è 1.
+- Uno shift register a 2 bit per l'attesa di 27: se 2 cicli fa c'era 27 e il precedente era FF…
+- Un flip‑flop per l'attesa di 30 al colpo più recente.
+I bit vengono aggiornati solo quando $EN=1$ e $OUT=0$. Alla fine si fa l'AND di tutti e tre i bit. Solo 6 FF in totale, indipendentemente dal parallelismo del dato.
+
+Le funzioni combinatorie $DECFF$, $DEC27$, $DEC30$ riconoscono i byte corrispondenti. Lo schema risultante è mostrato nel PDF.
+
+---
+
+## 10. Monoimpulsore (edge detector)
+
+Un **monoimpulsore** (o edge detector) genera un impulso della durata esatta di un periodo di clock quando l'ingresso (anche asincrono) compie una transizione da 0 a 1. Serve anche a sincronizzare il segnale asincrono.
+
+Vengono proposte diverse realizzazioni:
+
+- **Monoimpulsore 1**: un FF‑D e un AND. L'ingresso asincrono arriva direttamente al FF e all'AND insieme all'uscita negata del FF ritardata di un clock. Produce un impulso di un clock se non c'è metastabilità. In caso di metastabilità, l'uscita può rimanere alta per meno di un clock o per più di un clock (con una coda), a seconda di come la metastabilità viene interpretata. Questo può essere accettabile se l'uscita alimenta una rete di Moore che sincronizza ulteriormente.
+
+- **Monoimpulsore 2**: utilizza due FF‑D in cascata (sincronizzatore) e un AND tra l'uscita del secondo FF e la negata del primo. Così facendo, anche in presenza di metastabilità, l'uscita è garantita durare esattamente un periodo di clock (anche se con un possibile ritardo aggiuntivo di un ciclo). Il prezzo è un ritardo fisso di un clock anche in condizioni normali.
+
+- **Versioni errate**: si mostrano circuiti che non producono un singolo impulso, ad esempio quando l'ingresso rimane a 1 per più cicli, l'uscita può commutare a ogni clock.
+
+---
+
+## 11. Contatori
+
+Un **contatore** è una rete sincrona senza ingressi (nella forma più semplice) che percorre ciclicamente tutti gli stati interni. Le uscite coincidono con lo stato interno.
+
+**Contatore binario modulo N**: gli stati sono i primi N numeri binari.
+
+### 11.1 Contatore binario x4 (modulo 4)
+
+Ha 2 bit di stato $Q_1 Q_0$ che evolvono secondo la sequenza: $00 \to 01 \to 10 \to 11 \to 00 \dots$
+
+Si può realizzare in modo inefficiente con MUX e adder oppure sfruttando le regolarità:
+
+- Il bit meno significativo $Q_0$ commuta ad ogni clock: $Q_0^{n+1} = Q_0'$. Basta quindi un FF‑D con ingresso $D_0 = Q_0'$.
+- Il bit $Q_1$ commuta solo quando $Q_0 = 1$. Vale la relazione $Q_1^{n+1} = Q_1 \oplus Q_0$. Inoltre, $Q_1 \oplus Q_0$ si può ottenere con una porta EXOR, oppure usando un AND e un EXOR come si vedrà con i comandi sincroni.
+
+La realizzazione con **adder** non è la più efficiente ma evidenzia il legame: incrementare significa sommare 1. Sommando 1 a $Q_1 Q_0$, il bit $S_0 = Q_0 \oplus 1 = Q_0'$, $S_1 = Q_1 \oplus Q_0$, $R_1 = Q_1 Q_0$ (riporto). Le due realizzazioni (con EXOR o con sommatore) sono logicamente equivalenti.
+
+### 11.2 Comandi sincroni: ENABLE
+
+Il comando $EN$ abilita il conteggio: quando $EN = 1$, il contatore incrementa; quando $EN = 0$, mantiene lo stato.
+
+Per il contatore x4 con EN si può usare un MUX per ogni FF che seleziona tra il valore attuale e quello successivo. Questa struttura può essere ottimizzata:
+
+- Per $Q_0$: il MUX equivale a un EXOR tra $EN$ e $Q_0$: $D_0 = EN \oplus Q_0$ (perché se $EN=0$, $D_0 = Q_0$; se $EN=1$, $D_0 = Q_0'$).
+- Per $Q_1$: $D_1 = Q_1 \oplus (EN \cdot Q_0)$. La porta AND combina $EN$ e $Q_0$ per abilitare la commutazione solo quando entrambi sono 1.
+
+Questi schemi si generalizzano per contatori più grandi: ogni bit $Q_i$ deve commutare quando tutti i bit di peso inferiore valgono 1 (in conteggio avanti).
+
+### 11.3 Comandi sincroni: RESET e LOAD
+
+- **RESET sincrono**: riporta il contatore a 0 al successivo fronte di clock. Normalmente prioritario su EN. Si realizza con MUX o forzando gli ingressi D.
+- **LOAD sincrono**: carica un valore esterno $I[k-1..0]$. Nell'esempio x4 con LD e EN, due MUX in cascata gestiscono le priorità.
+
+### 11.4 Comandi UP/DOWN (avanti/indietro)
+
+Un contatore bidirezionale aggiunge un ingresso $U/D'$: $1$ = conteggio crescente, $0$ = decrescente.
+
+Osservazioni per il contatore x4 con EN e U/D':
+
+- $Q_0$ commuta sempre (sia avanti che indietro), quindi $D_0 = EN \oplus Q_0$ rimane invariato.
+- $Q_1$ commuta quando $Q_0$ passa da $0$ a $1$ (conteggio avanti) o da $1$ a $0$ (conteggio indietro). Pertanto la condizione per il toggle di $Q_1$ diventa $EN \cdot Q_0$ se $U/D'=1$, oppure $EN \cdot Q_0'$ se $U/D'=0$. Serve quindi un MUX che selezioni tra $Q_0$ e $Q_0'$ in base a $U/D'$, e poi una AND con $EN$, il tutto in OR con l'uscita dell'EXOR come prima. Lo schema finale è mostrato nel PDF.
+
+### 11.5 Contatore binario x8 (modulo 8)
+
+La regola generale: $Q_i$ commuta quando tutti i bit $Q_{i-1} \dots Q_0$ sono a $1$. Per $i=2$, $Q_2$ commuta quando $Q_1 Q_0 = 11$, cioè quando $Q_1 \cdot Q_0 = 1$. Quindi $D_2 = Q_2 \oplus (Q_1 \cdot Q_0)$.
+
+Aggiungendo un EN, si ha $D_2 = Q_2 \oplus (EN \cdot Q_1 \cdot Q_0)$. Realizzabile con una AND a 3 ingressi e un EXOR.
+
+### 11.6 Incremento della base di conteggio (cascata di contatori)
+
+Per realizzare un contatore modulo $M$ grande si possono collegare in cascata più contatori con **carry out (CO)**. Il CO del contatore meno significativo segnala quando tutti i suoi bit sono $1$ (conteggio avanti) o $0$ (indietro). Collegando CO all'EN del contatore successivo, questo incrementa solo quando il primo ha terminato un ciclo.
+
+Per esempio, un contatore x32 si ottiene da un x8 (3 bit) e un x4 (2 bit) in cascata. L'EN complessivo del contatore composto va collegato all'EN dello stadio meno significativo e contemporaneamente condizionare il CO diretto allo stadio successivo in AND con EN, per garantire che il tutto conti solo quando EN=1.
+
+### 11.7 Decremento della base di conteggio (modulo M < N)
+
+Dato un contatore modulo N (es. x16) e volendo un contatore modulo M (es. x10), si può resettare il contatore quando raggiunge lo stato M (o meglio M-1, per tornare a 0). Si usa l'ingresso di RESET sincrono.
+
+- **Soluzione semplice**: realizzare il mintermine corrispondente a $M-1$ e mandarlo al RESET (tenendo conto anche di EN). Per x10 a partire da x16, $M-1 = 9 = 1001_2$, quindi $RES = Q_3 Q_0$ (trascurando gli stati più alti mai raggiunti) con in AND anche $EN$.
+- **Ottimizzazione**: poiché il contatore non raggiungerà mai stati superiori a $M-1$, non è necessario l'intero mintermine; basta l'AND dei bit che sono 1 nella rappresentazione binaria di $M-1$. Per $9_{10}=1001_2$, occorrono solo $Q_3$ e $Q_0$, perché 9 è il più piccolo numero con entrambi quei bit a 1.
+
+### 11.8 Divisore di frequenza
+
+Ogni uscita $Q_i$ di un contatore binario con $EN=1$ fisso produce un'onda quadra di frequenza $f/2^{i+1}$. Ad esempio, con un clock a $1024\,\text{Hz}$, l'uscita $Q_9$ (contatore x1024) ha frequenza $1\,\text{Hz}$. Utile per generare basi di tempo.
+
+---
+
+## 12. Esercizio: Timer
+
+Specifiche: timer pilotato da clock a 8 Hz. Ingresso $START$ (sincrono), bus $TIME[?..0]$ (numero senza segno di cicli da attendere). Dal clock successivo a $START=1$, l'uscita $ON$ resta alta per un numero di cicli pari al valore su $TIME$ in quel momento. Durata massima 10 secondi.
+
+Analisi:
+- 10 secondi a 8 Hz $\rightarrow$ $10 \times 8 = 80$ cicli. Per rappresentare 80 occorrono 7 bit ($2^7=128$). Quindi $TIME[6..0]$.
+- Si può usare un contatore con load (LD) e conteggio all'indietro.
+  1. Stato di attesa: contatore fermo a 0, $ON = 0$.
+  2. Quando $START=1$, al fronte successivo si carica il valore di $TIME$ (comando LD) e si abilita il conteggio all'indietro ($U/D'=0$).
+  3. Si attiva $ON = 1$ ogni volta che il contatore $\neq 0$ (cioè l'OR di tutti i bit $Q_i$). Quando il contatore torna a 0, $ON$ si spegne.
+- Il contatore necessario è x128, realizzabile con un x8 e due x4 in cascata (es. $8 \times 4 \times 4 = 128$). Si aggiungono i circuiti per LD, U/D'=0 e l'OR di uscita.
+
+---
+
+## 13. Riconoscitore di sequenze – Soluzione 3 (con contatore)
+
+Riprendendo il riconoscitore a 3 byte (FF-27-30), la soluzione più efficiente in termini di flip‑flop usa un **contatore x4** (2 FF) invece di shift register.
+
+Idea: il contatore tiene traccia di quanti simboli corretti consecutivi sono stati visti.
+
+- Stato 0: nessun simbolo corretto, attesa di `FF`.
+- Stato 1: visto `FF`, attesa di `27`.
+- Stato 2: visti `FF` e `27`, attesa di `30`.
+- Stato 3: sequenza completata, $OUT=1$ e rimane tale fino al reset.
+
+Funzionamento:
+- Se il contatore è nello stato `00` (attesa `FF`) e arriva `FF`, si dà un enable (o un incremento) per passare allo stato `01`.
+- Se è in `01` e arriva `27`, si passa a `10`.
+- Se è in `10` e arriva `30`, si passa a `11`.
+- In qualsiasi altro caso (simbolo errato), si forza il contatore a `00` (reset sincrono o load di 0).
+- Raggiunto lo stato `11`, il contatore non deve più cambiare fino a reset: l'ENABLE viene disabilitato via $OUT'$.
+
+Il circuito richiede:
+- Logica combinatoria per riconoscere i tre simboli ($DECFF$, $DEC27$, $DEC30$).
+- Un contatore x4 con EN e LOAD sincrono, oppure EN e RESET sincrono (prioritario), a seconda della modalità di ritorno a 0.
+- Decodifica dello stato per sapere quale simbolo attendere.
+- Un segnale $LOAD = (ATTESA30 \cdot DEC30 + \dots)$ per gestire il ritorno a 0 in caso di simbolo errato.
+
+**Problema della soluzione iniziale**: se dopo $FF-27$ arriva di nuovo $FF$, la decodifica di `ATTESA30` è `1` (perché lo stato corrente è `10`), e $DECFF=1$ attiva il LOAD di `00`, cancellando i progressi. Invece in tal caso la sequenza corretta potrebbe essere $FF-27-FF-27-30$, dove dopo il secondo $FF$ la rete dovrebbe rimanere in attesa di $27$ (stato `01`) non resettarsi.
+
+**Soluzione modificata**: si raffinano le condizioni di LOAD. Invece di resettare a zero per ogni simbolo errato, si carica lo stato appropriato:
+- Dallo stato `01` (attesa 27), se arriva `FF` (cioè di nuovo il primo simbolo), si carica `01` (perché l'ultimo `FF` può essere l'inizio di una nuova sequenza).
+- Nello stato `10` (attesa 30), se arriva `FF`, si carica `01` (come se si fosse ripartiti da `FF`).
+- Nello stato `10`, se arriva `27`, si carica `00` (due `27` di fila rompono la sequenza).
+E così via. La logica di LOAD diventa:
+
+\[
+LOAD = \text{ATTESA30} \cdot (EN \cdot DECFF) + \text{ATTESA27} \cdot (EN \cdot \overline{DECFF} \cdot \overline{DEC27}) + \dots
+\]
+
+e i dati caricati sono codificati opportunamente. Il PDF mostra il circuito dettagliato.
+
+---
+
+## 14. Esercizio: riconoscitore non consecutivo
+
+Variante: la sequenza FF, 27, 30 può essere riconosciuta anche se intervallata da altri simboli, purché compaia nello stesso ordine. Es.: `FF-7A-E0-9F-27-B2-30`. In questo caso il contatore deve incrementare solo quando viene visto il simbolo atteso, ma **non** deve resettare a 0 se il simbolo è sbagliato: deve rimanere nello stato corrente. Basta quindi rimuovere il reset/load forzato a 0, e semplicemente dare EN=1 solo quando il simbolo in ingresso corrisponde a quello atteso nello stato attuale. Se il simbolo non corrisponde, il contatore mantiene lo stato. L'uscita si attiva al raggiungimento dello stato 3.
+
+---
+
+## 15. Clock gating e clock skew
+
+Il **clock gating** consiste nell'usare una porta AND (o altro) per fermare il clock a certi flip‑flop, ad esempio per non aggiornare un registro quando non serve. Tuttavia introduce problemi:
+
+1. **Alee (glitch)**: Se il segnale di abilitazione non è perfettamente sincrono, la porta AND può generare fronti di clock spuri dovuti a transizioni multiple della logica combinatoria. Possono campionare dati errati.
+2. **Clock skew**: Il clock "gated" arriva ai FF con un ritardo (introdotto dalla porta AND) rispetto al clock originale. Questo sfasamento può far sì che circuiti a valle campionino valori già aggiornati invece di quelli precedenti, rompendo la temporizzazione sincrona. Ad esempio, un contatore collegato a un registro con clock gated: se lo skew è elevato, il registro potrebbe vedere l'uscita già incrementata del contatore anziché il valore stabile precedente.
+
+**Regola**: non usare porte combinatorie per generare il clock dei flip‑flop. Invece, si utilizza sempre un segnale di enable (WE, EN) collegato all'ingresso D di un MUX o a una logica che decide se il FF deve aggiornarsi. In questo modo il clock rimane pulito e non ci sono problemi di glitch o skew.
+
+---
+
+## 16. Schema di sintesi diretta
+
+La progettazione diretta con reti notevoli segue un flusso tipico:
+1. Analizzare le specifiche e individuare gli elementi di memoria necessari (contatore, registro, shift register…).
+2. Scegliere i componenti e i loro segnali di controllo (EN, LD, RES, U/D…).
+3. Progettare la logica combinatoria di supporto (decodifiche, condizioni di enable, calcolo dei dati da caricare).
+4. Verificare le temporizzazioni e la correttezza con simulazioni.
+
+Questo metodo è molto usato nella progettazione digitale perché sfrutta blocchi già ottimizzati e riduce gli errori.
