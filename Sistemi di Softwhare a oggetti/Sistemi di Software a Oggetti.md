@@ -5149,4 +5149,471 @@ integers[2] = 44;
 System.out.println(Arrays.toString(integers));
 // [22, 33, 44, null, null, null, null, null, null]
 ```
-##
+## Gestione IO
+Java gestisce l’I/O in modo **agnostico rispetto al dispositivo** (file, console, rete, array di byte…), usando il concetto di **stream** (canale di comunicazione unidirezionale).  
+L’architettura è a “cipolla” (adapter + chain of responsibility): si parte da uno stream di base e lo si “avvolge” con altri stream per aggiungere funzionalità.
+### Come rappresentare file e directory
+#### La vecchia classe `File` (`java.io`)
+- Modella un **file o una directory** (può anche non esistere).
+- Costruttore: `new File("percorso")`
+- Metodi utili: `exists()`, `isDirectory()`, `list()`, `renameTo()`, `delete()`, `mkdir()`, `isFile()`, ecc.
+
+```java
+File f = new File("myfile.tmp");
+if (f.exists()) {
+    f.renameTo(new File("myfile.old"));
+}
+```
+
+**Problemi di `File`**:
+- Molti metodi non lanciano eccezioni (solo `boolean` di fallimento, senza motivo).
+- `rename` si comporta diversamente tra piattaforme.
+- Supporto limitato a link simbolici e metadati.
+- Problemi di scalabilità con directory grandi.
+
+#### La nuova interfaccia `Path` (`java.nio.file`)
+
+- Sostituisce `File`.
+- È un’**interfaccia** → nessun costruttore. Si ottiene tramite la factory `Paths.get()`.
+- Supporta operazioni su percorsi (normalizzazione, risoluzione, relativizzazione, confronti…).
+
+```java
+Path p1 = Paths.get("/tmp/foo");
+Path p2 = Paths.get(System.getProperty("user.home"), "logs", "foo.log");
+
+System.out.println(p1.getFileName());    // foo
+System.out.println(p1.getParent());      // /tmp
+System.out.println(p1.getNameCount());   // 2
+```
+
+**Metodi utili di `Path`**:
+- `normalize()` – rimuove `.` e `..` superflui
+- `resolve(Path other)` – concatena percorsi
+- `relativize(Path other)` – restituisce il percorso relativo tra due percorsi
+- `equals()`, `compareTo()`, `startsWith()`, `endsWith()`
+
+```java
+Path base = Paths.get("/home");
+Path assoluto = Paths.get("/home/sally/bar");
+System.out.println(base.relativize(assoluto)); // sally\bar
+```
+
+#### La classe factory `Files` (`java.nio.file`)
+
+Contiene solo **metodi statici** per operare su file/directory:
+
+- **Operazioni base**: `exists()`, `isDirectory()`, `move()`, `copy()`, `delete()`, `createDirectory()`, `list()`, `walk()`…
+- **Lettura/scrittura in blocco** (solo per file **piccoli**!):
+  - `readAllBytes(Path)` → `byte[]`
+  - `readAllLines(Path, Charset)` → `List<String>`
+  - `write(Path, byte[])` / `write(Path, Iterable<? extends CharSequence>)`
+
+```java
+// Lettura di un piccolo file di testo
+Path percorso = Paths.get("dati.txt");
+try {
+    List<String> righe = Files.readAllLines(percorso, StandardCharsets.UTF_8);
+    for (String riga : righe) {
+        System.out.println(riga);
+    }
+} catch (IOException e) {
+    System.err.println("Errore di lettura: " + e.getMessage());
+}
+```
+
+```java
+// Scrittura di un piccolo file binario
+byte[] dati = {10, 20, 30, 40};
+Files.write(Paths.get("output.bin"), dati, StandardOpenOption.CREATE);
+```
+
+⚠️ **Non usare `readAllBytes` / `readAllLines` per file grandi** (rischio di memoria e prestazioni).
+
+
+### Il package `java.io` – le basi
+**Concetto di stream**
+- Canale **unidirezionale** (input o output).
+	- Stream di **byte** (`InputStream`, `OutputStream`) – per dati binari.
+	- Stream di **caratteri** (`Reader`, `Writer`) – ottimizzati per testo e Unicode.
+![[127-Gestione IO in Java-generalità.pdf#page=32&rect=49,133,674,400|127-Gestione IO in Java-generalità, p.32|400]]
+
+| Operazione | Byte stream                     | Character stream            |
+|------------|--------------------------------|-----------------------------|
+| Input      | `java.io.InputStream`          | `java.io.Reader`            |
+| Output     | `java.io.OutputStream`         | `java.io.Writer`            |
+
+**Architettura a cipolla (Adapter + Chain of responsibility)**
+- **Stream di nodo** (incapsulano la sorgente/destinazione fisica):  
+  `FileInputStream`, `FileOutputStream`, `FileReader`, `FileWriter`, `ByteArrayInputStream`, `SocketInputStream`…
+- **Stream di filtro/adattamento** (avvolgono uno stream esistente per aggiungere funzionalità):  
+  `BufferedInputStream`, `DataInputStream`, `ObjectInputStream`, `BufferedReader`, `PrintWriter`…
+
+Esempio (lettura efficiente di testo da file):
+```java
+// Stream di nodo
+FileReader fr = new FileReader("input.txt");
+// Stream di adattamento (buffer + readLine)
+BufferedReader br = new BufferedReader(fr);
+
+String linea;
+while ((linea = br.readLine()) != null) {
+    System.out.println(linea);
+}
+br.close();
+```
+
+**Vantaggio**: si può comporre a piacere la “cipolla” per ottenere esattamente il comportamento desiderato (buffer, parsing di tipi primitivi, serializzazione oggetti…).
+
+---
+
+### 3. Separatori dipendenti dalla piattaforma
+
+`File` (e anche `Path`) espone costanti per scrivere percorsi portabili:
+
+- `File.separator` → `/` su Unix/Mac, `\` su Windows
+- `File.pathSeparator` → `:` su Unix/Mac, `;` su Windows
+
+Meglio usare `Paths.get()` con stringhe “normali” (che accettano entrambi i separatori) o costruire il percorso a pezzi.
+
+
+> **Nota**: in presenza di eccezioni di I/O (es. `IOException`), Java richiede **controllo obbligatorio** (checked exception) – quindi vanno gestite con `try/catch` o dichiarate con `throws`.
+
+
+
+## Gestione dell’I/O in Java – I/O Binario
+### Stream di byte: classi base astratte
+**`InputStream`** – canale di input a byte:
+- `int read()`: legge un byte (0‑255) o restituisce -1 se lo stream è terminato; può bloccarsi in attesa di dati.
+- `int read(byte[] b)`, `read(byte[] b, int off, int len)`: legge più byte.
+- `void close()`: chiude lo stream.
+
+**`OutputStream`** – canale di output a byte:
+- `void write(int b)`: scrive un byte (0‑255).
+- `void write(byte[] b)`, `write(byte[] b, int off, int len)`: scrive più byte.
+- `void flush()`: forza la scrittura dei buffer.
+- `void close()`: chiude lo stream.
+
+Entrambe sono astratte: le sottoclassi concrete implementano `read`/`write` adeguate alla specifica sorgente/destinazione.
+### Stream di byte per file: `FileInputStream` e `FileOutputStream`
+**`FileInputStream`** – input da file:
+- Costruttori: `FileInputStream(String nome)` o `FileInputStream(File file)`, lancia `FileNotFoundException` (obbligatoria).
+- `int read()`: legge un byte dal file, restituisce -1 a fine file.
+
+**`FileOutputStream`** – output su file:
+- Costruttori: `FileOutputStream(String nome)`, `FileOutputStream(String nome, boolean append)`, analoghi con `File`. Lancia `FileNotFoundException`.
+- `void write(int b)`: scrive il byte sul file.
+
+*Esempio di lettura di un file binario byte per byte:*
+```java
+import java.io.*;
+
+public class LetturaDaFileBinario {
+    public static void main(String args[]) {
+        FileInputStream is = null;
+        try {
+            is = new FileInputStream(args[0]);
+        } catch (FileNotFoundException e) {
+            System.out.println("File non trovato");
+            System.exit(1);
+        }
+        try {
+            int x = is.read();
+            int n = 0;
+            while (x >= 0) {
+                System.out.print(" " + x);
+                n++;
+                x = is.read();
+            }
+            System.out.println("\nTotale byte: " + n);
+        } catch (IOException ex) {
+            System.out.println("Errore di input");
+            System.exit(2);
+        }
+    }
+}
+```
+
+*Esempio di scrittura di alcuni byte su file:*
+```java
+import java.io.*;
+
+public class ScritturaSuFileBinario {
+    public static void main(String args[]) {
+        FileOutputStream os = null;
+        try {
+            os = new FileOutputStream(args[0]);
+        } catch (FileNotFoundException e) {
+            System.out.println("Imposs. aprire file");
+            System.exit(1);
+        }
+        try {
+            for (int x = 0; x < 10; x += 3) {
+                System.out.println("Scrittura di " + x);
+                os.write(x);
+            }
+        } catch (IOException ex) {
+            System.out.println("Errore di output");
+            System.exit(2);
+        }
+    }
+}
+```
+### Stream di adattamento per dati primitivi
+**`DataInputStream`** (implementa `DataInput`) e **`DataOutputStream`** (implementa `DataOutput`)
+- Incapsulano rispettivamente un `InputStream` o un `OutputStream` e forniscono metodi per leggere/scrivere tipi primitivi Java (`readInt`, `writeInt`, `readFloat`, `writeFloat`, `readBoolean`, `writeBoolean`, `readChar`, `writeChar`, `readDouble`, `writeDouble`, …) e stringhe in formato UTF.
+- I metodi di lettura lanciano `EOFException` se lo stream termina inaspettatamente.
+
+*Esempio: scrittura di valori primitivi su file usando `DataOutputStream` sopra un `FileOutputStream`:*
+```java
+import java.io.*;
+
+public class Esempio1 {
+    public static void main(String args[]) {
+        FileOutputStream fs = null;
+        try {
+            fs = new FileOutputStream("Prova.dat");
+        } catch (IOException e) {
+            System.out.println("Apertura fallita");
+            System.exit(1);
+        }
+        DataOutputStream os = new DataOutputStream(fs);
+        float f1 = 3.1415F;
+        char c1 = 'X';
+        boolean b1 = true;
+        double d1 = 1.4142;
+        try {
+            os.writeFloat(f1);
+            os.writeBoolean(b1);
+            os.writeDouble(d1);
+            os.writeChar(c1);
+            os.writeInt(12);
+            os.close();
+        } catch (IOException e) {
+            System.out.println("Scrittura fallita");
+            System.exit(2);
+        }
+    }
+}
+```
+
+*Esempio di rilettura corrispondente con `DataInputStream`:*
+```java
+import java.io.*;
+
+public class Esempio2 {
+    public static void main(String args[]) {
+        FileInputStream fin = null;
+        try {
+            fin = new FileInputStream("Prova.dat");
+        } catch (FileNotFoundException e) {
+            System.out.println("File non trovato");
+            System.exit(3);
+        }
+        DataInputStream is = new DataInputStream(fin);
+        float f2; char c2; boolean b2; double d2; int i2;
+        try {
+            f2 = is.readFloat();
+            b2 = is.readBoolean();
+            d2 = is.readDouble();
+            c2 = is.readChar();
+            i2 = is.readInt();
+            is.close();
+            System.out.println(f2 + ", " + b2 + ", " + d2 + ", " + c2 + ", " + i2);
+        } catch (IOException e) {
+            System.out.println("Errore di input");
+            System.exit(4);
+        }
+    }
+}
+```
+> **Nota:** Solo chi scrive conosce l’esatto ordine e tipo dei dati – occorre leggere nello stesso ordine.
+### Serializzazione di oggetti: `ObjectInputStream` e `ObjectOutputStream`
+
+- **Serializzare** = salvare un oggetto in una rappresentazione binaria (con `ObjectOutputStream`).
+- **Deserializzare** = ricostruire l’oggetto dalla sua forma binaria (con `ObjectInputStream`).
+- Non tutte le classi sono automaticamente serializzabili: devono implementare l’interfaccia **`java.io.Serializable`** (marcatore vuoto, nessun metodo). Questo obbliga il progettista a un’esplicita scelta di design.
+
+#### Interfaccia `Serializable` e numero di versione `serialVersionUID`
+- Ogni classe serializzabile dovrebbe dichiarare un campo:
+  ```java
+  private static final long serialVersionUID = 1L;
+  ```
+  - **private** (non accessibile dall’esterno), **static** (vale per l’intera classe), **final** (costante).
+  - Serve per distinguere versioni della classe: se al momento della deserializzazione il `serialVersionUID` salvato non corrisponde a quello corrente, viene lanciata `InvalidClassException`.
+- Se non dichiarato, ne viene calcolato uno di default basato su dettagli del compilatore → rischio di eccezioni inattese. Pertanto è **fortemente consigliato** definirlo esplicitamente.
+
+*Esempio: classe `Punto2D` serializzabile*
+```java
+public class Punto2D implements java.io.Serializable {
+    float x, y;
+    private static final long serialVersionUID = 1;
+
+    public Punto2D(float xx, float yy) { x = xx; y = yy; }
+    public float getX() { return x; }
+    public float getY() { return y; }
+}
+```
+
+#### Metodi principali
+- `ObjectOutputStream.writeObject(Object obj)` – serializza un oggetto (deve essere `Serializable`).
+- `ObjectInputStream.readObject()` – restituisce un `Object`; necessario un **downcast** al tipo concreto noto solo a chi ha progettato il protocollo.
+
+*Esempio: salvataggio di un `Punto2D`*
+```java
+Punto2D p = new Punto2D(3.2F, 1.5F);
+try {
+    FileOutputStream f = new FileOutputStream("data.bin");
+    ObjectOutputStream os = new ObjectOutputStream(f);
+    os.writeObject(p);
+    os.flush();
+    os.close();
+} catch (IOException e) { ... }
+```
+
+*Esempio: rilettura*
+```java
+Punto2D p = null;
+try {
+    FileInputStream f = new FileInputStream("data.bin");
+    ObjectInputStream is = new ObjectInputStream(f);
+    p = (Punto2D) is.readObject();
+    is.close();
+    System.out.println("x,y = " + p.getX() + ", " + p.getY());
+} catch (IOException | ClassNotFoundException e) { ... }
+```
+
+#### Serializzare collezioni di oggetti
+Invece di serializzare un oggetto alla volta, si può serializzare l’intera collezione (array, `List`, ecc.) come un unico oggetto, perché le collezioni sono a loro volta oggetti serializzabili. La rilettura restituisce direttamente la collezione.
+
+*Esempio con array di `Punto2D`:*
+```java
+public static void salvaPunti(String filename, Punto2D[] punti) {
+    try {
+        FileOutputStream f = new FileOutputStream(filename);
+        ObjectOutputStream os = new ObjectOutputStream(f);
+        os.writeObject(punti);
+        os.close();
+    } catch (IOException e) {
+        System.err.println("Errore in fase di salvataggio dati");
+    }
+}
+
+public static Punto2D[] leggiPunti(String filename) {
+    Punto2D[] punti = null;
+    try {
+        FileInputStream f = new FileInputStream(filename);
+        ObjectInputStream is = new ObjectInputStream(f);
+        punti = (Punto2D[]) is.readObject();
+        is.close();
+    } catch (IOException | ClassNotFoundException e) {
+        System.err.println("Errore in fase di rilettura dati");
+    }
+    return punti;
+}
+```
+Utilizzo in un `main` di prova:
+```java
+public static void main(String[] args) {
+    final String filename = "punti.bin";
+    Punto2D[] punti = { new Punto2D(3.14F, 1.57F), new Punto2D(8, -8.88F) };
+    System.out.println("Writing " + Arrays.toString(punti));
+    salvaPunti(filename, punti);
+    System.out.println("Now reading...");
+    var puntiRiletti = leggiPunti(filename);
+    System.out.println("Riletti " + Arrays.toString(puntiRiletti));
+}
+```
+
+> **Nota:** Il `serialVersionUID` è obbligatorio per le classi normali. Gli array sono esenti dal controllo di versione (struttura fissa a livello bytecode), ma altre collezioni (es. `ArrayList`) necessitano del numero di versione come ogni altra classe.
+
+---
+
+### Java 7 – Factory methods con `Files`
+
+A partire da Java 7, oltre alla creazione diretta con `new`, si possono ottenere stream binari tramite i metodi statici della classe `Files` (pacchetto `java.nio.file`):
+- `InputStream Files.newInputStream(Path p, OpenOption... options)`
+- `OutputStream Files.newOutputStream(Path p, OpenOption... options)`
+
+Questi restituiscono stream “pronti all’uso” (tipicamente `FileInputStream`/`FileOutputStream` ma restituiti come tipo astratto), e supportano opzioni di apertura (es. `StandardOpenOption.APPEND`). Si usano insieme a `Paths.get()`.
+
+*Esempio: riscrittura del primo esempio di scrittura usando `Files` e incapsulando in `DataOutputStream`:*
+```java
+import java.io.*;
+import java.nio.file.*;
+
+public class NioEsempio1 {
+    public static void main(String[] args) {
+        try (OutputStream fs = Files.newOutputStream(Paths.get("Prova.dat"))) {
+            DataOutputStream os = new DataOutputStream(fs);
+            // ... operazioni di scrittura
+        } catch (IOException e) {
+            System.out.println("Apertura fallita");
+            System.exit(1);
+        }
+    }
+}
+```
+Allo stesso modo per la lettura:
+```java
+try (InputStream fin = Files.newInputStream(Paths.get("Prova.dat"))) {
+    DataInputStream is = new DataInputStream(fin);
+    // ... operazioni di lettura
+}
+```
+
+---
+
+### Try-with-resources (Java 7)
+
+Per semplificare la gestione delle risorse (stream, file, socket, …) è stato introdotto il costrutto **try-with-resources**:
+- Le risorse sono aperte all’interno della dichiarazione del `try`:
+  ```java
+  try (InputStream is = Files.newInputStream(Paths.get(file))) {
+      // uso lo stream
+  } catch (IOException e) { ... }
+  ```
+- Al termine del blocco (sia normalmente che per eccezione) le risorse vengono chiuse automaticamente (devono implementare `AutoCloseable`, condizione soddisfatta da tutti gli stream).
+- Elimina il blocco `finally` e il boilerplate di chiusura, migliorando leggibilità e robustezza.
+- **Attenzione**: le risorse aperte con try-with-resources sono utilizzabili **solo dentro il blocco**; dopo l’uscita sono già chiuse.
+
+*Confronto: versione classica vs. try-with-resources per lettura file binario.*
+
+**Classica:**
+```java
+FileInputStream is = null;
+try {
+    is = new FileInputStream(args[0]);
+} catch (FileNotFoundException e) {
+    System.out.println("File non trovato");
+    System.exit(1);
+}
+try {
+    int x = is.read(), n = 0;
+    while (x >= 0) {
+        System.out.print(" " + x); n++; x = is.read();
+    }
+    System.out.println("\nTotale byte: " + n);
+} catch (IOException ex) {
+    System.out.println("Errore di input");
+    System.exit(2);
+}
+```
+
+**Con try-with-resources e factory `Files`:**
+```java
+try (InputStream is = Files.newInputStream(Paths.get(args[0]))) {
+    int x = is.read(), n = 0;
+    while (x >= 0) {
+        System.out.print(" " + x); n++; x = is.read();
+    }
+    System.out.println("\nTotale byte: " + n);
+} catch (IOException ex) {
+    System.out.println("Errore di input");
+    System.exit(2);
+}
+```
+
+---
+
+### `PrintStream` – menzione
+`PrintStream` è uno stream di adattamento per l’output di testo (`print`, `println`), ma è **obsoleto** (deprecato) e non dovrebbe essere usato in nuovo codice. Va ricordato solo perché `System.out` e `System.err` sono di tipo `PrintStream` per ragioni di retrocompatibilità (introdotti in Java 1.0). L’alternativa moderna è `PrintWriter`.
