@@ -5161,10 +5161,9 @@ L’architettura è a “cipolla” (adapter + chain of responsibility): si part
 - Supporto limitato a link simbolici e metadati.
 - Problemi di scalabilità con directory grandi.
 
-#### La nuova interfaccia `Path` (`java.nio.file`)
-- È un’**interfaccia** → nessun costruttore. Si ottiene tramite la factory `Paths.get()`.
-- Supporta operazioni su percorsi (normalizzazione, risoluzione, relativizzazione, confronti…).
-
+#### `Path` (`java.nio.file`)
+È un’**interfaccia** → nessun costruttore. Si ottiene tramite la factory `Paths.get()`.
+Supporta operazioni su percorsi (normalizzazione, risoluzione, relativizzazione, confronti…).
 ```java
 Path p1 = Paths.get("/tmp/foo");
 Path p2 = Paths.get(System.getProperty("user.home"), "logs", "foo.log");
@@ -5179,23 +5178,20 @@ System.out.println(p1.getNameCount());   // 2
 - `resolve(Path other)` – concatena percorsi
 - `relativize(Path other)` – restituisce il percorso relativo tra due percorsi
 - `equals()`, `compareTo()`, `startsWith()`, `endsWith()`
-
 ```java
 Path base = Paths.get("/home");
 Path assoluto = Paths.get("/home/sally/bar");
 System.out.println(base.relativize(assoluto)); // sally\bar
 ```
 
-#### La classe factory `Files` (`java.nio.file`)
-
+**La classe factory `Files` (`java.nio.file`)**
 Contiene solo **metodi statici** per operare su file/directory:
-
 - **Operazioni base**: `exists()`, `isDirectory()`, `move()`, `copy()`, `delete()`, `createDirectory()`, `list()`, `walk()`…
 - **Lettura/scrittura in blocco** (solo per file **piccoli**!):
   - `readAllBytes(Path)` → `byte[]`
   - `readAllLines(Path, Charset)` → `List<String>`
   - `write(Path, byte[])` / `write(Path, Iterable<? extends CharSequence>)`
-
+  
 ```java
 // Lettura di un piccolo file di testo
 Path percorso = Paths.get("dati.txt");
