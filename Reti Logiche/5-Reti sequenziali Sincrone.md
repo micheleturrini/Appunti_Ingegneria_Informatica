@@ -106,17 +106,6 @@ Il segnale asincrono $x$ viene campionato da un primo FF-D, la cui uscita $x_1$ 
 - Tuttavia, è molto probabile che la metastabilità si risolva entro un periodo di clock. Il secondo FF campiona $x_1$ quando è ormai stabile, garantendo che $x_{\text{sync}}$ non sia mai metastabile.
 - L'incertezza sulla transizione di $x$ si traduce in un'incertezza sul **ritardo** con cui $x_{\text{sync}}$ commuta (1 o 2 cicli di clock dopo il fronte reale di $x$).
 Si possono usare più di due FF in cascata per ridurre ulteriormente la probabilità di metastabilità alla rete a valle.
-
-
-**DA QUI IN POI é SOLO TRASCRIZIONE DI DEEPSEEK NON APPUNTI**
-buono studio :)
-
-
-
-
-
-
-
 ## Sintesi formale di una RSS
 Procedura in 5 passi:
 1.  **Comprensione delle specifiche e grafo degli stati**.
@@ -152,18 +141,14 @@ D & A,0 & A,1 & D,0 & A,0 \\
 \end{array}$$
 
 ### 3 Codifica degli stati
-La codifica è **arbitraria** (es. A=00, B=01, C=10, D=11). Non esistono corse critiche perché il campionamento filtra le transizioni multiple. Bit di stato spesso indicati con $Q_1 Q_0$ (uscite dei FF). Una codifica opportuna può minimizzare la complessità combinatoria, ma non è oggetto di questa trattazione.
-### 9.4 Sintesi combinatoria
-
+La codifica è **arbitraria** (es. A=00, B=01, C=10, D=11). Non esistono corse critiche perché il campionamento filtra le transizioni multiple. Bit di stato spesso indicati con $Q_1 Q_0$ (uscite dei FF). Una codifica opportuna può minimizzare la complessità combinatoria.
+### 4 Sintesi combinatoria
 Dalla tabella delle transizioni codificata si ricavano le funzioni booleane per:
-
 - gli **ingressi $D_i$ dei flip-flop** (stato futuro): $D_1^n = \text{funzione}(Q_1^n, Q_0^n, x_1^n, x_0^n)$, $D_0^n = \dots$
 - l'**uscita** $z^n$ (per Mealy, anche funzione degli ingressi).
-
 Non occorre preoccuparsi di alee, quindi si può eseguire la sintesi **a costo minimo** (mappe di Karnaugh, NAND, ecc.).
 
 Esempio per la cassaforte Mealy:
-
 $$
 \begin{aligned}
 D_1^n &= (Q_0 \, x_1 \, x_0)^n \\
@@ -171,113 +156,57 @@ D_0^n &= (x_1' x_0' + x_1 x_0 \, Q_1' Q_0')^n \\
 z^n &= (Q_1 \, Q_0' \, x_1' \, x_0)^n
 \end{aligned}
 $$
+### 5 Schema logico
+![[8_reti_sequenziali_sincrone.pdf#page=37&rect=10,10,693,449|8_reti_sequenziali_sincrone, p.37|700]]
 
----
+**Limiti della cassaforte sincrona**
+Dallo schema logico finale **non è immediato capire quale sequenza sia riconosciuta**
+Eventuali modifiche alla sequenza target richiedono un nuovo progetto. 
+Per sequenze di ingressi asincroni con più bit, la semplice sincronizzazione con un FF per bit non garantisce la correttezza (problema della coerenza dei segnali multi-bit).
+## Sintesi diretta di RSS
+Si utilizzano **blocchi notevoli** già pronti – registri, shift register, contatori – e li si interconnette con opportuna logica combinatoria per ottenere il comportamento desiderato.
 
-### 9.5 Schema logico
-
-Si disegnano i flip-flop D con i segnali $D_i$ e il clock comune. La rete combinatoria per $D_i$ e $z$ è realizzata con porte logiche.
-
-I segnali asincroni in ingresso devono essere **sincronizzati** con un sincronizzatore a 2 FF-D. Attenzione: la sincronizzazione singola non basta quando **due o più segnali asincroni codificano un'informazione multi-bit**, perché il ritardo relativo tra di essi potrebbe far campionare valori transitori incoerenti (non appartenenti alla codifica). Per questi casi servono tecniche aggiuntive (es. codifica Gray e sincronizzatori con segnali di handshake).
-
----
-
-## 10. Limiti della cassaforte sincrona
-
-Dallo schema logico finale **non è immediato capire quale sequenza sia riconosciuta**; la rete diventa una "scatola nera". Eventuali modifiche alla sequenza target richiedono un nuovo progetto. Inoltre, per sequenze di ingressi asincroni con più bit, la semplice sincronizzazione con un FF per bit non garantisce la correttezza (problema della coerenza dei segnali multi-bit).
-
-Appunti dettagliati su **Sintesi diretta di RSS tramite uso di reti notevoli**
-
----
-
-
-
-
-## 1. Introduzione: due approcci alla sintesi
-
-Esistono due strategie per progettare reti sequenziali sincrone (RSS):
-
-- **Approccio formale** (già visto per le RSA): si parte dalle specifiche, si disegna il grafo degli stati, si codificano gli stati, si ricavano le funzioni booleane e si disegna lo schema logico.
-- **Approccio diretto** (tipico per le RSS): si utilizzano **blocchi notevoli** già pronti – registri, shift register, contatori – e li si interconnette con opportuna logica combinatoria per ottenere il comportamento desiderato.
-
-Questa seconda strada semplifica il progetto perché molti componenti sono già ottimizzati e testati.
-
----
-
-## 2. Registro a k bit
-
+I componenti:
+### Registro a k bit
 Un **registro a k bit** è una rete sincrona che memorizza un dato di k bit. Possiede:
-
+![[8_reti_sequenziali_sincrone.pdf#page=41&rect=233,13,488,138|8_reti_sequenziali_sincrone, p.41|200]]
 - **Ingressi**: $IN[k-1..0]$ (dato da scrivere), $WE$ (write enable, sincrono).
 - **Uscite**: $OUT[k-1..0]$ (dato memorizzato).
-- **Reset asincrono**: $A\_RESET$ (o $A\_RESET'$, attivo basso), che azzera tutti i bit indipendentemente dal clock.
-
-Il comportamento al fronte di salita del clock:
-
+- **Reset asincrono**: $A\_RESET$ (o $A\_RESET'$, attivo basso), che azzera tutti i bit indipendentemente dal clock.  (A_SegnaleAsincrono != SegnaleSincrono)
+Il comportamento **al fronte di salita del clock**:
 - Se $WE = 1$, $OUT \leftarrow IN$.
 - Se $WE = 0$, $OUT$ mantiene il valore precedente.
+![[8_reti_sequenziali_sincrone.pdf#page=45&rect=20,2,709,219|8_reti_sequenziali_sincrone, p.45|600]]
 
-**Realizzazione a 1 bit**:
-Si usa un flip‑flop D e un multiplexer a 2 vie.
-
-- Al FF‑D arriva l'uscita del MUX.
-- Il MUX ha ingressi $Q$ (uscita attuale) e $IN$, selezionati da $WE$.
-
-Schema:
-
-\[
-\text{MUX}:\; \text{uscita} = 
-\begin{cases}
-Q & \text{se } WE = 0 \\
-IN & \text{se } WE = 1
-\end{cases}
-\]
-
-Il FF‑D campiona al fronte di clock. L'azzeramento asincrono si ottiene collegando il segnale $A\_RESET'$ all'ingresso $\overline{CLR}$ del flip‑flop.
-
-**Estensione a k bit**: si replicano $k$ FF‑D e $k$ MUX a 2 vie, condividendo i segnali $WE$, $A\_RESET$ e il clock.
-
----
-
-## 3. Comandi sincroni e priorità
-
-Spesso i registri offrono più comandi sincroni, con diversi livelli di priorità. Regola generale: **i comandi asincroni sono sempre prioritari su quelli sincroni**. Tra comandi sincroni bisogna specificare l'ordine.
+**Comandi sincroni e priorità**
+Spesso i registri offrono più comandi sincroni, con diversi livelli di priorità. Regola generale: **i comandi asincroni sono sempre prioritari su quelli sincroni**.
+> [!important]
+> Tra comandi **sincroni** bisogna specificare l'**ordine**.
 
 Esempi con un registro dotato di $WE$ e di un segnale di reset sincrono $RESET$:
-
 - **RESET prioritario su WE**: se al fronte di clock $RESET = 1$, l'uscita diventa $0$ indipendentemente da $WE$ e $IN$.
 - **WE prioritario su RESET**: l'azzeramento sincrono avviene solo se $RESET = 1$ e contemporaneamente $WE = 1$, altrimenti il comando di reset viene ignorato.
+![[8_reti_sequenziali_sincrone.pdf#page=47&rect=8,4,658,452|8_reti_sequenziali_sincrone, p.47|400]]
 
-In fase di sintesi occorre sapere esattamente l'ordine delle priorità per costruire la logica combinatoria di pilotaggio dei FF‑D.
-
----
-
-## 4. Esempio 1: flip‑flop T (toggle)
-
+**Esempio 1: flip‑flop T (toggle)**
 Specifiche: rete di Moore con un ingresso sincrono $T$. L'uscita $Q$ commuta (toggle) ad ogni ciclo in cui $T = 1$; con $T = 0$ mantiene il valore. All'accensione ($A\_RESET = 1$) la rete memorizza $1$.
+![[8_reti_sequenziali_sincrone.pdf#page=49&rect=166,11,522,224|8_reti_sequenziali_sincrone, p.49|300]]
+Questo circuito è noto come **flip‑flop T**. 
 
-Soluzione: si usa un registro a 1 bit. Il valore da scrivere è il complemento del valore attuale: $IN = Q'$. Si pone $WE = T$. Così quando $T = 1$, al clock successivo $Q \leftarrow Q'$ (toggle); quando $T = 0$, $WE = 0$ e il registro mantiene il valore.
-
-Questo circuito è noto come **flip‑flop T**. Può essere ulteriormente ottimizzato eliminando il multiplexer, ma il concetto rimane lo stesso.
-
----
-
-## 5. Esempio 2: controllo di livello in un serbatoio
-
+**Esempio 2**
 Specifiche: ingresso sincrono $N[3..0]$ (livello come numero senza segno). L'uscita $Z$ deve andare a $1$ quando $N \ge 12$ e rimanere a $1$ finché $N \ge 8$ (isteresi). All'accensione $Z=0$.
-
 Analisi: nell'intervallo $8 \le N < 12$ l'uscita dipende dalla storia passata: serve un bit di memoria. Si usa un registro a 1 bit.
-
 Si definiscono due segnali combinatori:
-
 - $NGTE12 = 1$ se $N \ge 12$, cioè $N_3 N_2$.
 - $NLT8 = 1$ se $N < 8$, cioè $N_3'$ (poiché 8 è la potenza di due successiva, basta il bit più significativo).
-
 Il registro deve essere scritto solo quando si esce dall'intervallo di isteresi o vi si entra: $WE = NGTE12 + NLT8$. Il dato da scrivere è $NGTE12$ (perché quando si attiva $NGTE12$ va scritto $1$, quando si attiva $NLT8$ va scritto $0$). L'uscita $Z$ coincide con lo stato del registro.
-
 La logica combinatoria aggiuntiva calcola $NGTE12$ e $NLT8$, poi il tutto pilota il registro.
+![[8_reti_sequenziali_sincrone.pdf#page=53&rect=98,137,577,362|8_reti_sequenziali_sincrone, p.53|400]]
 
----
+
+
+
+
 
 ## 6. Shift register (registro a scorrimento)
 

@@ -5147,7 +5147,7 @@ integers[2] = 44;
 System.out.println(Arrays.toString(integers));
 // [22, 33, 44, null, null, null, null, null, null]
 ```
-## Gestione IO
+## Gestione IO - Generale
 Java gestisce l’I/O in modo **agnostico rispetto al dispositivo** (file, console, rete, array di byte…), usando il concetto di **stream** (canale di comunicazione unidirezionale).  
 L’architettura è a “cipolla” (adapter + chain of responsibility): si parte da uno stream di base e lo si “avvolge” con altri stream per aggiungere funzionalità.
 ### Come rappresentare file e directory
@@ -5155,14 +5155,6 @@ L’architettura è a “cipolla” (adapter + chain of responsibility): si part
 - Modella un **file o una directory** (può anche non esistere).
 - Costruttore: `new File("percorso")`
 - Metodi utili: `exists()`, `isDirectory()`, `list()`, `renameTo()`, `delete()`, `mkdir()`, `isFile()`, ecc.
-
-```java
-File f = new File("myfile.tmp");
-if (f.exists()) {
-    f.renameTo(new File("myfile.old"));
-}
-```
-
 **Problemi di `File`**:
 - Molti metodi non lanciano eccezioni (solo `boolean` di fallimento, senza motivo).
 - `rename` si comporta diversamente tra piattaforme.
@@ -5170,8 +5162,6 @@ if (f.exists()) {
 - Problemi di scalabilità con directory grandi.
 
 #### La nuova interfaccia `Path` (`java.nio.file`)
-
-- Sostituisce `File`.
 - È un’**interfaccia** → nessun costruttore. Si ottiene tramite la factory `Paths.get()`.
 - Supporta operazioni su percorsi (normalizzazione, risoluzione, relativizzazione, confronti…).
 
@@ -5278,7 +5268,7 @@ Meglio usare `Paths.get()` con stringhe “normali” (che accettano entrambi i 
 
 
 
-## Gestione dell’I/O in Java – I/O Binario
+## I/O Binario
 ### Stream di byte: classi base astratte
 **`InputStream`** – canale di input a byte:
 - `int read()`: legge un byte (0‑255) o restituisce -1 se lo stream è terminato; può bloccarsi in attesa di dati.
