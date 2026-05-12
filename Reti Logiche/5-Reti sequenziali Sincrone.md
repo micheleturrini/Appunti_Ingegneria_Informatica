@@ -202,24 +202,19 @@ Si definiscono due segnali combinatori:
 Il registro deve essere scritto solo quando si esce dall'intervallo di isteresi o vi si entra: $WE = NGTE12 + NLT8$. Il dato da scrivere è $NGTE12$ (perché quando si attiva $NGTE12$ va scritto $1$, quando si attiva $NLT8$ va scritto $0$). L'uscita $Z$ coincide con lo stato del registro.
 La logica combinatoria aggiuntiva calcola $NGTE12$ e $NLT8$, poi il tutto pilota il registro.
 ![[8_reti_sequenziali_sincrone.pdf#page=53&rect=98,137,577,362|8_reti_sequenziali_sincrone, p.53|400]]
-
-
-
-
-
-
-## 6. Shift register (registro a scorrimento)
-
-Uno **shift register a k bit** è una catena di $k$ flip‑flop D in serie. L'ingresso seriale $IN$ viene campionato e tutti i bit memorizzati scalano di una posizione ad ogni fronte di clock.
-
-- **Uscite**: $OUT[k-1..0]$ (il bit $OUT[0]$ è il più recente, $OUT[k-1]$ è il più vecchio, oppure viceversa a seconda della direzione).
+### Shift register (registro a scorrimento)
+ L'ingresso seriale $IN$ viene campionato e tutti i bit memorizzati scalano di una posizione ad ogni fronte di clock.
+![[8_reti_sequenziali_sincrone.pdf#page=54&rect=176,16,570,118|8_reti_sequenziali_sincrone, p.54|300]]
+- **Uscite**: $OUT[k-1..0]$ **(il bit $OUT[0]$ è il bit più significativo ritardato di un solo clock).**
 - **Reset asincrono**: $A\_RESET$ azzera tutti i registri.
 
 Le forme d'onda mostrano che l'andamento di $IN$ si ritrova sulle uscite con ritardi crescenti di un ciclo di clock ciascuna.
 
-**Comandi sincroni tipici**:
+Uno **shift register a k bit** è una catena di $k$ flip‑flop D in serie.
 
-- **Enable (EN)**: lo scorrimento avviene solo se $EN = 1$.
+![[8_reti_sequenziali_sincrone.pdf#page=57&rect=155,15,413,161|8_reti_sequenziali_sincrone, p.57|200]]
+**Comandi sincroni**:
+- **Enable (EN)**: lo scorri!mento avviene solo se $EN = 1$ altrimenti vengono conservati gli ultimi bit letti.
 - **Load (LD)**: se $LD = 1$, il registro carica in parallelo un bus $I[k-1..0]$ indipendentemente da $IN$ e $EN$. Normalmente $LD$ è prioritario su $EN$.
 - **Direzione (R/L')**: stabilisce se lo scorrimento è verso destra (verso il bit meno significativo) o verso sinistra.
 
