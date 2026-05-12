@@ -5150,7 +5150,6 @@ System.out.println(Arrays.toString(integers));
 ## Gestione IO - Generale
 Java gestisce l’I/O in modo **agnostico rispetto al dispositivo** (file, console, rete, array di byte…), usando il concetto di **stream** (canale di comunicazione unidirezionale).  
 L’architettura è a “cipolla” (adapter + chain of responsibility): si parte da uno stream di base e lo si “avvolge” con altri stream per aggiungere funzionalità.
-### Come rappresentare file e directory
 #### La vecchia classe `File` (`java.io`)
 - Modella un **file o una directory** (può anche non esistere).
 - Costruttore: `new File("percorso")`
@@ -5160,7 +5159,6 @@ L’architettura è a “cipolla” (adapter + chain of responsibility): si part
 - `rename` si comporta diversamente tra piattaforme.
 - Supporto limitato a link simbolici e metadati.
 - Problemi di scalabilità con directory grandi.
-
 #### `Path` (`java.nio.file`)
 È un’**interfaccia** → nessun costruttore. Si ottiene tramite la factory `Paths.get()`.
 Supporta operazioni su percorsi (normalizzazione, risoluzione, relativizzazione, confronti…).
@@ -5212,8 +5210,6 @@ Files.write(Paths.get("output.bin"), dati, StandardOpenOption.CREATE);
 ```
 
 ⚠️ **Non usare `readAllBytes` / `readAllLines` per file grandi** (rischio di memoria e prestazioni).
-
-
 ### Il package `java.io` – le basi
 **Concetto di stream**
 - Canale **unidirezionale** (input o output).
@@ -5248,21 +5244,13 @@ br.close();
 
 **Vantaggio**: si può comporre a piacere la “cipolla” per ottenere esattamente il comportamento desiderato (buffer, parsing di tipi primitivi, serializzazione oggetti…).
 
----
-
-### 3. Separatori dipendenti dalla piattaforma
-
+**Separatori dipendenti dalla piattaforma**
 `File` (e anche `Path`) espone costanti per scrivere percorsi portabili:
-
 - `File.separator` → `/` su Unix/Mac, `\` su Windows
 - `File.pathSeparator` → `:` su Unix/Mac, `;` su Windows
-
 Meglio usare `Paths.get()` con stringhe “normali” (che accettano entrambi i separatori) o costruire il percorso a pezzi.
 
-
 > **Nota**: in presenza di eccezioni di I/O (es. `IOException`), Java richiede **controllo obbligatorio** (checked exception) – quindi vanno gestite con `try/catch` o dichiarate con `throws`.
-
-
 
 ## I/O Binario
 ### Stream di byte: classi base astratte
@@ -5601,3 +5589,4 @@ try (InputStream is = Files.newInputStream(Paths.get(args[0]))) {
 
 ### `PrintStream` – menzione
 `PrintStream` è uno stream di adattamento per l’output di testo (`print`, `println`), ma è **obsoleto** (deprecato) e non dovrebbe essere usato in nuovo codice. Va ricordato solo perché `System.out` e `System.err` sono di tipo `PrintStream` per ragioni di retrocompatibilità (introdotti in Java 1.0). L’alternativa moderna è `PrintWriter`.
+## I/O

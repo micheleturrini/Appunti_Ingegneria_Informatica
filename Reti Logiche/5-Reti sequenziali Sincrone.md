@@ -209,36 +209,34 @@ La logica combinatoria aggiuntiva calcola $NGTE12$ e $NLT8$, poi il tutto pilota
 - **Reset asincrono**: $A\_RESET$ azzera tutti i registri.
 
 Le forme d'onda mostrano che l'andamento di $IN$ si ritrova sulle uscite con ritardi crescenti di un ciclo di clock ciascuna.
+![[8_reti_sequenziali_sincrone.pdf#page=55&rect=9,46,709,452|8_reti_sequenziali_sincrone, p.55|600]]
 
 Uno **shift register a k bit** è una catena di $k$ flip‑flop D in serie.
+![[8_reti_sequenziali_sincrone.pdf#page=56&rect=20,7,689,310|8_reti_sequenziali_sincrone, p.56|500]]
 
-![[8_reti_sequenziali_sincrone.pdf#page=57&rect=155,15,413,161|8_reti_sequenziali_sincrone, p.57|200]]
 **Comandi sincroni**:
-- **Enable (EN)**: lo scorri!mento avviene solo se $EN = 1$ altrimenti vengono conservati gli ultimi bit letti.
+![[8_reti_sequenziali_sincrone.pdf#page=57&rect=155,15,413,161|8_reti_sequenziali_sincrone, p.57|200]]
+- **Enable (EN)**: lo scorrimento avviene solo se $EN = 1$ altrimenti vengono conservati gli ultimi bit letti.
 - **Load (LD)**: se $LD = 1$, il registro carica in parallelo un bus $I[k-1..0]$ indipendentemente da $IN$ e $EN$. Normalmente $LD$ è prioritario su $EN$.
 - **Direzione (R/L')**: stabilisce se lo scorrimento è verso destra (verso il bit meno significativo) o verso sinistra.
+![[8_reti_sequenziali_sincrone.pdf#page=58&rect=13,28,715,253|8_reti_sequenziali_sincrone, p.58|500]]
 
 **Universal shift register**: dotato di tutti i comandi, codificati su 2 bit ($S_1 S_0$):
 
-| $S_1 S_0$ | Comando       | Funzione                              |
-|-----------|---------------|---------------------------------------|
-| 00        | Hold          | Mantiene il valore                    |
-| 01        | Shift right   | $OUT[i] \leftarrow OUT[i-1]$ (i>0), $OUT[0] \leftarrow IN\_R$ |
-| 10        | Shift left    | $OUT[i] \leftarrow OUT[i+1]$ (i<k-1), $OUT[k-1] \leftarrow IN\_L$ |
-| 11        | Load          | $OUT[i] \leftarrow I[i]$              |
-
----
-
-## 7. Comunicazione seriale e parallela
-
+| $S_1 S_0$ | Comando     | Funzione                                                          |
+| --------- | ----------- | ----------------------------------------------------------------- |
+| 00        | Hold        | Mantiene il valore                                                |
+| 01        | Shift right | $OUT[i] \leftarrow OUT[i-1]$ (i>0), $OUT[0] \leftarrow IN\_R$     |
+| 10        | Shift left  | $OUT[i] \leftarrow OUT[i+1]$ (i<k-1), $OUT[k-1] \leftarrow IN\_L$ |
+| 11        | Load        | $OUT[i] \leftarrow I[i]$                                          |
+![[8_reti_sequenziali_sincrone.pdf#page=59&rect=24,1,694,233|8_reti_sequenziali_sincrone, p.59|500]]
+## Comunicazione seriale e parallela
+![[8_reti_sequenziali_sincrone.pdf#page=61&rect=12,10,719,443|8_reti_sequenziali_sincrone, p.61|500]]
 Un'applicazione classica degli shift register è la conversione tra formato seriale e parallelo.
-
 - **Seriale → Parallelo (S/P)**:
-  - **Moore**: l'ultimo bit di un dato di $k$ bit viene caricato nello shift register al clock $k$, e il dato completo è disponibile sulle uscite al clock $k+1$. (Es.: 3 bit, il dato appare un ciclo dopo la ricezione dell'ultimo bit).
-  - **Mealy**: si può risparmiare un flip‑flop se l'ultimo bit viene mandato direttamente sull'uscita senza passare per il registro. Il dato è disponibile già nello stesso ciclo in cui arriva l'ultimo bit, ma l'uscita è parzialmente combinatoria.
-
-- **Parallelo → Seriale (P/S)**: si usa uno shift register con comando di load. Al primo ciclo si carica il dato parallelo ($LD=1$), poi con $LD=0$ e $EN=1$ (o semplicemente facendo shift) i bit escono uno al ciclo dall'uscita seriale ($OUT[k-1]$ o $OUT[0]$ a seconda della connessione). Conoscendo la posizione del bit più significativo si può trasmettere correttamente.
-
+  - **Moore**: l'ultimo bit di un dato di $k$ bit viene caricato nello shift register al clock $k$, e il dato completo è disponibile sulle uscite al clock $k+1$. (Es.: 3 bit, il dato appare un ciclo dopo la ricezione dell'ultimo bit).![[8_reti_sequenziali_sincrone.pdf#page=62&rect=3,2,719,336|8_reti_sequenziali_sincrone, p.62|600]]
+  - **Mealy**: si può risparmiare un flip‑flop se l'ultimo bit viene mandato direttamente sull'uscita senza passare per il registro. Il dato è disponibile già nello stesso ciclo in cui arriva l'ultimo bit, ma l'uscita è parzialmente combinatoria.![[8_reti_sequenziali_sincrone.pdf#page=63&rect=3,2,718,335|8_reti_sequenziali_sincrone, p.63|600]]
+- **Parallelo → Seriale (P/S)**: si usa uno shift register con comando di load. Al primo ciclo si carica il dato parallelo ($LD=1$), poi con $LD=0$ e $EN=1$ (o semplicemente facendo shift) i bit escono uno al ciclo dall'uscita seriale $OUT[k-1]$. Conoscendo la posizione del bit più significativo si può trasmettere correttamente.![[8_reti_sequenziali_sincrone.pdf#page=64&rect=7,1,720,352|8_reti_sequenziali_sincrone, p.64|600]]
 ---
 
 ## 8. Shift come moltiplicazione/divisione per 2
