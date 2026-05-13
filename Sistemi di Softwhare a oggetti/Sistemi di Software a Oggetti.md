@@ -5589,4 +5589,349 @@ try (InputStream is = Files.newInputStream(Paths.get(args[0]))) {
 
 ### `PrintStream` – menzione
 `PrintStream` è uno stream di adattamento per l’output di testo (`print`, `println`), ma è **obsoleto** (deprecato) e non dovrebbe essere usato in nuovo codice. Va ricordato solo perché `System.out` e `System.err` sono di tipo `PrintStream` per ragioni di retrocompatibilità (introdotti in Java 1.0). L’alternativa moderna è `PrintWriter`.
-## I/O
+## I/O di Testo
+L'I/O di testo si basa su **stream di caratteri** (Reader/Writer), più adatti dei byte stream perché gestiscono automaticamente la codifica UNICODE e le convenzioni locali.
+  - un nucleo (es. `FileReader`, `FileWriter`) che incapsula la sorgente/destinazione fisica
+  - uno o più adapter (es. `BufferedReader`, `PrintWriter`) che aggiungono funzionalità (bufferizzazione, lettura per righe, stampa formattata).
+
+**FileReader** e **FileWriter** permettono di leggere/scrivere un file un carattere alla volta.
+```java
+import java.io.*;
+
+public class LetturaDaFileDiTesto {
+    public static void main(String[] args) {
+        FileReader r = null;
+        try {
+            r = new FileReader(args[0]);
+            int x, n = 0;
+            while ((x = r.read()) >= 0) {
+                System.out.print(" " + (char) x);
+                n++;
+            }
+            System.out.println("\nTotale caratteri: " + n);
+        } catch (FileNotFoundException e) {
+            System.out.println("File non trovato");
+            System.exit(1);
+        } catch (IOException e) {
+            System.out.println("Errore di input");
+            System.exit(2);
+        } finally {
+            if (r != null) try { r.close(); } catch (IOException e) { }
+        }
+    }
+}
+```
+
+Output esempio:
+```
+N e l   m e z z o   d e l   c a m m i n   d i   n o s t r a   v i t a
+Totale caratteri: 35
+```
+
+**BufferedReader e PrintWriter**
+- `BufferedReader` incapsula un `Reader` e introduce la **lettura per righe** tramite `readLine()`, che restituisce `null` a fine file.
+- `PrintWriter` incapsula un `Writer` e offre i metodi `print()`, `println()` e `printf()` per una scrittura semplice e senza eccezioni controllate.
+
+Esempio: lettura e scrittura bufferizzatan <-
+```java
+// Lettura per righe
+BufferedReader br = new BufferedReader(new FileReader("input.txt"));
+String riga;
+while ((riga = br.readLine()) != null) {
+    // elabora la riga
+}
+
+// Scrittura per righe
+PrintWriter pw = new PrintWriter(new FileWriter("output.txt"));
+pw.println("Una riga di testo");
+pw.print("Altra riga senza a capo");
+pw.close();
+
+// Costruttore diretto dal nome del file
+PrintWriter pw2 = new PrintWriter("output.txt");
+pw2.println("Hello");
+```
+
+**Input da console**
+Java 25 introduce la classe `java.lang.IO` (importata automaticamente) con metodi statici `println()` e `readln()` per un accesso alla console più semplice e immediato, adatto anche ai principianti.
+
+```java
+import static java.lang.IO.*;
+
+void main() {
+    println("Hello world");
+    String nome = readln("Immettere il nome: ");
+    String cognome = readln("Immettere il cognome: ");
+    String eta = readln("Immettere l'età: ");
+    println(nome + " " + cognome + " ha " + eta + " anni.");
+}
+```
+### Tokenizzazione delle righe di testo
+
+Dopo aver letto una riga, occorre estrarre i singoli **token** (parole, numeri, date, ecc.) in base a dei **separatori**. In Java gli strumenti principali sono `Scanner` e `String.split`. `StringTokenizer` è considerata obsoleta.
+
+### 3.1 StringTokenizer (cenni, obsoleto)
+
+- Incapsula una stringa già letta; `nextToken()` estrae i token uno a uno.
+- Non può cambiare la stringa incapsulata: serve un nuovo tokenizer per ogni riga, generando molti oggetti.
+- Configurabile con un set di delimitatori; restituisce stringhe da pulire con `trim()`.
+- Problemi noti: cambiando delimitatore a metà riga, i vecchi separatori diventano caratteri normali e possono “sporcare” i token successivi. Gestibile solo con trucchi (es. tokenizer a tre argomenti con `returnDelims=true`), ma è macchinoso e fragile.
+- **Oggi è sconsigliato**; preferire sempre `Scanner` o `split`.
+
+```java
+StringTokenizer st = new StringTokenizer("nome,cognome,città", ",");
+while (st.hasMoreTokens()) {
+    System.out.println(st.nextToken().trim());
+}
+```
+
+### 3.2 Scanner
+
+- Supera i limiti di `StringTokenizer`: può essere costruito su `String`, `File`, `InputStream`, `Readable`.
+- Non incapsula staticamente la stringa, quindi è efficiente per elaborare più righe.
+- I delimitatori e i pattern sono basati su **espressioni regolari** (regex).
+- Metodi principali: `hasNext()`, `hasNextInt()`, `hasNextLine()`, `next()`, `nextInt()`, `useDelimiter(pattern)`, `skip(pattern)`, `findInLine(pattern)`.
+
+**Costruzione di uno Scanner**
+
+```java
+Scanner sc1 = new Scanner(unaStringa);
+Scanner sc2 = new Scanner(new File("dati.txt"));
+Scanner sc3 = new Scanner(System.in);  // da tastiera
+```
+
+**Lettura di base** (spazi/tab come delimitatore di default)
+
+```java
+Scanner sc = new Scanner(System.in);
+int i = sc.nextInt();
+String word = sc.next();
+```
+
+**Cambio delimitatore**
+
+```java
+sc.useDelimiter(":");   // delimitatore personalizzato
+sc.reset();             // torna al default (spazi/tab)
+```
+
+**Esempio: separatore unico (virgola)**
+
+```java
+Scanner sc = new Scanner(reader);
+sc.useDelimiter("\\s*,\\s*");  // virgola con eventuali spazi
+while (sc.hasNext()) {
+    System.out.println(sc.next()); // token già puliti
+}
+```
+
+**Esempio 3 (separatori impliciti) con Scanner**
+
+Formato: `Madre Arianna3471234567` – token: ruolo, nome, telefono.
+
+```java
+Scanner sc = new Scanner(reader);
+while (sc.hasNext()) {
+    String ruolo = sc.next();              // token fino allo spazio
+    sc.useDelimiter("\\d+");               // ora delimiter = cifre
+    String nome = sc.next();               // token fino alle cifre
+    sc.reset();
+    String tel = sc.next();                // token fino a spazio/EOF
+    System.out.println(ruolo + "/" + nome + "/" + tel);
+}
+```
+
+**findInLine() (approccio avanzato, sconsigliato se non necessario)**
+
+Permette di descrivere l’intera riga con un pattern, estraendo i gruppi:
+
+```java
+String pattern = "(\\w+)(?:\\s+)(\\D+)(\\d+)";
+if (sc.findInLine(pattern) != null) {
+    MatchResult res = sc.match();
+    String first = res.group(1);
+    String second = res.group(2);
+    String third = res.group(3);
+    sc.nextLine(); // consuma il newline rimasto
+}
+```
+
+### 3.3 String.split()
+
+- Metodo della classe `String`, internamente usa `Scanner`.
+- Divide la stringa in base a un’espressione regolare e restituisce un array di token.
+- **Vantaggi:** semplice quando il delimitatore è costante per tutta la riga.
+- **Svantaggi:** non può cambiare delimitatore a metà riga; per casi complessi servono più passi di split annidati.
+
+**Esempio base**
+
+```java
+String[] parti = "nome, cognome, città".split(",");
+// token: "nome", " cognome", " città" – serve trim()!
+```
+
+**Miglioramento con regex che include spazi**
+
+```java
+String[] parti = riga.split("\\s*,\\s*");
+// token: "nome", "cognome", "città" – già puliti
+```
+
+**Esempio: tabulazioni (una o più)**
+
+```java
+String[] parti = riga.split("\\s*\\t+\\s*");
+// robusto contro più tab consecutivi e spazi attorno
+```
+
+**Esempio con separatori multipli assimilabili (virgola o trattino)**
+
+```java
+String[] items = riga.split("\\s*(,|-)+\\s*");
+```
+
+**Limite:** l'Esempio 3 (separatore implicito tra secondo e terzo token) non è gestibile con una sola `split`. Occorrono più passi:
+
+```java
+String[] parts1 = line.split("\\s+");       // ruolo e resto
+String ruolo = parts1[0];
+String other = parts1[1];
+String[] parts2 = other.split("\\d+");      // nome
+String nome = parts2[0];
+String[] parts3 = other.split("\\D+");      // telefono (part3[1] perché part3[0] vuoto)
+String tel = parts3[1];
+// Soluzione fragile: fallisce se il nome contiene spazi.
+```
+
+**Java 21: `splitWithDelimiters()`**
+
+Nuovo metodo che include i delimitatori nell'array risultante, utile per separatori impliciti.
+
+```java
+String[] items = line.splitWithDelimiters("\\s+|\\d+", 0);
+// items: [ruolo, " ", nome, "3471234567"]
+// Il delimitatore " " può essere scartato.
+String ruolo = items[0];
+String nome = items[2];
+String tel = items[3];
+```
+
+Attenzione: funziona bene solo se non ci sono spazi all'interno dei token (altrimenti meglio usare le tabulazioni).
+
+---
+
+## 4. Casi pratici di tokenizzazione (riepilogo per Java)
+
+| Caso | Caratteristica | Strumento consigliato |
+|------|----------------|-----------------------|
+| 1 – Separatore fisso (es. `$`) | Semplice, unico delimitatore | `split` con `\\$` |
+| 2 – Separatori diversi ma assimilabili (`,` e `-`) | Possono essere trattati come uno solo | `split` con `(,|-)+` o `Scanner.useDelimiter` |
+| 3 – Separatori diversi, non assimilabili | Virgola anche all'interno di un token, trattino no | `Scanner` con cambio delimitatore e `skip` |
+| 4 – Separatori impliciti (cambio tra lettere e numeri) | Es: `Arianna3471234567` | `Scanner` con `useDelimiter` dinamico |
+| 5 – Larghezza fissa | Non servono separatori | `String.substring()` |
+
+---
+
+## 5. Parsing di valori numerici e date
+
+Dopo l'estrazione dei token, quasi sempre occorre convertirli in tipi appropriati (es. `int`, `double`, `LocalDate`, `LocalTime`) per costruire il modello dati.
+
+### 5.1 Parsing di stringhe numeriche
+
+Si usano i formattatori di `java.text.NumberFormat`. **Attenzione** a:
+- Simbolo delle migliaia e separatore decimale dipendono dalla `Locale`.
+- Il simbolo delle migliaia viene ignorato dal parser, causando potenziali errori silenziosi.
+- Percentuali e valute hanno formattatori dedicati.
+
+```java
+import java.text.NumberFormat;
+import java.util.Locale;
+
+NumberFormat nf = NumberFormat.getNumberInstance(Locale.ITALY);
+Number num = nf.parse("1.234,56");  // 1234.56
+double value = num.doubleValue();   // 1234.56
+
+// Valuta
+NumberFormat cf = NumberFormat.getCurrencyInstance(Locale.ITALY);
+Number prezzo = cf.parse("€ 1.234,56");
+// Percentuale
+NumberFormat pf = NumberFormat.getPercentInstance(Locale.ITALY);
+Number perc = pf.parse("36,75%");   // 0.3675
+```
+
+**Problema delle migliaia:** parse accetta simboli di raggruppamento ovunque, senza segnalare errori. Esempio: `"367.5"` viene letto come `3675` (il punto è inteso come separatore delle migliaia, non decimale). L'unica soluzione è un controllo manuale: recuperare il `groupingSeparator` e rimuoverlo con `replace` prima del parsing, o validare la posizione con `DecimalFormatSymbols`.
+
+### 5.2 Parsing di date e orari
+
+Si utilizza `java.time.format.DateTimeFormatter`. Due approcci:
+- **Dal formattatore:** `formatter.parse(str)` restituisce un `TemporalAccessor`, poi convertito con `LocalDate.from()`.
+- **Dalla classe data/ora:** `LocalDate.parse(str, formatter)` direttamente.
+
+```java
+import java.time.*;
+import java.time.format.*;
+import java.util.Locale;
+
+// Stile localizzato
+DateTimeFormatter fmt = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+                                         .withLocale(Locale.ITALY);
+// Approccio 1
+TemporalAccessor ta = fmt.parse("12/02/23");
+LocalDate data = LocalDate.from(ta);           // 2023-02-12
+
+// Approccio 2
+LocalDate data2 = LocalDate.parse("12/02/23", fmt);
+LocalTime ora = LocalTime.parse("12:30", DateTimeFormatter.ofPattern("HH:mm"));
+```
+
+Formati personalizzati: ad esempio `"dd/MM/yyyy"`.
+
+```java
+DateTimeFormatter customFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+LocalDate data = LocalDate.parse("25/01/2022", customFmt);
+```
+
+**Nota:** il parsing fallisce con `DateTimeParseException` se il formato non corrisponde.
+
+---
+
+## 6. Struttura tipica di un lettore da file in un compito
+
+1. Aprire il file con `BufferedReader(new FileReader(...))`.
+2. Leggere riga per riga con `readLine()`.
+3. Tokenizzare la riga (con `split` o `Scanner`).
+4. Convertire i token in tipi concreti (es. `Double.parseDouble`, `Integer.parseInt`, `NumberFormat.parse`, `LocalDate.parse`).
+5. Costruire gli oggetti del modello e inserirli in una collezione.
+
+Esempio da un ipotetico file di spese sanitarie (separatore `;`):
+
+```java
+List<Spesa> spese = new ArrayList<>();
+try (BufferedReader br = new BufferedReader(new FileReader("spesesanitarie.txt"))) {
+    String line;
+    while ((line = br.readLine()) != null) {
+        String[] parts = line.split("\\s*;\\s*");
+        LocalDate data = LocalDate.parse(parts[0], DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String emittente = parts[1];
+        int numVoci = Integer.parseInt(parts[2]);
+        NumberFormat cf = NumberFormat.getCurrencyInstance(Locale.ITALY);
+        double totale = cf.parse(parts[3]).doubleValue();
+        // ... leggere le voci successive con un ciclo for
+    }
+}
+```
+
+---
+
+## 7. Riepilogo e indicazioni
+
+- **Lettura righe:** `BufferedReader.readLine()`.
+- **Scrittura:** `PrintWriter.println()`.
+- **Input da console:** `IO.readln()` (Java 25) oppure `System.console().readLine()`.
+- **Tokenizzazione semplice:** `String.split("pattern")` con regex opportuna; includere `\\s*` per eliminare spazi.
+- **Tokenizzazione complessa:** `Scanner` con `useDelimiter` e `skip` per gestire separatori multipli non omogenei.
+- **`StringTokenizer`:** solo per codice legacy; evitare nel nuovo codice.
+- **Parsing numeri:** usare `NumberFormat` con `Locale` appropriato; fare attenzione al simbolo delle migliaia.
+- **Parsing date/ore:** usare `DateTimeFormatter` e i metodi `parse` di `LocalDate`/`LocalTime`/`LocalDateTime`.
+
+Questi appunti sintetizzano tutte le competenze di I/O testuale e tokenizzazione richieste in Java, coprendo i contenuti del PDF.
