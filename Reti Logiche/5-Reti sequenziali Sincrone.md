@@ -237,7 +237,6 @@ Un'applicazione classica degli shift register è la conversione tra formato seri
   - **Moore**: l'ultimo bit di un dato di $k$ bit viene caricato nello shift register al clock $k$, e il dato completo è disponibile sulle uscite al clock $k+1$. (Es.: 3 bit, il dato appare un ciclo dopo la ricezione dell'ultimo bit).![[8_reti_sequenziali_sincrone.pdf#page=62&rect=3,2,719,336|8_reti_sequenziali_sincrone, p.62|600]]
   - **Mealy**: si può risparmiare un flip‑flop se l'ultimo bit viene mandato direttamente sull'uscita senza passare per il registro. Il dato è disponibile già nello stesso ciclo in cui arriva l'ultimo bit, ma l'uscita è parzialmente combinatoria.![[8_reti_sequenziali_sincrone.pdf#page=63&rect=3,2,718,335|8_reti_sequenziali_sincrone, p.63|600]]
 - **Parallelo → Seriale (P/S)**: si usa uno shift register con comando di load. Al primo ciclo si carica il dato parallelo ($LD=1$), poi con $LD=0$ e $EN=1$ (o semplicemente facendo shift) i bit escono uno al ciclo dall'uscita seriale $OUT[k-1]$. Conoscendo la posizione del bit più significativo si può trasmettere correttamente.![[8_reti_sequenziali_sincrone.pdf#page=64&rect=7,1,720,352|8_reti_sequenziali_sincrone, p.64|600]]
----
 
 ## 8. Shift come moltiplicazione/divisione per 2
 
@@ -250,8 +249,7 @@ Attenzione: bisogna stabilire quale bit è il più significativo all'interno del
 
 **Shift aritmetico** per numeri con segno in complemento a due:
 
-- **Shift a destra (divisione)**: per preservare il segno, il bit che entra deve essere uguale al bit più significativo (estensione del segno). Es.: $111010_2 = -6$ shift right $ \rightarrow 111101_2 = -3$.
-- **Shift a sinistra (moltiplicazione)**: come lo shift logico, entra $0$. L'overflow in complemento a 2 è segnalato da $Q_0 \neq Q_1$ (il bit di segno cambierebbe).
+- **Shift a destra (divisione)**: per preservare il segno, il bit che entra deve essere uguale al bit più significativo (estensione del segno). Es.: $111010_2 = -6$ shift right $$$ \rightarrow 111101_2 = -3$$- **Shift a sinistra (moltiplicazione)**: come lo shift logico, entra $0$. L'overflow in complemento a 2 è segnalato da $Q_0 \neq Q_1$ (il bit di segno cambierebbe).
 
 ---
 
