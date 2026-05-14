@@ -17,4 +17,4 @@
 	- [[esercitazionianalisiB.pdf]]
 - [ ] **Sistemi di softwhare a oggetti**
 	- [[Sistemi di Software a Oggetti]]
-	- [[Java FX]]
+	- [[Java FX e LambdaExpression]]
