@@ -271,9 +271,11 @@ Le funzioni combinatorie $DECFF$, $DEC27$, $DEC30$ riconoscono i byte corrispond
 
 ---
 
-## 10. Monoimpulsore (edge detector)
+## Monoimpulsore (edge detector)
+Un **monoimpulsore** genera un impulso della durata esatta di un periodo di clock quando l'ingresso (anche asincrono) compie una transizione da 0 a 1. Serve anche a **sincronizzare il segnale asincrono.**
+Assume che il segnale in ingresso abbia una **frequenza minore del clock** e è accettabile segnalare il **fronte del segnale con più di un clock di ritardo**.
+![[8_reti_sequenziali_sincrone.pdf#page=78&rect=56,4,678,235|8_reti_sequenziali_sincrone, p.78|400]]
 
-Un **monoimpulsore** (o edge detector) genera un impulso della durata esatta di un periodo di clock quando l'ingresso (anche asincrono) compie una transizione da 0 a 1. Serve anche a sincronizzare il segnale asincrono.
 
 Vengono proposte diverse realizzazioni:
 
