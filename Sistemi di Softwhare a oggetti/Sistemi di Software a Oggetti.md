@@ -5667,30 +5667,12 @@ void main() {
 }
 ```
 ### Tokenizzazione delle righe di testo
-
 Dopo aver letto una riga, occorre estrarre i singoli **token** (parole, numeri, date, ecc.) in base a dei **separatori**. In Java gli strumenti principali sono `Scanner` e `String.split`. `StringTokenizer` è considerata obsoleta.
-
-### 3.1 StringTokenizer (cenni, obsoleto)
-
-- Incapsula una stringa già letta; `nextToken()` estrae i token uno a uno.
-- Non può cambiare la stringa incapsulata: serve un nuovo tokenizer per ogni riga, generando molti oggetti.
-- Configurabile con un set di delimitatori; restituisce stringhe da pulire con `trim()`.
-- Problemi noti: cambiando delimitatore a metà riga, i vecchi separatori diventano caratteri normali e possono “sporcare” i token successivi. Gestibile solo con trucchi (es. tokenizer a tre argomenti con `returnDelims=true`), ma è macchinoso e fragile.
-- **Oggi è sconsigliato**; preferire sempre `Scanner` o `split`.
-
-```java
-StringTokenizer st = new StringTokenizer("nome,cognome,città", ",");
-while (st.hasMoreTokens()) {
-    System.out.println(st.nextToken().trim());
-}
-```
-
-### 3.2 Scanner
-
-- Supera i limiti di `StringTokenizer`: può essere costruito su `String`, `File`, `InputStream`, `Readable`.
-- Non incapsula staticamente la stringa, quindi è efficiente per elaborare più righe.
-- I delimitatori e i pattern sono basati su **espressioni regolari** (regex).
-- Metodi principali: `hasNext()`, `hasNextInt()`, `hasNextLine()`, `next()`, `nextInt()`, `useDelimiter(pattern)`, `skip(pattern)`, `findInLine(pattern)`.
+### Scanner
+Supera i limiti di `StringTokenizer`: può essere costruito su `String`, `File`, `InputStream`, `Readable`.
+Non incapsula staticamente la stringa, quindi è efficiente per elaborare più righe.
+I delimitatori e i pattern sono basati su **espressioni regolari** (regex).
+Metodi principali: `hasNext()`, `hasNextInt()`, `hasNextLine()`, `next()`, `nextInt()`, `useDelimiter(pattern)`, `skip(pattern)`, `findInLine(pattern)`.
 
 **Costruzione di uno Scanner**
 
@@ -5920,18 +5902,3 @@ try (BufferedReader br = new BufferedReader(new FileReader("spesesanitarie.txt")
     }
 }
 ```
-
----
-
-## 7. Riepilogo e indicazioni
-
-- **Lettura righe:** `BufferedReader.readLine()`.
-- **Scrittura:** `PrintWriter.println()`.
-- **Input da console:** `IO.readln()` (Java 25) oppure `System.console().readLine()`.
-- **Tokenizzazione semplice:** `String.split("pattern")` con regex opportuna; includere `\\s*` per eliminare spazi.
-- **Tokenizzazione complessa:** `Scanner` con `useDelimiter` e `skip` per gestire separatori multipli non omogenei.
-- **`StringTokenizer`:** solo per codice legacy; evitare nel nuovo codice.
-- **Parsing numeri:** usare `NumberFormat` con `Locale` appropriato; fare attenzione al simbolo delle migliaia.
-- **Parsing date/ore:** usare `DateTimeFormatter` e i metodi `parse` di `LocalDate`/`LocalTime`/`LocalDateTime`.
-
-Questi appunti sintetizzano tutte le competenze di I/O testuale e tokenizzazione richieste in Java, coprendo i contenuti del PDF.
