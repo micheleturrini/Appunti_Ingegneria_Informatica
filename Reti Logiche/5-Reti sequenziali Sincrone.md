@@ -288,9 +288,7 @@ Vengono proposte diverse realizzazioni:
 ---
 
 ## 11. Contatori
-
 Un **contatore** è una rete sincrona senza ingressi (nella forma più semplice) che percorre ciclicamente tutti gli stati interni. Le uscite coincidono con lo stato interno.
-
 **Contatore binario modulo N**: gli stati sono i primi N numeri binari.
 
 ### 11.1 Contatore binario x4 (modulo 4)
