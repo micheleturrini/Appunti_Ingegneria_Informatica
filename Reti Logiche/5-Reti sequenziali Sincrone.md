@@ -302,7 +302,7 @@ Si può realizzare in modo inefficiente con MUX e adder oppure sfruttando le reg
 
 La realizzazione con **adder** non è la più efficiente ma evidenzia il legame: incrementare significa sommare 1. Sommando 1 a $Q_1 Q_0$, il bit $S_0 = Q_0 \oplus 1 = Q_0'$, $S_1 = Q_1 \oplus Q_0$, $R_1 = Q_1 Q_0$ (riporto). Le due realizzazioni (con EXOR o con sommatore) sono logicamente equivalenti.
 
-### 11.2 Comandi sincroni: ENABLE
+### Comandi sincroni: ENABLE
 
 Il comando $EN$ abilita il conteggio: quando $EN = 1$, il contatore incrementa; quando $EN = 0$, mantiene lo stato.
 
@@ -313,9 +313,9 @@ Per il contatore x4 con EN si può usare un MUX per ogni FF che seleziona tra il
 
 Questi schemi si generalizzano per contatori più grandi: ogni bit $Q_i$ deve commutare quando tutti i bit di peso inferiore valgono 1 (in conteggio avanti).
 
-### 11.3 Comandi sincroni: RESET e LOAD
-
-- **RESET sincrono**: riporta il contatore a 0 al successivo fronte di clock. Normalmente prioritario su EN. Si realizza con MUX o forzando gli ingressi D.
+### Comandi sincroni: RESET e LOAD
+- **RESET sincrono**: riporta il contatore a 0 al successivo fronte di clock (**Non intercambiabile con A_Reset**). **Prioritario su EN**. 
+![[8_reti_sequenziali_sincrone.pdf#page=99&rect=20,208,694,442|8_reti_sequenziali_sincrone, p.99|500]]
 - **LOAD sincrono**: carica un valore esterno $I[k-1..0]$. Nell'esempio x4 con LD e EN, due MUX in cascata gestiscono le priorità.
 
 ### 11.4 Comandi UP/DOWN (avanti/indietro)
@@ -367,11 +367,9 @@ Analisi:
 ---
 
 ## 13. Riconoscitore di sequenze – Soluzione 3 (con contatore)
-
 Riprendendo il riconoscitore a 3 byte (FF-27-30), la soluzione più efficiente in termini di flip‑flop usa un **contatore x4** (2 FF) invece di shift register.
 
-Idea: il contatore tiene traccia di quanti simboli corretti consecutivi sono stati visti.
-
+Idea: il contatore tiene traccia di **quanti simboli corretti** consecutivi sono stati visti.
 - Stato 0: nessun simbolo corretto, attesa di `FF`.
 - Stato 1: visto `FF`, attesa di `27`.
 - Stato 2: visti `FF` e `27`, attesa di `30`.
