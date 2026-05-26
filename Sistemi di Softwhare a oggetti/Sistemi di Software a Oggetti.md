@@ -5675,7 +5675,6 @@ I delimitatori e i pattern sono basati su **espressioni regolari** (regex).
 Metodi principali: `hasNext()`, `hasNextInt()`, `hasNextLine()`, `next()`, `nextInt()`, `useDelimiter(pattern)`, `skip(pattern)`, `findInLine(pattern)`.
 
 **Costruzione di uno Scanner**
-
 ```java
 Scanner sc1 = new Scanner(unaStringa);
 Scanner sc2 = new Scanner(new File("dati.txt"));
@@ -5683,7 +5682,6 @@ Scanner sc3 = new Scanner(System.in);  // da tastiera
 ```
 
 **Lettura di base** (spazi/tab come delimitatore di default)
-
 ```java
 Scanner sc = new Scanner(System.in);
 int i = sc.nextInt();
@@ -5691,14 +5689,12 @@ String word = sc.next();
 ```
 
 **Cambio delimitatore**
-
 ```java
 sc.useDelimiter(":");   // delimitatore personalizzato
 sc.reset();             // torna al default (spazi/tab)
 ```
 
 **Esempio: separatore unico (virgola)**
-
 ```java
 Scanner sc = new Scanner(reader);
 sc.useDelimiter("\\s*,\\s*");  // virgola con eventuali spazi
@@ -5708,9 +5704,7 @@ while (sc.hasNext()) {
 ```
 
 **Esempio 3 (separatori impliciti) con Scanner**
-
 Formato: `Madre Arianna3471234567` – token: ruolo, nome, telefono.
-
 ```java
 Scanner sc = new Scanner(reader);
 while (sc.hasNext()) {
@@ -5724,9 +5718,7 @@ while (sc.hasNext()) {
 ```
 
 **findInLine() (approccio avanzato, sconsigliato se non necessario)**
-
 Permette di descrivere l’intera riga con un pattern, estraendo i gruppi:
-
 ```java
 String pattern = "(\\w+)(?:\\s+)(\\D+)(\\d+)";
 if (sc.findInLine(pattern) != null) {
@@ -5738,42 +5730,36 @@ if (sc.findInLine(pattern) != null) {
 }
 ```
 
-### 3.3 String.split()
-
+### String.split()
 - Metodo della classe `String`, internamente usa `Scanner`.
 - Divide la stringa in base a un’espressione regolare e restituisce un array di token.
 - **Vantaggi:** semplice quando il delimitatore è costante per tutta la riga.
 - **Svantaggi:** non può cambiare delimitatore a metà riga; per casi complessi servono più passi di split annidati.
 
 **Esempio base**
-
 ```java
 String[] parti = "nome, cognome, città".split(",");
 // token: "nome", " cognome", " città" – serve trim()!
 ```
 
 **Miglioramento con regex che include spazi**
-
 ```java
 String[] parti = riga.split("\\s*,\\s*");
 // token: "nome", "cognome", "città" – già puliti
 ```
 
 **Esempio: tabulazioni (una o più)**
-
 ```java
 String[] parti = riga.split("\\s*\\t+\\s*");
 // robusto contro più tab consecutivi e spazi attorno
 ```
 
 **Esempio con separatori multipli assimilabili (virgola o trattino)**
-
 ```java
 String[] items = riga.split("\\s*(,|-)+\\s*");
 ```
 
 **Limite:** l'Esempio 3 (separatore implicito tra secondo e terzo token) non è gestibile con una sola `split`. Occorrono più passi:
-
 ```java
 String[] parts1 = line.split("\\s+");       // ruolo e resto
 String ruolo = parts1[0];
@@ -5786,9 +5772,7 @@ String tel = parts3[1];
 ```
 
 **Java 21: `splitWithDelimiters()`**
-
 Nuovo metodo che include i delimitatori nell'array risultante, utile per separatori impliciti.
-
 ```java
 String[] items = line.splitWithDelimiters("\\s+|\\d+", 0);
 // items: [ruolo, " ", nome, "3471234567"]
@@ -5799,9 +5783,6 @@ String tel = items[3];
 ```
 
 Attenzione: funziona bene solo se non ci sono spazi all'interno dei token (altrimenti meglio usare le tabulazioni).
-
----
-
 ## 4. Casi pratici di tokenizzazione (riepilogo per Java)
 
 | Caso | Caratteristica | Strumento consigliato |
@@ -5812,14 +5793,9 @@ Attenzione: funziona bene solo se non ci sono spazi all'interno dei token (altri
 | 4 – Separatori impliciti (cambio tra lettere e numeri) | Es: `Arianna3471234567` | `Scanner` con `useDelimiter` dinamico |
 | 5 – Larghezza fissa | Non servono separatori | `String.substring()` |
 
----
-
 ## 5. Parsing di valori numerici e date
-
 Dopo l'estrazione dei token, quasi sempre occorre convertirli in tipi appropriati (es. `int`, `double`, `LocalDate`, `LocalTime`) per costruire il modello dati.
-
-### 5.1 Parsing di stringhe numeriche
-
+### Parsing di stringhe numeriche
 Si usano i formattatori di `java.text.NumberFormat`. **Attenzione** a:
 - Simbolo delle migliaia e separatore decimale dipendono dalla `Locale`.
 - Il simbolo delle migliaia viene ignorato dal parser, causando potenziali errori silenziosi.
@@ -5842,9 +5818,7 @@ Number perc = pf.parse("36,75%");   // 0.3675
 ```
 
 **Problema delle migliaia:** parse accetta simboli di raggruppamento ovunque, senza segnalare errori. Esempio: `"367.5"` viene letto come `3675` (il punto è inteso come separatore delle migliaia, non decimale). L'unica soluzione è un controllo manuale: recuperare il `groupingSeparator` e rimuoverlo con `replace` prima del parsing, o validare la posizione con `DecimalFormatSymbols`.
-
-### 5.2 Parsing di date e orari
-
+### Parsing di date e orari
 Si utilizza `java.time.format.DateTimeFormatter`. Due approcci:
 - **Dal formattatore:** `formatter.parse(str)` restituisce un `TemporalAccessor`, poi convertito con `LocalDate.from()`.
 - **Dalla classe data/ora:** `LocalDate.parse(str, formatter)` direttamente.
@@ -5867,18 +5841,12 @@ LocalTime ora = LocalTime.parse("12:30", DateTimeFormatter.ofPattern("HH:mm"));
 ```
 
 Formati personalizzati: ad esempio `"dd/MM/yyyy"`.
-
 ```java
 DateTimeFormatter customFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 LocalDate data = LocalDate.parse("25/01/2022", customFmt);
 ```
-
 **Nota:** il parsing fallisce con `DateTimeParseException` se il formato non corrisponde.
-
----
-
-## 6. Struttura tipica di un lettore da file in un compito
-
+## Struttura tipica di un lettore da file in un compito
 1. Aprire il file con `BufferedReader(new FileReader(...))`.
 2. Leggere riga per riga con `readLine()`.
 3. Tokenizzare la riga (con `split` o `Scanner`).
@@ -5886,7 +5854,6 @@ LocalDate data = LocalDate.parse("25/01/2022", customFmt);
 5. Costruire gli oggetti del modello e inserirli in una collezione.
 
 Esempio da un ipotetico file di spese sanitarie (separatore `;`):
-
 ```java
 List<Spesa> spese = new ArrayList<>();
 try (BufferedReader br = new BufferedReader(new FileReader("spesesanitarie.txt"))) {
