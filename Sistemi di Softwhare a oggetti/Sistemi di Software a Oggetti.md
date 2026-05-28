@@ -5783,7 +5783,6 @@ String tel = items[3];
 ```
 
 Attenzione: funziona bene solo se non ci sono spazi all'interno dei token (altrimenti meglio usare le tabulazioni).
-## 4. Casi pratici di tokenizzazione (riepilogo per Java)
 
 | Caso | Caratteristica | Strumento consigliato |
 |------|----------------|-----------------------|
@@ -5792,10 +5791,9 @@ Attenzione: funziona bene solo se non ci sono spazi all'interno dei token (altri
 | 3 – Separatori diversi, non assimilabili | Virgola anche all'interno di un token, trattino no | `Scanner` con cambio delimitatore e `skip` |
 | 4 – Separatori impliciti (cambio tra lettere e numeri) | Es: `Arianna3471234567` | `Scanner` con `useDelimiter` dinamico |
 | 5 – Larghezza fissa | Non servono separatori | `String.substring()` |
-
-## 5. Parsing di valori numerici e date
+### Parsing di valori numerici e date
 Dopo l'estrazione dei token, quasi sempre occorre convertirli in tipi appropriati (es. `int`, `double`, `LocalDate`, `LocalTime`) per costruire il modello dati.
-### Parsing di stringhe numeriche
+#### Parsing di stringhe numeriche
 Si usano i formattatori di `java.text.NumberFormat`. **Attenzione** a:
 - Simbolo delle migliaia e separatore decimale dipendono dalla `Locale`.
 - Il simbolo delle migliaia viene ignorato dal parser, causando potenziali errori silenziosi.
@@ -5818,7 +5816,7 @@ Number perc = pf.parse("36,75%");   // 0.3675
 ```
 
 **Problema delle migliaia:** parse accetta simboli di raggruppamento ovunque, senza segnalare errori. Esempio: `"367.5"` viene letto come `3675` (il punto è inteso come separatore delle migliaia, non decimale). L'unica soluzione è un controllo manuale: recuperare il `groupingSeparator` e rimuoverlo con `replace` prima del parsing, o validare la posizione con `DecimalFormatSymbols`.
-### Parsing di date e orari
+#### Parsing di date e orari
 Si utilizza `java.time.format.DateTimeFormatter`. Due approcci:
 - **Dal formattatore:** `formatter.parse(str)` restituisce un `TemporalAccessor`, poi convertito con `LocalDate.from()`.
 - **Dalla classe data/ora:** `LocalDate.parse(str, formatter)` direttamente.
@@ -5846,7 +5844,7 @@ DateTimeFormatter customFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 LocalDate data = LocalDate.parse("25/01/2022", customFmt);
 ```
 **Nota:** il parsing fallisce con `DateTimeParseException` se il formato non corrisponde.
-## Struttura tipica di un lettore da file in un compito
+### Struttura tipica di un lettore da file in un compito
 1. Aprire il file con `BufferedReader(new FileReader(...))`.
 2. Leggere riga per riga con `readLine()`.
 3. Tokenizzare la riga (con `split` o `Scanner`).
