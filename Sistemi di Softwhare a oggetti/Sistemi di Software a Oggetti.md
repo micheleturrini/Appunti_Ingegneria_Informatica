@@ -5869,3 +5869,85 @@ try (BufferedReader br = new BufferedReader(new FileReader("spesesanitarie.txt")
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+## Varianza e Wildcard
+Gli array in Java soffrono di un problema più subdolo legato all'ereditarietà: la **covarianza**. Poiché `Integer` deriva da `Object`, Java permette di fare questo:
+```java
+Integer[] arrayOfInt = new Integer[4];
+Object[] arrayOfObjects = arrayOfInt; // Compila correttamente
+arrayOfObjects[1] = "ciao"; // ATTENZIONE! 
+```
+Sebbene la compilazione abbia successo, a run-time l'inserimento di una stringa in un array che in memoria è effettivamente di interi causerà una `java.lang.ArrayStoreException`. Gli array in Java non sono "type safe" in scrittura.
+
+Le collezioni sono volutamente "blindate" per evitare disastri: non puoi usare una lista di Gatti come se fosse una lista generica di Animali, altrimenti rischieresti di infilarci dentro un Cane per sbaglio. Questa rigidità garantisce la sicurezza del programma, ma rende difficilissimo scrivere codice flessibile e riutilizzabile. La soluzione sono le **Wildcard** (`?`), che fungono da "permessi speciali": ti ridanno libertà di mescolare i tipi "parenti", a patto di promettere al compilatore se userai la collezione **solo per leggere** i dati (usando `? extends`) o **solo per scriverli** (usando `? super`). Così facendo, ottieni un codice flessibile senza mai sacrificare la sicurezza.
+#### Covarianza, Controvarianza e Invarianza
+- **Covarianza (Array):** La compatibilità di tipo dell'array varia nello stesso senso di quella degli elementi. È sicura solo in lettura, ma causa disastri in scrittura.
+- **Controvarianza:** Sarebbe la compatibilità in senso opposto. Una funzione che scrive interi in un array dovrebbe poter accettare un `Number[]` (sicuro semanticamente), ma gli array Java non lo permettono.
+- **Invarianza (JCF):** Per risolvere i problemi degli array, la JCF è stata progettata con strutture dati **invarianti**. Una `List<Integer>` NON è compatibile con una `List<Object>`, bloccando l'errore a tempo di compilazione.
+![[134-Varianza e wildcard.pdf#page=49&rect=16,41,709,438|134-Varianza e wildcard, p.49|600]]
+### Risolvere la rigidità dell'invarianza: Il principio PECS
+L'invarianza garantisce la massima sicurezza, ma porta a un'eccessiva rigidità. Se vogliamo copiare elementi da una `Collection<T>` sorgente a una destinazione, costringere entrambe ad essere esattamente dello stesso tipo `T` è limitativo.
+Immaginando la copia come un "tubo":
+- La **sorgente** (che produce elementi) può tranquillamente essere più _specifica_ (covariante).
+- La **destinazione** (che consuma elementi) può tranquillamente essere più _generale_ (controvariante).
+Questo porta alla regola aurea **PECS (Producer Extends, Consumer Super)**.
+### I tipi parametrici varianti in Java: Le Wildcard
+Java offre la _use-site variance_ (si specifica la varianza nel singolo metodo) tramite le **wildcard** (tipi parametrici varianti).
+- **`<? extends T>` (Upper Bound / Covarianza):** Usato per i _Producers_. Accetta `T` o i suoi sottotipi. È sicuro estrarre (leggere) elementi, ma NON si può scrivere (inserire).
+- **`<? super T>` (Lower Bound / Controvarianza):** Usato per i _Consumers_. Accetta `T` o i suoi supertipi. È sicuro inserire (scrivere) elementi, ma NON si può leggere assumendo un tipo specifico.
+- **`<?>` (Unbounded):** Usato quando il tipo è sconosciuto. Equivale a `<? extends Object>`. Accetta qualsiasi collezione, ma non permette modifiche al contenuto. Non va confuso con il _diamond operator_ `<>`.
+#### Esempio del refactoring di `copy`
+Utilizzando le wildcard, il metodo di copia diventa flessibile e "type-safe":
+```java
+public static <T> void copy( Collection<? extends T> src, Collection<? super T> dest) {
+    for (T elem : src) dest.add(elem);
+}
+```
+*La sorgente fornisce tipi "almeno pari a T", la destinazione accetta tipi "più grandi di T".*
+### Compatibilità fra tipi varianti
+I tipi contenenti wildcard hanno regole di compatibilità insiemistiche basate sulla tassonomia. Ad esempio:
+- `List<? extends Double>` è un vincolo più restrittivo di `List<? extends Number>`. Quindi, il primo può essere assegnato al secondo, ma non viceversa.
+- `List<? super Number>` accetta solo collezioni di `Number` e `Object`.
+### Sviluppare Classi Generiche
+Quando si crea una nuova struttura dati, bisogna decidere la varianza in base al suo scopo:
+- **`MyContainer<T>` (Sia Producer che Consumer):** Poiché ha metodi `get()` (legge) e `put()` (scrive), **deve** essere invariante.
+- **`MyProducer<T>` (Puro Producer):** Fornisce solo dati tramite `get()`. Sarebbe concettualmente covariante.
+- **`MyWriter<T>` (Puro Consumer):** Riceve solo dati tramite `put()`. Sarebbe concettualmente controvariante.
+#### Limiti di Java (Use-site Variance)
+Java **non** permette di dichiarare un'intera classe come covariante o controvariante (la cosiddetta _declaration-site variance_ non è supportata). Le classi personalizzate come `MyProducer<T>` nascono invarianti.
+Per sfruttare la varianza in Java, bisogna applicare le wildcard al momento dell'utilizzo (use-site variance):
+```java
+// Non si può dichiarare la classe covariante, ma la si usa in modo covariante:
+static void testProducer(MyProducer<? extends Number> producer) {
+    System.out.println(producer.get());
+}
+
+static void testWriter(MyWriter<? super Integer> writer) {
+    writer.put(18);
+}
+```
+
+**MyStack**
+Se creiamo una classe `MyStack<T>` con metodi `push(T)` e `pop()`, questa è invariante. Due stack di tipi diversi sono totalmente incompatibili (`stack1 = stack2` non compila).
+Tuttavia, se aggiungiamo un metodo per travasare elementi da un altro stack, possiamo (e dovremmo) usare le wildcard per non limitarlo inutilmente:
+```java
+// Senza wildcard: Accetta solo uno stack esattamente dello stesso tipo
+// public void moveFrom(MyStack<T> source) 
+
+// Con wildcard (Applicazione della covarianza in lettura):
+public void moveFrom(MyStack<? extends T> source) {
+    while(!source.isEmpty()) push(source.pop());
+}
+```
+_Questo permette a uno Stack di Number di prelevare elementi, ad esempio, da uno Stack di Integer._
