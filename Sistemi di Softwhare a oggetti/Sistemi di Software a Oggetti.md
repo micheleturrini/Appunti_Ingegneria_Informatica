@@ -5867,7 +5867,7 @@ try (BufferedReader br = new BufferedReader(new FileReader("spesesanitarie.txt")
     }
 }
 ```
-
+## Lambda Expression
 
 
 
