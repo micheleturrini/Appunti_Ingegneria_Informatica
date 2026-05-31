@@ -609,18 +609,18 @@ import org.junit.jupiter.api.*;           // per le annotazioni
 import static org.junit.jupiter.api.Assertions.*;  // per i metodi assert
 ```
 
-|Metodo|Descrizione|
-|---|---|
-|`assertEquals(expected, actual)`|Verifica che due valori/oggetti siano uguali (usa `equals` per oggetti)|
-|`assertEquals(expected, actual, delta)`|Per valori floating-point: verifica uguaglianza entro un delta (tolleranza)|
-|`assertArrayEquals(expected, actual)`|Verifica che due array siano uguali (elemento per elemento)|
-|`assertTrue(condition)`|Verifica che la condizione sia vera|
-|`assertFalse(condition)`|Verifica che la condizione sia falsa|
-|`assertNull(value)`|Verifica che il valore sia nullo|
-|`assertNotNull(value)`|Verifica che il valore non sia nullo|
-|`assertSame(expected, actual)`|Verifica che i riferimenti puntino allo stesso oggetto (`==`)|
-|`assertNotSame(expected, actual)`|Verifica che i riferimenti puntino a oggetti diversi|
-|`fail()`|Forza il fallimento del test (utile per percorsi eccezionali)|
+| Metodo                                  | Descrizione                                                                 |
+| --------------------------------------- | --------------------------------------------------------------------------- |
+| `assertEquals(expected, actual)`        | Verifica che due valori/oggetti siano uguali (usa `equals` per oggetti)     |
+| `assertEquals(expected, actual, delta)` | Per valori floating-point: verifica uguaglianza entro un delta (tolleranza) |
+| `assertArrayEquals(expected, actual)`   | Verifica che due array siano uguali (elemento per elemento)                 |
+| `assertTrue(condition)`                 | Verifica che la condizione sia vera                                         |
+| `assertFalse(condition)`                | Verifica che la condizione sia falsa                                        |
+| `assertNull(value)`                     | Verifica che il valore sia nullo                                            |
+| `assertNotNull(value)`                  | Verifica che il valore non sia nullo                                        |
+| `assertSame(expected, actual)`          | Verifica che i riferimenti puntino allo stesso oggetto (`==`)               |
+| `assertNotSame(expected, actual)`       | Verifica che i riferimenti puntino a oggetti diversi                        |
+| `fail()`                                | Forza il fallimento del test (utile per percorsi eccezionali)               |
 esempio
 ```java
 package counter;
@@ -5868,10 +5868,350 @@ try (BufferedReader br = new BufferedReader(new FileReader("spesesanitarie.txt")
 }
 ```
 ## Lambda Expression
+**La visione tradizionale**
+* **Separazione netta:** Il software è suddiviso rigidamente tra **Dati** (entità passive, semplici o strutturate, come variabili, array o istanze di oggetti) e **Codice** (entità attive e immutabili che rappresentano il comportamento).
+* **Ispirazione hardware:** Questa impostazione deriva dall'architettura dei processori (es. architettura di von Neumann/Assembly), dove dati e codice risiedono in segmenti di memoria ben separati.
+* **Limitazioni nei linguaggi tradizionali:** In questa ottica, una funzione è un mero costrutto sintattico dotato di nome, firma (signature) e corpo, invocabile solo tramite l'operatore `()` . Di conseguenza, una funzione: non può essere assegnata a variabili; non può essere passata come argomento ad altre funzioni (i puntatori a funzione del C contengono solo un indirizzo di memoria, non sono vere entità funzionali strutturate); non può essere restituita da un'altra funzione (non si può "sintetizzare comportamento" a runtime); non può essere definita "al volo" o dinamicamente (es. tramite un operatore simile a `new`).
+
+**La visione funzionale**
+* **Funzioni come dati:** Le funzioni vengono interpretate come un particolare tipo di dato strutturato. Possiedono proprietà intrinseche (nome, argomenti, tipo di ritorno, codice associato) accessibili tramite metodi accessori, ma mantengono la caratteristica unica di essere **eseguibili**.
+* **First-class entities:** Nei linguaggi puramente funzionali, le funzioni godono degli stessi diritti di qualsiasi altro tipo di dato (assegnazione, passaggio come parametro, generazione dinamica).
+* **Utilità del passaggio di "comportamento":** Permette di iniettare logica flessibile dentro algoritmi generali (es. comparatori personalizzati per algoritmi di ordinamento) o definire funzioni di callback per la gestione asincrona degli eventi nelle interfacce grafiche.
+### La sintassi delle lambda expression in Java
+Una lambda expression è una **funzione anonima**, espressa con una notazione leggera analoga a quella matematica (es. $x \rightarrow 2x + 1$).
+
+**Struttura sintattica generale**
+```java
+(lista_argomenti) -> { corpo_della_funzione }
+```
+
+**Regole di omissione e semplificazione**
+1. **Omissione dei tipi (type inference):** Di norma, i tipi dei parametri in ingresso possono essere omessi se il compilatore è in grado di dedurli in modo univoco dal contesto d'uso (*target typing*).
+2. **Omissione delle parentesi tonde:** Se la funzione accetta **un solo argomento**, le parentesi tonde della lista argomenti possono essere omesse.
+3. **Omissione delle parentesi graffe e di `return`:** Se il corpo della funzione è composto da **una sola espressione (statement)**, si possono omettere le parentesi graffe e la parola chiave `return`. Il valore dell'espressione viene restituito automaticamente.
+
+Esempi di scrittura sintattica in Java:
+```java
+// Forma estesa, con tipi espliciti e blocco di codice
+(int x, int y) -> { return 2 * x - y; }
+
+// Forma abbreviata, con inferenza dei tipi e statement singolo
+(x, y) -> 2 * x - y
+
+// Forma con un solo argomento (niente tonde, niente graffe)
+x -> x * x
+```
+
+### Le interfacce funzionali (interfacce SAM)
+In Java, il tipo di una lambda expression è rappresentato da una **Interfaccia Funzionale**.
+* **Definizione:** Una normale interfaccia che dichiara **un solo metodo astratto** (*Single Abstract Method* o SAM).
+* **Annotazione `@FunctionalInterface`:** Non è obbligatoria per la compilazione, ma funge da vincolo per lo sviluppatore; se l'interfaccia contiene per errore più di un metodo astratto (o nessuno), il compilatore solleva un errore di compilazione.
+* Il metodo astratto presente nell'interfaccia è quello che incapsulerà il codice della lambda.
+#### Le 4 macro-categorie principali (generiche):
+1. **`Function<T, R>`:** Rappresenta una trasformazione da un tipo `T` (dominio) a un tipo `R` (codominio). Metodo astratto: `R apply(T t)`.
+2. **`Consumer<T>`:** Accetta un argomento di tipo `T` ed esegue un'operazione senza restituire alcun risultato (codominio vuoto/void). Metodo astratto: `void accept(T t)`.
+3. **`Supplier<T>`:** Non accetta argomenti (dominio vuoto) e produce/fornisce un valore di tipo `T`. Metodo astratto: `T get()`.
+4. **`Predicate<T>`:** Accetta un argomento di tipo `T` e restituisce un valore booleano (`boolean`). Metodo astratto: `boolean test(T t)`.
+Estensioni a due argomenti:
+* Abbinate al prefisso `Bi-` per gestire domini composti da due variabili generiche: `BiFunction<T, U, R>`, `BiConsumer<T, U>`, `BiPredicate<T, U>`.
+Operatori specializzati (dominio == codominio):
+* Quando i tipi di ingresso e uscita coincidono, si usano gli operatori per evitare ridondanze: `UnaryOperator<T>` (estende `Function<T, T>`) e `BinaryOperator<T>` (estende `BiFunction<T, T, T>`).
+Per evitare boxing e unboxing java introduce corrispettive interfacce per i tre tipi primitivi
+* **Esempi:** `IntUnaryOperator`, `DoubleBinaryOperator`, `LongSupplier`, `ToIntFunction<T>`.
 
 
+### Assegnazione e chiamata (invocazione) delle lambda
+Dal punto di vista del compilatore, scrivere un literal lambda equivale a istanziare una classe anonima preposta a implementare l'interfaccia funzionale di riferimento.
 
+```java
+// Scrittura sviluppatore:
+IntUnaryOperator f = x -> x + 1;
 
+// Traduzione concettuale del compilatore:
+IntUnaryOperator f = new IntUnaryOperator() {
+    @Override
+    public int applyAsInt(int x) {
+        return x + 1;
+    }
+};
+```
+
+Poiché la lambda viene convertita in un oggetto classico, per eseguirla **è obbligatorio chiamare esplicitamente il nome del suo unico metodo astratto**. Non è possibile usare la sintassi diretta `f(argument)`.
+* **Inestetismo del naming variabile:** Il nome del metodo interno da invocare non è fisso o universale, ma cambia a seconda dell'interfaccia funzionale adottata.
+```java
+// Caso 1: Operatore unario su interi (metodo applyAsInt)
+IntUnaryOperator f = x -> x + 3;
+int res1 = f.applyAsInt(4);
+
+// Caso 2: Funzione generica (metodo apply)
+Function<String, Integer> convertitore = s -> s.length();
+int res2 = convertitore.apply("Java");
+
+// Caso 3: Fornitore primitivo (metodo getAsDouble)
+DoubleSupplier casuale = () -> Math.random();
+double res3 = casuale.getAsDouble();
+```
+### method reference
+Quando il corpo di una lambda si limita a invocare un metodo già esistente senza effettuare elaborazioni aggiuntive o alterare gli argomenti, è possibile utilizzare una scorciatoia sintattica compatta basata sull'operatore doppio due punti `::`.
+
+L'uso dell'operatore `::` non esegue il metodo, ma genera un riferimento ad esso mappabile sulla firma dell'interfaccia funzionale attesa.
+1. **Metodi statici di una classe:**
+   *Sintassi:* `NomeClasse::nomeMetodoStatico`
+   *Equivalenza:* `x -> Math.sin(x)` diventa `Math::sin`
+2. **Metodi di istanza di un oggetto specifico:**
+   *Sintassi:* `NomeIstanza::nomeMetodoIstanza`
+   *Equivalenza:* `x -> oggettoContenitore.elabora(x)`
+   *Caso `this`:* All'interno di una classe, `this::myHandle` fa riferimento a un metodo d'istanza della classe corrente.
+3. **Metodi di istanza di un oggetto arbitrario (fornito come primo parametro):**
+   *Sintassi:* `NomeClasse::nomeMetodoIstanza`
+   *Equivalenza:* `p -> p.getCognome()` diventa `Persona::getCognome` (il compilatore capisce che il metodo `getCognome` va invocato sull'oggetto di tipo `Persona` passato come parametro della lambda).
+# Casi applicativi dettagliati ed evoluti in Java
+
+## Caso applicativo 1: l'interfaccia `Comparator` e la fabbrica dei comparatori
+
+### Evoluzione storica dell'ordinamento di array/collezioni
+
+L'interfaccia `Comparator<T>` ha l'unico scopo di esporre il metodo SAM `int compare(T o1, T o2)`.
+
+Nelle vecchie versioni di Java, per passare un criterio di ordinamento al metodo `Arrays.sort()` o `Collections.sort()` c'erano due approcci ridondanti:
+
+1. **Classi Comparator esterne:** Creare una classe dedicata (es. `CognomeComparator implements Comparator<Persona>`) da istanziare al momento del bisogno.
+2. **Classi anonime inline:** Scrivere l'intera implementazione dell'interfaccia direttamente dentro la chiamata, generando codice nidificato e poco leggibile ("accrocchio sintattico"). In questo scenario, il Comparator funge da mero "adulto accompagnatore" (wrapper) per l'unica funzione che conta davvero: la `compare`.
+
+```java
+// Approccio obsoleto con Classe Anonima Inline
+Arrays.sort(persone, new Comparator<Persona>() {
+    @Override
+    public int compare(Persona p1, Persona p2) {
+        return p1.getCognome().compareTo(p2.getCognome());
+    }
+});
+```
+
+### La soluzione moderna: lambda come comparatori anonimi
+
+La lambda sostituisce direttamente la classe anonima, iniettando il puro comportamento di confronto in una sola riga:
+
+```java
+// Ordinamento per stringhe
+Arrays.sort(persone, (p1, p2) -> p1.getCognome().compareTo(p2.getCognome()));
+
+// Ordinamento per tipi primitivi (usando i metodi statici di confronto delle classi wrapper)
+Arrays.sort(persone, (p1, p2) -> Integer.compare(p1.getEtà(), p2.getEtà()));
+```
+
+### La fabbrica dei comparatori (`Comparator.comparing`)
+
+Osservando i comparatori strutturati tramite lambda, si nota che l'unica variazione risiede nella proprietà dell'oggetto da estrarre per effettuare il confronto. Java introduce quindi dei metodi factory statici all'interno dell'interfaccia `Comparator` per automatizzare la sintesi dei comparatori a partire da una funzione estrattrice (*extractor*):
+
+```java
+// Uso della Factory con Lambda Extractor
+Arrays.sort(persone, Comparator.comparing(p -> p.getCognome()));
+
+// Massima espressione: Factory combinata con Method Reference
+Arrays.sort(persone, Comparator.comparing(Persona::getCognome));
+```
+
+#### Varianti per tipi primitivi (efficienza energetica/prestazionale):
+
+Al fine di evitare la creazione di oggetti wrapper durante i confronti massivi, si devono usare le factory dedicate per primitivi:
+
+* `Comparator.comparingInt(Persona::getEtà)`
+* `Comparator.comparingDouble(...)`
+* `Comparator.comparingLong(...)`
+
+### Ordinamenti multipli in cascata (`thenComparing`)
+
+Sfruttando il pattern delle *Fluent Interfaces* (cascading di metodi), è possibile concatenare molteplici criteri di ordinamento (principale, secondario, terziario, ecc.) in modo dichiarativo ed estremamente leggibile:
+
+```java
+Arrays.sort(persone, 
+    Comparator.comparing(Persona::getCognome)       // Criterio 1: Cognome
+              .thenComparing(Persona::getNome)      // Criterio 2: Nome
+              .thenComparingInt(Persona::getEtà)    // Criterio 3: Età (primitivo)
+);
+```
+
+### Limiti della type inference nei comparatori multipli
+
+Il compilatore esegue l'inferenza del tipo partendo dal contesto della firma del metodo ospitante (es. se `playlist` è una `List<Song>`, `Arrays.sort` si aspetta un `Comparator<Song>`). Tuttavia, nelle catene di metodi lunghe, il compilatore potrebbe non riuscire a determinare i tipi dei singoli passaggi intermedi, causando un fallimento dell'inferenza.
+
+```java
+// ERRORE DI COMPILAZIONE: La Type Inference fallisce sui passaggi successivi al primo
+Collections.sort(playlist, 
+    comparing(p1 -> p1.getTitle())      // Qui il tipo Song viene dedotto da playlist
+    .thenComparing(p1 -> p1.getDuration()) // ERRORE: Contesto intermedio non chiaro
+);
+```
+
+#### Le 3 "cure" per ripristinare le informazioni di tipo:
+
+1. **Usare riferimenti a metodo espliciti (consigliato):** Forniscono direttamente la classe di partenza (`Song::getTitle`), eliminando l'ambiguità.
+2. **Tipizzare esplicitamente l'argomento della lambda:** Forzare il tipo all'interno dei parametri in ingresso della prima lambda: `(Song p1) -> p1.getTitle()`.
+3. **Specificare esplicitamente i generics nella chiamata del metodo:** Scrivere la chiamata anteponendo i tipi alla factory: `Comparator.<Song, String>comparing(...)`.
+
+## Riferimenti ai costruttori (constructor reference)
+
+I riferimenti ai costruttori permettono di memorizzare o passare come parametro la capacità di generare una nuova istanza di una classe.
+
+### Sintassi
+
+Java adotta la convenzione di associare la parola chiave `new` come nome fittizio del metodo del costruttore:
+
+```java
+NomeClasse::new
+```
+
+### Mappatura sui tipi funzionali standard
+
+Il costruttore referenziato viene mappato automaticamente su un'interfaccia funzionale compatibile con la sua lista argomenti:
+
+* **Costruttore senza argomenti (default):** Si mappa su un `Supplier<T>`.
+* **Costruttore con 1 argomento (`U`):** Si mappa su una `Function<U, T>`.
+* **Costruttore con 2 argomenti (`U`, `V`):** Si mappa su una `BiFunction<U, V, T>`.
+
+```java
+// Associazione a un costruttore vuoto (Senza argomenti)
+Supplier<Persona> ctorVuoto = Persona::new; // Mappa public Persona()
+Persona p1 = ctorVuoto.get();
+
+// Associazione a un costruttore a due argomenti
+BiFunction<String, String, Persona> ctorDati = Persona::new; // Mappa public Persona(String c, String n)
+Persona p2 = ctorDati.apply("Rossi", "Mario");
+```
+
+### Gestione di costruttori con 3+ argomenti
+
+Poiché il package standard di Java non prevede interfacce predefinite per funzioni con più di due parametri, in presenza di costruttori complessi (es. a 3 o 4 argomenti) lo sviluppatore **deve obbligatoriamente definire un'interfaccia personalizzata (custom SAM)**:
+
+```java
+// Definizione delle interfacce custom
+interface TriFunction<T, U, V, R> { R apply(T t, U u, V v); }
+interface QuadriFunction<T, U, V, W, R> { R apply(T t, U u, V v, W w); }
+
+// Cattura dei costruttori complessi tramite Method Reference
+TriFunction<String, String, Integer, Persona> ctor3Args = Persona::new;
+QuadriFunction<String, String, Integer, Boolean, Persona> ctor4Args = Persona::new;
+```
+
+### Utilità pratica: factory parametriche
+
+I riferimenti ai costruttori risultano fondamentali quando si deve comunicare a un algoritmo o a una struttura dati centralizzata *come* istanziare gli elementi interni. Un caso classico è il metodo degli Stream `Stream.toArray()`, che necessita del riferimento al costruttore dell'array specifico per allocare correttamente la memoria a runtime: `Persona[]::new`.
+
+## Caso applicativo 2: iterazione interna (`forEach`)
+
+### Il cambio di paradigma
+
+* **Iterazione esterna (stile classico):** Si utilizzano costrutti di controllo espliciti (`for`, `while`, cicli `for-each`). Lo sviluppatore governa manualmente il *come* scorrere la struttura dati, ordinando l'avanzamento dell'indice punto per punto.
+* **Iterazione interna (stile funzionale):** Si delega il controllo del ciclo direttamente alla collezione stessa invocando il metodo `forEach()`. Lo sviluppatore si limita a passare l'azione (sotto forma di `Consumer`) da applicare a ciascun elemento. Ci si focalizza sul *cosa* fare e non sul *come* farlo (stile dichiarativo).
+
+```java
+// Iterazione Esterna Tradizionale
+for (Persona p : persone) {
+    System.out.println(p);
+}
+
+// Iterazione Interna con Lambda Expression
+persone.forEach(p -> System.out.println(p));
+
+// Iterazione Interna ottimizzata con Method Reference
+persone.forEach(System.out::println);
+```
+
+*Vincolo architetturale sugli array:* In Java, il metodo `forEach` è definito sulle classi che implementano l'interfaccia `Collection`, non sugli array nativi. Per applicare l'iterazione interna su un array, è necessario prima effettuarne la conversione in lista tramite `Arrays.asList(array)`.
+
+### Il vincolo delle variabili di chiusura (*effectively final*)
+
+Quando una lambda expression fa riferimento a una variabile locale dichiarata all'esterno del suo corpo, si genera una **chiusura (closure)**.
+
+* **La regola:** Per motivi di sicurezza legati alla gestione della memoria e della concorrenza tra thread, Java impone che qualsiasi variabile esterna catturata all'interno di una lambda sia **`final`** o **indirettamente immutata dopo l'inizializzazione (`effectively final`)**. Non è consentito riassegnare o incrementare variabili locali dentro la lambda.
+
+```java
+// QUESTO CODICE NON COMPILA IN JAVA
+int sommaEta = 0;
+Arrays.asList(persone).forEach(p -> sommaEta += p.getEtà()); // ERRORE: la variabile esterna deve essere final!
+```
+
+#### Il workaround del wrapper ad hoc:
+
+Per aggirare questo limite e accumulare dati mantenendo l'iterazione interna, è necessario incapsulare il valore primitivo all'interno di un oggetto wrapper modificabile, modificandone la proprietà interna senza alterare il riferimento dell'oggetto in sé (che rimane immutato ed *effectively final*):
+
+```java
+// Soluzione tramite la definizione di una classe anonima Object dotata di proprietà mutabile
+var wrapper = new Object() { int ageSum = 0; };
+
+Arrays.asList(persone).forEach(p -> wrapper.ageSum += p.getEtà()); // Compila! Il riferimento a 'wrapper' non cambia
+
+System.out.println("Età media = " + (double) wrapper.ageSum / persone.length);
+```
+
+## Composizione di funzioni e iterazioni composte
+
+### I metodi `andThen` e `compose`
+
+Java consente di unire due oggetti-funzione per sintetizzare una terza funzione complessa senza scriverne la logica da zero.
+
+* **`f.andThen(g)`:** Esegue prima la funzione `f` e sul risultato applica la funzione `g` (sequenza logica: $g(f(x))$).
+* **`f.compose(g)`:** Esegue prima la funzione `g` e sul risultato applica la funzione `f` (composizione logica: $f(g(x))$).
+
+```java
+IntUnaryOperator mulBy3 = x -> x * 3;
+IntUnaryOperator incBy1 = x -> x + 1;
+
+// Sequenza logica: (4 * 3) + 1 = 13
+int y = mulBy3.andThen(incBy1).applyAsInt(4);
+
+// Composizione logica: 3 * (4 + 1) = 15
+int z = mulBy3.compose(incBy1).applyAsInt(4);
+```
+
+*Vincolo omogeneo di Java:* In Java, `andThen` e `compose` possono essere usate per comporre solo interfacce funzionali del medesimo tipo omogeneo (es. due `IntUnaryOperator` o due `IntConsumer`). Non è ammesso miscelare interfacce diverse nativamente (a differenza di Scala). Nel caso dei `Consumer`, la composizione `andThen` significa che entrambi i consumatori eseguiranno in sequenza la loro operazione sul medesimo valore in ingresso.
+
+### Iterazioni composte e fallimento del target type
+
+L'abbinamento di funzioni composte all'interno di un'iterazione interna (es. combinare due filtri o due azioni in un `forEach`) rappresenta uno scenario avanzato che spinge l'inferenza del compilatore al punto di rottura, specialmente se si usano i *method reference*.
+
+```java
+// SCENARIO: Si vogliono stampare le persone usando due metodi d'istanza alternativi della classe Persona
+// ERRORE DI COMPILAZIONE: Il compilatore non riesce a dedurre il tipo intermedio del Method Reference
+elencoPersone.forEach(Persona::printIfMature.andThen(Persona::printIfYoung)); // NON COMPILA!
+```
+
+*Motivo del fallimento:* Un method reference preso singolarmente non fornisce al compilatore informazioni strutturate sufficienti sui parametri e sul contesto d'uso immediato se agganciato a un metodo in cascata come `.andThen()`.
+
+#### Le 3 "cure" per risolvere il problema del target type nelle iterazioni composte:
+
+1. **Riformulazione tramite cast esplicito (Java only):**
+   Si inserisce un cast esplicito sul primo elemento della catena per comunicare al compilatore l'interfaccia funzionale di riferimento, sbloccando l'inferenza per i passi successivi:
+   ```java
+   elencoPersone.forEach(
+       ((Consumer<Persona>) Persona::printIfMature).andThen(Persona::printIfYoung)
+   );
+   ```
+
+2. **Spostamento in una funzione ausiliaria tipizzata:**
+   Si incapsula la andThen all'interno di un metodo generico statico (`combina`) i cui parametri di ingresso forzano la tipizzazione corretta dei parametri:
+   ```java
+   // Metodo ausiliario definito nella classe
+   private static <T> Consumer<T> combina(Consumer<T> f1, Consumer<T> f2) {
+       return f1.andThen(f2);
+   }
+   
+   // Chiamata pulita nel flusso principale
+   elencoPersone.forEach(combina(Persona::printIfMature, Persona::printIfYoung));
+   ```
+
+3. **Uso di una funzione identità (metodo `itself`):**
+   Si crea una funzione di passaggio che restituisce l'argomento ricevuto, ma che ha il compito strutturale di esplicitare il tipo formale dell'interfaccia al compilatore:
+   ```java
+   // Metodo identità ausiliario
+   private static <T> Consumer<T> itself(Consumer<T> f) {
+       return f;
+   }
+   
+   // Chiamata nel flusso
+   elencoPersone.forEach(itself(Persona::printIfMature).andThen(Persona::printIfYoung));
+   ```
 
 
 
