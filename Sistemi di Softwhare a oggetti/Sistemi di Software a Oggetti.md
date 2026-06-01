@@ -1797,6 +1797,8 @@ System.out.println(periodo.getYears() + " anni, " + periodo.getMonths() + " mesi
 **Sommare/sottrarre un Period a una data:**
 ```java
 LocalDate nuovaData = (LocalDate) periodo.addTo(inizio);   // richiede cast (vedi spiegazione sotto)
+
+LocalDate nuovaData = inizio.plus(periodo); // versione ottimale
 ```
 **Perché il cast?** I metodi `addTo` e `subtractFrom` lavorano su oggetti `Temporal` (interfaccia generica). Il tipo effettivo dipende dall'input: se passo una `LocalDate`, ottengo una `LocalDate`; se passo una `LocalDateTime`, ottengo una `LocalDateTime`. Il cast è necessario per riottenere il tipo specifico.
 ### Concetti assoluti
@@ -1807,7 +1809,6 @@ I concetti assoluti rappresentano un **istante preciso sulla linea del tempo**, 
 ```java
 Instant adesso = Instant.now();   // 2026-03-17T14:30:00.123456789Z (formato ISO)
 ```
-
 #### Duration: durata in nanosecondi
 `Duration` rappresenta un lasso di tempo **preciso** in nanosecondi. Tipicamente si usa per differenze tra `Instant`.
 
@@ -2975,7 +2976,6 @@ Questo crea una disuniformità rispetto ai tipi riferimento:
 | Array separati          | `int[]`, `double[]`             | `Object[]`, `Counter[]`                 |
 | Supportano ereditarietà | No                              | Sì                                      |
 | Usabili in `Collection` | No (es. `List<int>` non valido) | Sì (`List<Integer>`)                    |
-
 **Conseguenze**
 Un valore primitivo **non può essere usato dove è richiesto un `Object`**:
 ```java
@@ -3121,6 +3121,7 @@ if (v instanceof int && v < 18) {   // v deve essere int
 switch (v) {
     case int i when i < 18 -> System.out.println("Bocciato: " + i);
     case int i -> System.out.println("Promosso: " + i);
+	default -> System.out.println("Input non valido");
 }
 ```
 Per abilitare le preview feature:
@@ -4251,10 +4252,8 @@ System.out.println(value1);  // boh
 System.out.println(value2);  // ciao
 ```
 
-### 5.5 Esempio reale: compito BikeRent (12/9/2018)
-
+Esempio reale: compito BikeRent
 La classe `Rate` ha attributi opzionali come durata massima e orario limite di rientro. Il costruttore e i getter usano `Optional<Duration>` e `Optional<LocalTime>`:
-
 ```java
 public class Rate {
     private final String city;
@@ -4281,12 +4280,10 @@ public class Rate {
     }
 }
 ```
-
 Il chiamante, sapendo che i campi sono opzionali, userà `isPresent()` o `orElse()` per gestirli in modo sicuro.
 
 Esempio reale: compito Cambia Valute
 La classe `CambiaValute` ha metodi `acquisto` e `vendita` che restituiscono `OptionalDouble`: se la valuta richiesta non è trattata dall’agenzia, si restituisce un optional vuoto.
-
 ```java
 public class CambiaValute {
     // ...
@@ -4307,9 +4304,7 @@ public class CambiaValute {
     }
 }
 ```
-
 Il cliente può usare `orElse` per fornire un valore di default o un messaggio:
-
 ```java
 CambiaValute agenzia = new CambiaValute();
 double risultato = agenzia.acquisto(100, "USD").orElse(-1);
@@ -5965,33 +5960,8 @@ L'uso dell'operatore `::` non esegue il metodo, ma genera un riferimento ad esso
 3. **Metodi di istanza di un oggetto arbitrario (fornito come primo parametro):**
    *Sintassi:* `NomeClasse::nomeMetodoIstanza`
    *Equivalenza:* `p -> p.getCognome()` diventa `Persona::getCognome` (il compilatore capisce che il metodo `getCognome` va invocato sull'oggetto di tipo `Persona` passato come parametro della lambda).
-# Casi applicativi dettagliati ed evoluti in Java
-
-## Caso applicativo 1: l'interfaccia `Comparator` e la fabbrica dei comparatori
-
-### Evoluzione storica dell'ordinamento di array/collezioni
-
-L'interfaccia `Comparator<T>` ha l'unico scopo di esporre il metodo SAM `int compare(T o1, T o2)`.
-
-Nelle vecchie versioni di Java, per passare un criterio di ordinamento al metodo `Arrays.sort()` o `Collections.sort()` c'erano due approcci ridondanti:
-
-1. **Classi Comparator esterne:** Creare una classe dedicata (es. `CognomeComparator implements Comparator<Persona>`) da istanziare al momento del bisogno.
-2. **Classi anonime inline:** Scrivere l'intera implementazione dell'interfaccia direttamente dentro la chiamata, generando codice nidificato e poco leggibile ("accrocchio sintattico"). In questo scenario, il Comparator funge da mero "adulto accompagnatore" (wrapper) per l'unica funzione che conta davvero: la `compare`.
-
-```java
-// Approccio obsoleto con Classe Anonima Inline
-Arrays.sort(persone, new Comparator<Persona>() {
-    @Override
-    public int compare(Persona p1, Persona p2) {
-        return p1.getCognome().compareTo(p2.getCognome());
-    }
-});
-```
-
-### La soluzione moderna: lambda come comparatori anonimi
-
-La lambda sostituisce direttamente la classe anonima, iniettando il puro comportamento di confronto in una sola riga:
-
+### `Comparator` e la fabbrica dei comparatori
+L'interfaccia `Comparator<T>` ha l'unico scopo di esporre il metodo `int compare(T o1, T o2)`.
 ```java
 // Ordinamento per stringhe
 Arrays.sort(persone, (p1, p2) -> p1.getCognome().compareTo(p2.getCognome()));
@@ -6000,10 +5970,8 @@ Arrays.sort(persone, (p1, p2) -> p1.getCognome().compareTo(p2.getCognome()));
 Arrays.sort(persone, (p1, p2) -> Integer.compare(p1.getEtà(), p2.getEtà()));
 ```
 
-### La fabbrica dei comparatori (`Comparator.comparing`)
-
-Osservando i comparatori strutturati tramite lambda, si nota che l'unica variazione risiede nella proprietà dell'oggetto da estrarre per effettuare il confronto. Java introduce quindi dei metodi factory statici all'interno dell'interfaccia `Comparator` per automatizzare la sintesi dei comparatori a partire da una funzione estrattrice (*extractor*):
-
+**La fabbrica dei comparatori (`Comparator.comparing`)**
+Java quindi dei metodi factory statici all'interno dell'interfaccia `Comparator` per automatizzare la sintesi dei comparatori a partire da una funzione estrattrice (*extractor*):
 ```java
 // Uso della Factory con Lambda Extractor
 Arrays.sort(persone, Comparator.comparing(p -> p.getCognome()));
@@ -6012,18 +5980,14 @@ Arrays.sort(persone, Comparator.comparing(p -> p.getCognome()));
 Arrays.sort(persone, Comparator.comparing(Persona::getCognome));
 ```
 
-#### Varianti per tipi primitivi (efficienza energetica/prestazionale):
-
+**Varianti per tipi primitivi** 
 Al fine di evitare la creazione di oggetti wrapper durante i confronti massivi, si devono usare le factory dedicate per primitivi:
-
 * `Comparator.comparingInt(Persona::getEtà)`
 * `Comparator.comparingDouble(...)`
 * `Comparator.comparingLong(...)`
 
-### Ordinamenti multipli in cascata (`thenComparing`)
-
-Sfruttando il pattern delle *Fluent Interfaces* (cascading di metodi), è possibile concatenare molteplici criteri di ordinamento (principale, secondario, terziario, ecc.) in modo dichiarativo ed estremamente leggibile:
-
+**Ordinamenti multipli in cascata (`thenComparing`)**
+è possibile concatenare molteplici criteri di ordinamento (principale, secondario, terziario, ecc.) in modo dichiarativo ed estremamente leggibile:
 ```java
 Arrays.sort(persone, 
     Comparator.comparing(Persona::getCognome)       // Criterio 1: Cognome
@@ -6032,8 +5996,7 @@ Arrays.sort(persone,
 );
 ```
 
-### Limiti della type inference nei comparatori multipli
-
+**Limiti della type inference**
 Il compilatore esegue l'inferenza del tipo partendo dal contesto della firma del metodo ospitante (es. se `playlist` è una `List<Song>`, `Arrays.sort` si aspetta un `Comparator<Song>`). Tuttavia, nelle catene di metodi lunghe, il compilatore potrebbe non riuscire a determinare i tipi dei singoli passaggi intermedi, causando un fallimento dell'inferenza.
 
 ```java
@@ -6043,33 +6006,21 @@ Collections.sort(playlist,
     .thenComparing(p1 -> p1.getDuration()) // ERRORE: Contesto intermedio non chiaro
 );
 ```
-
-#### Le 3 "cure" per ripristinare le informazioni di tipo:
-
+Soluzioni
 1. **Usare riferimenti a metodo espliciti (consigliato):** Forniscono direttamente la classe di partenza (`Song::getTitle`), eliminando l'ambiguità.
 2. **Tipizzare esplicitamente l'argomento della lambda:** Forzare il tipo all'interno dei parametri in ingresso della prima lambda: `(Song p1) -> p1.getTitle()`.
 3. **Specificare esplicitamente i generics nella chiamata del metodo:** Scrivere la chiamata anteponendo i tipi alla factory: `Comparator.<Song, String>comparing(...)`.
 
-## Riferimenti ai costruttori (constructor reference)
-
+### Riferimenti ai costruttori (constructor reference)
 I riferimenti ai costruttori permettono di memorizzare o passare come parametro la capacità di generare una nuova istanza di una classe.
-
-### Sintassi
-
-Java adotta la convenzione di associare la parola chiave `new` come nome fittizio del metodo del costruttore:
-
 ```java
 NomeClasse::new
 ```
 
-### Mappatura sui tipi funzionali standard
-
 Il costruttore referenziato viene mappato automaticamente su un'interfaccia funzionale compatibile con la sua lista argomenti:
-
 * **Costruttore senza argomenti (default):** Si mappa su un `Supplier<T>`.
 * **Costruttore con 1 argomento (`U`):** Si mappa su una `Function<U, T>`.
 * **Costruttore con 2 argomenti (`U`, `V`):** Si mappa su una `BiFunction<U, V, T>`.
-
 ```java
 // Associazione a un costruttore vuoto (Senza argomenti)
 Supplier<Persona> ctorVuoto = Persona::new; // Mappa public Persona()
@@ -6080,10 +6031,7 @@ BiFunction<String, String, Persona> ctorDati = Persona::new; // Mappa public Per
 Persona p2 = ctorDati.apply("Rossi", "Mario");
 ```
 
-### Gestione di costruttori con 3+ argomenti
-
-Poiché il package standard di Java non prevede interfacce predefinite per funzioni con più di due parametri, in presenza di costruttori complessi (es. a 3 o 4 argomenti) lo sviluppatore **deve obbligatoriamente definire un'interfaccia personalizzata (custom SAM)**:
-
+In presenza di costruttori complessi (es. a 3 o 4 argomenti) lo sviluppatore **deve obbligatoriamente definire un'interfaccia personalizzata (custom SAM)**:
 ```java
 // Definizione delle interfacce custom
 interface TriFunction<T, U, V, R> { R apply(T t, U u, V v); }
@@ -6094,17 +6042,11 @@ TriFunction<String, String, Integer, Persona> ctor3Args = Persona::new;
 QuadriFunction<String, String, Integer, Boolean, Persona> ctor4Args = Persona::new;
 ```
 
-### Utilità pratica: factory parametriche
-
-I riferimenti ai costruttori risultano fondamentali quando si deve comunicare a un algoritmo o a una struttura dati centralizzata *come* istanziare gli elementi interni. Un caso classico è il metodo degli Stream `Stream.toArray()`, che necessita del riferimento al costruttore dell'array specifico per allocare correttamente la memoria a runtime: `Persona[]::new`.
-
-## Caso applicativo 2: iterazione interna (`forEach`)
-
-### Il cambio di paradigma
-
-* **Iterazione esterna (stile classico):** Si utilizzano costrutti di controllo espliciti (`for`, `while`, cicli `for-each`). Lo sviluppatore governa manualmente il *come* scorrere la struttura dati, ordinando l'avanzamento dell'indice punto per punto.
-* **Iterazione interna (stile funzionale):** Si delega il controllo del ciclo direttamente alla collezione stessa invocando il metodo `forEach()`. Lo sviluppatore si limita a passare l'azione (sotto forma di `Consumer`) da applicare a ciascun elemento. Ci si focalizza sul *cosa* fare e non sul *come* farlo (stile dichiarativo).
-
+**Caso d'uso**
+I riferimenti ai costruttori risultano fondamentali quando si deve comunicare a un algoritmo o a una struttura dati centralizzata *come* istanziare gli elementi interni. 
+Un caso classico è il metodo degli Stream `Stream.toArray()`, che necessita del riferimento al costruttore dell'array specifico per allocare correttamente la memoria a runtime: `Persona[]::new`
+### Iterazione interna (`forEach`, `andThen` e `compose`)
+Si delega il controllo del ciclo direttamente alla collezione stessa invocando il metodo `forEach()`. Lo sviluppatore si limita a passare l'azione (sotto forma di `Consumer`) da applicare a ciascun elemento.
 ```java
 // Iterazione Esterna Tradizionale
 for (Persona p : persone) {
@@ -6117,25 +6059,18 @@ persone.forEach(p -> System.out.println(p));
 // Iterazione Interna ottimizzata con Method Reference
 persone.forEach(System.out::println);
 ```
+*Vincolo architetturale sugli array:*  il metodo `forEach` è definito sulle classi che implementano l'interfaccia `Collection`, non sugli array nativi. Per applicare l'iterazione interna su un array, è necessario prima effettuarne la conversione in lista tramite `Arrays.asList(array)`.
 
-*Vincolo architetturale sugli array:* In Java, il metodo `forEach` è definito sulle classi che implementano l'interfaccia `Collection`, non sugli array nativi. Per applicare l'iterazione interna su un array, è necessario prima effettuarne la conversione in lista tramite `Arrays.asList(array)`.
-
-### Il vincolo delle variabili di chiusura (*effectively final*)
-
+**Il vincolo delle variabili di chiusura (*effectively final*)**
 Quando una lambda expression fa riferimento a una variabile locale dichiarata all'esterno del suo corpo, si genera una **chiusura (closure)**.
-
-* **La regola:** Per motivi di sicurezza legati alla gestione della memoria e della concorrenza tra thread, Java impone che qualsiasi variabile esterna catturata all'interno di una lambda sia **`final`** o **indirettamente immutata dopo l'inizializzazione (`effectively final`)**. Non è consentito riassegnare o incrementare variabili locali dentro la lambda.
-
+**Non è consentito riassegnare o incrementare variabili locali dentro la lambda.**
 ```java
 // QUESTO CODICE NON COMPILA IN JAVA
 int sommaEta = 0;
 Arrays.asList(persone).forEach(p -> sommaEta += p.getEtà()); // ERRORE: la variabile esterna deve essere final!
 ```
 
-#### Il workaround del wrapper ad hoc:
-
-Per aggirare questo limite e accumulare dati mantenendo l'iterazione interna, è necessario incapsulare il valore primitivo all'interno di un oggetto wrapper modificabile, modificandone la proprietà interna senza alterare il riferimento dell'oggetto in sé (che rimane immutato ed *effectively final*):
-
+Per aggirare questo limite e accumulare dati mantenendo l'iterazione interna, è necessario incapsulare il valore primitivo all'interno di un oggetto wrapper modificabile.
 ```java
 // Soluzione tramite la definizione di una classe anonima Object dotata di proprietà mutabile
 var wrapper = new Object() { int ageSum = 0; };
@@ -6145,15 +6080,10 @@ Arrays.asList(persone).forEach(p -> wrapper.ageSum += p.getEtà()); // Compila! 
 System.out.println("Età media = " + (double) wrapper.ageSum / persone.length);
 ```
 
-## Composizione di funzioni e iterazioni composte
-
-### I metodi `andThen` e `compose`
-
+**Composizione di funzioni e iterazioni composte**
 Java consente di unire due oggetti-funzione per sintetizzare una terza funzione complessa senza scriverne la logica da zero.
-
 * **`f.andThen(g)`:** Esegue prima la funzione `f` e sul risultato applica la funzione `g` (sequenza logica: $g(f(x))$).
 * **`f.compose(g)`:** Esegue prima la funzione `g` e sul risultato applica la funzione `f` (composizione logica: $f(g(x))$).
-
 ```java
 IntUnaryOperator mulBy3 = x -> x * 3;
 IntUnaryOperator incBy1 = x -> x + 1;
@@ -6165,30 +6095,25 @@ int y = mulBy3.andThen(incBy1).applyAsInt(4);
 int z = mulBy3.compose(incBy1).applyAsInt(4);
 ```
 
-*Vincolo omogeneo di Java:* In Java, `andThen` e `compose` possono essere usate per comporre solo interfacce funzionali del medesimo tipo omogeneo (es. due `IntUnaryOperator` o due `IntConsumer`). Non è ammesso miscelare interfacce diverse nativamente (a differenza di Scala). Nel caso dei `Consumer`, la composizione `andThen` significa che entrambi i consumatori eseguiranno in sequenza la loro operazione sul medesimo valore in ingresso.
+*Vincolo omogeneo di Java:* In Java, `andThen` e `compose` possono essere usate per comporre solo interfacce funzionali del medesimo tipo omogeneo (es. due `IntUnaryOperator` o due `IntConsumer`). Non è ammesso miscelare interfacce diverse nativamente. Nel caso dei `Consumer`la composizione `andThen` significa che entrambi i consumatori eseguiranno in sequenza la loro operazione sul medesimo valore in ingresso.
 
-### Iterazioni composte e fallimento del target type
-
+**Iterazioni composte e fallimento del target type**
 L'abbinamento di funzioni composte all'interno di un'iterazione interna (es. combinare due filtri o due azioni in un `forEach`) rappresenta uno scenario avanzato che spinge l'inferenza del compilatore al punto di rottura, specialmente se si usano i *method reference*.
-
 ```java
 // SCENARIO: Si vogliono stampare le persone usando due metodi d'istanza alternativi della classe Persona
 // ERRORE DI COMPILAZIONE: Il compilatore non riesce a dedurre il tipo intermedio del Method Reference
 elencoPersone.forEach(Persona::printIfMature.andThen(Persona::printIfYoung)); // NON COMPILA!
 ```
-
 *Motivo del fallimento:* Un method reference preso singolarmente non fornisce al compilatore informazioni strutturate sufficienti sui parametri e sul contesto d'uso immediato se agganciato a un metodo in cascata come `.andThen()`.
 
-#### Le 3 "cure" per risolvere il problema del target type nelle iterazioni composte:
-
-1. **Riformulazione tramite cast esplicito (Java only):**
+**Soluzioni**
+1. **Riformulazione tramite cast esplicito:**
    Si inserisce un cast esplicito sul primo elemento della catena per comunicare al compilatore l'interfaccia funzionale di riferimento, sbloccando l'inferenza per i passi successivi:
    ```java
    elencoPersone.forEach(
        ((Consumer<Persona>) Persona::printIfMature).andThen(Persona::printIfYoung)
    );
    ```
-
 2. **Spostamento in una funzione ausiliaria tipizzata:**
    Si incapsula la andThen all'interno di un metodo generico statico (`combina`) i cui parametri di ingresso forzano la tipizzazione corretta dei parametri:
    ```java
@@ -6200,7 +6125,6 @@ elencoPersone.forEach(Persona::printIfMature.andThen(Persona::printIfYoung)); //
    // Chiamata pulita nel flusso principale
    elencoPersone.forEach(combina(Persona::printIfMature, Persona::printIfYoung));
    ```
-
 3. **Uso di una funzione identità (metodo `itself`):**
    Si crea una funzione di passaggio che restituisce l'argomento ricevuto, ma che ha il compito strutturale di esplicitare il tipo formale dell'interfaccia al compilatore:
    ```java
@@ -6212,13 +6136,6 @@ elencoPersone.forEach(Persona::printIfMature.andThen(Persona::printIfYoung)); //
    // Chiamata nel flusso
    elencoPersone.forEach(itself(Persona::printIfMature).andThen(Persona::printIfYoung));
    ```
-
-
-
-
-
-
-
 ## Varianza e Wildcard
 Gli array in Java soffrono di un problema più subdolo legato all'ereditarietà: la **covarianza**. Poiché `Integer` deriva da `Object`, Java permette di fare questo:
 ```java
@@ -6289,3 +6206,41 @@ public void moveFrom(MyStack<? extends T> source) {
 }
 ```
 _Questo permette a uno Stack di Number di prelevare elementi, ad esempio, da uno Stack di Integer._
+## Numeri Reali
+La sensazione che i calcoli siano perfetti è dovuta alle funzioni di Input/Output di Java (come `System.out.println()`), che arrotondano i valori per "non spaventare" l'utente.
+*Esperimento pratico:** Se dichiari `double val1 = 0.1;` e `double val2 = 0.3;`, Java stamperà esattamente 0.1 e 0.3.
+Tuttavia, se esegui `double d = val1 + val1 + val1;`, il risultato `d` **non sarà uguale** a `val2` (`d != val2`).
+Stampando la differenza (`d - val2`), Java rivela un errore residuo pari a `5.551115123125783E-17`.
+
+**Precisione: `float` vs `double`**
+In Java, la scelta del tipo di dato determina le cifre significative disponibili a causa dei bit dedicati alla mantissa.
+- **`float` (Precisione Singola):** La mantissa ha 24 bit, garantendo un errore relativo che permette di avere circa **7-8 cifre decimali significative**.
+- **`double` (Precisione Doppia):** La mantissa ha 53 bit, garantendo circa **16-17 cifre decimali significative**.
+Questo è il motivo per cui `System.out.println(1/3.0F)` (nota il suffisso `F` per i float) stampa 8 cifre (`0.33333334`), mentre `System.out.println(1/3.0)` ne stampa 16 (`0.3333333333333333`).
+
+**Spiare la Memoria della Virtual Machine**
+Java mette a disposizione le classi wrapper (`Float` e `Double`) per estrarre i bit esatti.
+
+|**Tipo di dato**|**Metodo per estrarre i bit**|**Tipo restituito**|
+|---|---|---|
+|`float`|`Float.floatToIntBits(f)`|`int` (32 bit)|
+|`double`|`Double.doubleToLongBits(d)`|`long` (64 bit)|
+**Come visualizzarli:** Una volta convertito il valore, puoi usare `Integer.toBinaryString(internalRep)` per ottenere una stringa e visualizzare esattamente il bit di segno, l'esponente e la mantissa.
+### Tipi di Errori
+**Errore di Incolonnamento (Alignment Error)**
+Si verifica quando si sommano numeri con ordini di grandezza molto distanti: il numero più piccolo viene "de-normalizzato" perdendo cifre.
+- **Esperimento:** Se dichiari `double val1 = 12345.0;` (5 cifre) e `double val2 = 1e-13;`, l'operazione `val1 + val2 == val1` risulterà **vera**.
+- **Motivo:** Il numero richiede 18 cifre totali per essere rappresentato, ma il `double` arriva al massimo a 16-17 cifre significative. Il valore di `1e-13` viene perso durante l'incolonnamento. Con `val2 = 1e-12`, invece, si è al limite e il calcolo va a buon fine.
+
+**Errore di Cancellazione**
+Avviene quando si sottraggono due numeri vicini fra loro che in precedenza erano già stati affetti da errore di troncamento.
+- **Esperimento:** Matematicamente, `1/3 - 1/4` è uguale a `1/12`.
+	- Su JShell, `System.out.println(1/3.0 - 1/4.0)` restituisce `0.08333333333333331`.
+	- Invece, `System.out.println(1/12.0)` restituisce `0.08333333333333333`.
+- **Controesempio:** Se nessuno dei due operandi iniziali è stato troncato (es. potenze di 2 al denominatore), il problema non si manifesta. `System.out.println(1/4.0 - 1/64.0)` dà un risultato esatto senza errori di cancellazione.
+
+**Accumulazione degli Errori in Loop**
+Gli errori si accumulano portando a risultati assurdi, specie se usi precisioni non adatte in cicli iterativi lunghi.
+- **Esperimento di Euclide per il Pi Greco:** Utilizzando i `float` per calcolare il Pi Greco, con una precisione richiesta di `float eps = 1E-4F`, il ciclo termina correttamente fornendo un'approssimazione accettabile.
+- Se si forza la precisione a `eps = 1E-8F` (il limite della precisione singola), gli errori si accumulano in modo catastrofico.
+- Al crescere dei lati del poligono (`nlati`), i valori sballano fino ad arrivare a `nl = 32768.0`, dove la lunghezza del lato calcolata diventa `0.0` e di conseguenza **il Pi Greco calcolato da Java crolla a 0.0**.
