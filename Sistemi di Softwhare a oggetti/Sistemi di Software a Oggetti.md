@@ -4350,6 +4350,11 @@ Non introduce nuovi metodi rispetto a `Collection`, ma **ridefinisce il contratt
 ####  `SortedSet<T>` (estende `Set<T>`)
 Aggiunge l'**ordinamento totale** sugli elementi.
 Gli elementi devono implementare `Comparable<T>` o va fornito un `Comparator<T>` al momento della creazione.
+```java
+SortedSet<Integer> numeri = new TreeSet<>(Comparator.reverseOrder());
+
+SortedSet<Integer> numeri = new TreeSet<>(); // comparator di default
+```
 Nuovi metodi:
   - `T first()` – elemento minimo
   - `T last()` – elemento massimo
